@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>jin.h.mun</groupId>
+    <artifactId>knutalk-top</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  
+  <artifactId>knutalk-domain</artifactId>
+  <packaging>jar</packaging>
+  
+  <name>knutalk-domain</name>
+  <description>this is a domain project.</description>
+  
+  <dependencies>
+    <!-- springboot dependencies -->
+    <dependency>
+  	  <groupId>org.springframework.boot</groupId>
+  	  <artifactId>spring-boot-starter-data-jpa</artifactId>
+  	</dependency>
+  	
+  	<!-- h2 db dependencies -->
+  	<dependency>
+  	  <groupId>com.h2database</groupId>
+  	  <artifactId>h2</artifactId>
+  	</dependency>
+  	
+  	<!-- knutalk dependencies -->
+  	<dependency>
+  	  <groupId>jin.h.mun</groupId>
+  	  <artifactId>knutalk-dto</artifactId>
+  	  <version>${knutalk.version}</version>
+  	</dependency>
+  </dependencies>
+  
+</project>

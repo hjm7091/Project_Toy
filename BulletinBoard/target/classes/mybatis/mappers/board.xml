@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.board">
+
+	<resultMap id="articlesResult" type="articleVO">
+		<result property="level" column="level" />
+        <result property="articleNO" column="articleNO" />
+        <result property="parentNO" column="parentNO" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="writeDate" column="writeDate"/>
+        <result property="imageFileName" column="imageFileName"/>
+	</resultMap> 
+	
+	<select id="selectAllArticlesList" resultMap="articlesResult" parameterType="java.util.Map">
+	    <![CDATA[
+	      select lvl, articleNO, parentNO, title, content, id, writeDate, imageFileName, viewCount from
+			(
+			    select rownum as recnum, lvl, articleNO, parentNO, title, content, id, writeDate, imageFileName, viewCount from 
+			    (
+			        select level as lvl, articleNO, parentNO, title, content, id, writeDate, imageFileName, viewCount
+			        from t_board
+			        start with parentNO = 0
+			        connect by prior articleNO = parentNO
+			        order siblings by articleNO
+			    )
+			) where recnum between (#{section}-1)*100 + (#{pageNum}-1)*10+1 and (#{section}-1)*100 + #{pageNum}*10					
+	    ]]>
+  	</select>
+  	
+  	<select id="countTotalArticles" resultType="int">
+  		<![CDATA[
+	      SELECT count(articleNO) from t_board	
+	    ]]>
+  	</select>
+  	
+  	<insert id="insertNewArticle" parameterType="java.util.Map">
+  		<![CDATA[
+	      INSERT into t_board(parentNO, articleNO, title, content, imageFileName, id)
+	      VALUES(#{parentNO}, #{articleNO}, #{title}, #{content}, #{imageFileName}, #{id})		
+	    ]]>
+  	</insert>
+  	
+  	<select id="selectNewArticleNO" resultType="int">
+  		<![CDATA[
+	      SELECT max(articleNO)+1 from t_board	
+	    ]]>
+  	</select>
+  	
+  	<select id="selectArticle" resultType="articleVO" parameterType="int">
+  		<![CDATA[
+	      SELECT * from t_board
+	      where articleNO = #{articleNO}	
+	    ]]>
+  	</select>
+  	
+  	<update id="increaseViewCount" parameterType="int">
+  		update t_board
+  		set viewCount = viewCount + 1
+  		where articleNO = #{articleNO}
+  	</update>
+  	
+  	<update id="updateArticle" parameterType="java.util.Map">
+  		update t_board
+		set title=#{title},	 
+		content=#{content}
+		<if test="imageFileName!='' and imageFileName!=null">
+			, imageFileName=#{imageFileName}
+		</if>
+		where articleNO=#{articleNO}
+  	</update>
+  	
+  	<delete id="deleteArticle"  parameterType="int">
+	    <![CDATA[
+	      delete from t_board
+	      where articleNO in (
+	         SELECT articleNO FROM  t_board
+	         START WITH articleNO = #{articleNO}
+	         CONNECT BY PRIOR  articleNO = parentNO )
+	    ]]>      
+  	</delete>
+
+</mapper>

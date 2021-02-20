@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>jin.h.mun</groupId>
+  <artifactId>knutalk-top</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  <name>knutalk-top</name>
+  <description>this is a top project.</description>
+  
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <knutalk.version>${project.version}</knutalk.version>
+  </properties>
+  
+  <modules>
+    <module>knutalk-web</module>
+    <module>knutalk-service</module>
+    <module>knutalk-dto</module>
+    <module>knutalk-domain</module>
+    <module>knutalk-data</module>
+    <module>knutalk-api</module>
+  </modules>
+  
+  <!-- springboot parent --> 
+  <parent> 
+  	<groupId>org.springframework.boot</groupId> 
+  	<artifactId>spring-boot-starter-parent</artifactId> 
+  	<version>2.1.3.RELEASE</version> 
+  	<relativePath/> <!-- lookup parent from repository --> 
+  </parent>
+  
+  <dependencies>
+    <!--springboot test dependencies -->
+	<dependency>
+      <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>compile</scope>
+	</dependency>
+  </dependencies>
+
+</project>

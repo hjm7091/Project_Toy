@@ -15,31 +15,31 @@ public class PersistHelper {
 	
 	private EntityTransaction et;
 
-	public PersistHelper(String persistenceUnitName) {
-		emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+	public PersistHelper( final String persistenceUnitName ) {
+		emf = Persistence.createEntityManagerFactory( persistenceUnitName );
 		em = emf.createEntityManager();
 		et = em.getTransaction();
 	}
 	
-	public void persist(Object entity) {
+	public void persist( final Object entity ) {
 		et.begin();
-		em.persist(entity);
+		em.persist( entity );
 		et.commit();
 	}
 	
-	public <T> T find(Class<T> entityClass, Object primaryKey) {
-		return em.find(entityClass, primaryKey);
+	public <T> T find( final Class<T> entityClass, final Object primaryKey ) {
+		return em.find( entityClass, primaryKey );
 	}
 	
-	public <T, U> void update(BiConsumer<T, U> updateAction, T entityClass, U dtoClass) {
+	public <T, U> void update( final BiConsumer<T, U> updateAction, final T entityClass, final U dtoClass ) {
 		et.begin();
-		updateAction.accept(entityClass, dtoClass);
+		updateAction.accept( entityClass, dtoClass );
 		et.commit();
 	}
 	
-	public void delete(Object entity) {
+	public void delete( final Object entity ) {
 		et.begin();
-		em.remove(entity);
+		em.remove( entity );
 		et.commit();
 	}
 	

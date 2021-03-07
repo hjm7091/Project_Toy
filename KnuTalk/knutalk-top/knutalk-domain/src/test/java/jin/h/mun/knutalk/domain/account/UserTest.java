@@ -9,8 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jin.h.mun.knutalk.domain.PersistHelper;
-import jin.h.mun.knutalk.dto.account.UserRegisterDto;
-import jin.h.mun.knutalk.dto.account.UserUpdateDto;
+import jin.h.mun.knutalk.domain.account.enums.RoleType;
+import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
+import jin.h.mun.knutalk.dto.account.UserUpdateRequest;
 
 public class UserTest {
 	
@@ -20,12 +21,14 @@ public class UserTest {
 
 	@Before
 	public void setUp() {
-		persistHelper = new PersistHelper("domain");
+		persistHelper = new PersistHelper( "domain" );
 		
-		user = User.createUser(UserRegisterDto.builder()
-				.email("jin@gmail.com")
-				.password("1234")
-				.nickName("jin").build());
+		user = new User( UserRegisterRequest.builder()
+						   .email( "hjm7091@naver.com" )
+						   .password( "1234" )
+						   .userName( "jin" )
+						   .picture( "picture1" )
+						   .build() );
 	}
 	
 	@After
@@ -40,76 +43,78 @@ public class UserTest {
 		 * user가 생성된 시점과 테스트가 실행되는 시점의 텀이 너무 짧아 시간이 
 		 * 동일할 수 있으므로 시간이 조금 흘렀다고 가정하기 위해 스레드를 잠시 재운다.
 		 */
-		Thread.sleep(100L);
+		Thread.sleep( 100L );
+		LocalDateTime nowTime = LocalDateTime.now();
+		
+		//then
+		assertThat( nowTime.isAfter( user.getCreatedAt() ) ).isTrue();
+		assertThat( nowTime.isAfter( user.getUpdatedAt() ) ).isTrue();
+	}
+	
+	@Test
+	public void idAfterPersist() {
+		//given
+		assertThat( user.getId() ).isNull();
+		
+		//when
+		persistHelper.persist( user );
+		
+		//then
+		assertThat( user.getId() ).isNotNull();
+	}
+	
+	@Test
+	public void fieldAfterUpdate() {
+		//given
 		LocalDateTime startTime = LocalDateTime.now();
 		
-		//then
-		assertThat(startTime.isAfter(user.getCreatedAt())).isTrue();
-		assertThat(startTime.isAfter(user.getUpdatedAt())).isTrue();
-		assertThat(user.getUserLevel()).isEqualTo(UserLevel.UNVERIFIED);
-	}
-	
-	@Test
-	public void checkIdAfterPersist() {
-		//given
-		assertThat(user.getId()).isNull();
+		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+												.password( null )
+												.userName( null )
+												.picture( null )
+												.roleType( "admin" )
+												.build();
 		
-		//when
-		persistHelper.persist(user);
-		
-		//then
-		assertThat(user.getId()).isNotNull();
-	}
-	
-	@Test
-	public void checkFieldAfterUpdate() {
-		//given
-		LocalDateTime startTime = LocalDateTime.now();
-		
-		UserUpdateDto userUpdateDto = UserUpdateDto.builder()
-				.password("5678")
-				.nickName("hak")
-				.userLevel("VERIFIED").build();
-		
-		persistHelper.persist(user);
+		persistHelper.persist( user );
 		persistHelper.clearEntityManager();
 		
 		//when
-		User findUserInDB = persistHelper.find(User.class, user.getId());
+		User findUserInDB = persistHelper.find( User.class, user.getId() );
 		
-		persistHelper.update((user, dto) -> {
-			user.changePassword(dto.getPassword());
-			user.changeNickName(dto.getNickName());
-			user.changeUserLevel(dto.getUserLevel());
-		}, findUserInDB, userUpdateDto);
+		persistHelper.update( ( user, request ) -> {
+			user.changePassword( request.getPassword() );
+			user.changeUserName( request.getUserName() );
+			user.changePicture( request.getPicture() );
+			user.changeRoleType( RoleType.getRoleType( request.getRoleType() ) );
+		}, findUserInDB, userUpdateRequest );
 		
 		persistHelper.clearEntityManager();
 		
-		findUserInDB = persistHelper.find(User.class, user.getId());
+		findUserInDB = persistHelper.find( User.class, user.getId() );
 		
 		//then
-		assertThat(findUserInDB.getPassword()).isEqualTo("5678");
-		assertThat(findUserInDB.getNickName()).isEqualTo("hak");
-		assertThat(findUserInDB.getUserLevel()).isEqualTo(UserLevel.VERIFIED);
-		assertThat(findUserInDB.getUpdatedAt().isAfter(startTime)).isTrue();
+		assertThat( findUserInDB.getPassword() ).isEqualTo( "1234" );
+		assertThat( findUserInDB.getUserName() ).isEqualTo( "jin" );
+		assertThat( findUserInDB.getRoleType() ).isEqualTo( RoleType.ADMIN );
+		assertThat( findUserInDB.getUpdatedAt().isAfter( startTime ) ).isTrue();
 	}
 	
 	@Test
-	public void checkUserAfterDelete() {
+	public void userAfterDelete() {
 		//given
-		persistHelper.persist(user);
+		persistHelper.persist( user );
 		persistHelper.clearEntityManager();
 		
 		//when
-		User findUserInDB = persistHelper.find(User.class, user.getId());
+		User findUserInDB = persistHelper.find( User.class, user.getId() );
 		
-		persistHelper.delete(findUserInDB);
+		persistHelper.delete( findUserInDB );
 		persistHelper.clearEntityManager();
 		
-		findUserInDB = persistHelper.find(User.class, user.getId());
+		findUserInDB = persistHelper.find( User.class, user.getId() );
 		
 		//then
-		assertThat(findUserInDB).isNull();
+		assertThat( findUserInDB ).isNull();
 	}
 	
 }

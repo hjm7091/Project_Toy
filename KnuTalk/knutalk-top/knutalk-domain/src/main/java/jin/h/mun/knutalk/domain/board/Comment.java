@@ -20,39 +20,37 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter @Setter(value = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = {"id"}, callSuper = false)
-@ToString(of = {"id", "content"})
+@Getter @Setter( value = AccessLevel.PRIVATE )
+@NoArgsConstructor( access = AccessLevel.PROTECTED )
+@EqualsAndHashCode( of = { "id" }, callSuper = false )
+@ToString( of = { "id", "content" } )
 @Entity
-@Table(name = "tbComment")
+@Table( name = "tbComment" )
 public class Comment extends BaseField {
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "commentId")
+	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
+	@Column( name = "commentId" )
 	private Long id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "userId")
+	@ManyToOne( fetch = FetchType.LAZY )
+	@JoinColumn( name = "userId" )
 	private User writer;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "postId")
+	@ManyToOne( fetch = FetchType.LAZY )
+	@JoinColumn( name = "postId" )
 	private Post post;
 	
-	@Column(name = "commentContent", nullable = false)
+	@Column( name = "commentContent", nullable = false )
 	private String content;
 	
 	@Builder
-	public static Comment createComment(User writer, Post postToWrite, String content) {
-		Comment comment = new Comment();
+	public Comment( User writer, Post targetPost, String content ) {
 		
-		comment.setWriter(writer);
-		comment.setPost(postToWrite);
-		comment.setContent(content);
+		this.setWriter( writer );
+		this.setPost( targetPost );
+		this.setContent( content );
 		
-		postToWrite.getComments().add(comment);
+		targetPost.getComments().add( this );
 		
-		return comment;
 	}
 }

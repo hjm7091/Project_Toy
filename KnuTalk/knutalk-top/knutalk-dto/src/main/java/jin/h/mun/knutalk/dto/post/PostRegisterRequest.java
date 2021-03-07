@@ -2,19 +2,22 @@ package jin.h.mun.knutalk.dto.post;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter
 @ToString
-public class PostRegisterDto {
+public class PostRegisterRequest {
 
+	@NonNull
 	private String title;
 	
+	@NonNull
 	private String content;
 
 	@Builder
-	public PostRegisterDto(String title, String content) {
+	public PostRegisterRequest( String title, String content ) {
 		this.title = title;
 		this.content = content;
 	}

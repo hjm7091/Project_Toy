@@ -61,6 +61,9 @@ public class Post extends BaseField {
 	@OneToMany( mappedBy = "post", cascade = { CascadeType.PERSIST, CascadeType.REMOVE } )
 	private List<Comment> comments = new ArrayList<>();
 	
+	@OneToMany( mappedBy = "post" ,cascade = { CascadeType.PERSIST, CascadeType.REMOVE } )
+	private List<ThumbUpPost> thumbUpPosts = new ArrayList<>();
+	
 	public Post( PostRegisterRequest request, User owner ) {
 		this.title = request.getTitle();
 		this.content = request.getContent();
@@ -83,6 +86,10 @@ public class Post extends BaseField {
 	
 	public void increaseViewCount() {
 		this.viewCount++;
+	}
+	
+	public int thumbUpCount() {
+		return thumbUpPosts.size();
 	}
 	
 }

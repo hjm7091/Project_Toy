@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,6 +52,11 @@ public class ThumbUpPostTest {
 		user5 = User.builder().email( "user5@test.com" ).userName( "user5" ).build();
 		
 		users = Stream.of( user1, user2, user3, user4, user5 ).collect( Collectors.toList() );
+	}
+	
+	@After
+	public void tearDown() {
+		persistHelper.closeAll();
 	}
 	
 	@Test

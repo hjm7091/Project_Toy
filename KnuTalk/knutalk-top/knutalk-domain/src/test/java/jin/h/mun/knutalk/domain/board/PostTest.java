@@ -2,10 +2,10 @@ package jin.h.mun.knutalk.domain.board;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
-
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jin.h.mun.knutalk.domain.PersistHelper;
@@ -16,18 +16,26 @@ import jin.h.mun.knutalk.dto.post.SecretPostRegisterRequest;
 
 public class PostTest {
 
-	private PersistHelper persistHelper;
+	private static PersistHelper persistHelper;
 	
 	private User owner;
 	
 	private Post post;
 	
 	private SecretPost secretPost;
+	
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		persistHelper = new PersistHelper( "domain" );
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() {
+		persistHelper.closeAll();
+	}
 
 	@Before
 	public void setUp() {
-		persistHelper = new PersistHelper( "domain" );
-		
 		owner = new User( UserRegisterRequest.builder()
 						   .email( "hjm7091@naver.com" )
 						   .password( "1234" )
@@ -53,95 +61,68 @@ public class PostTest {
 	
 	@After
 	public void tearDown() {
-		persistHelper.closeAll();
-	}
-
-	@Test
-	public void baseField() throws InterruptedException {
-		//given
-		/*
-		 * post가 생성된 시점과 테스트가 실행되는 시점의 텀이 너무 짧아 시간이 
-		 * 동일할 수 있으므로 시간이 조금 흘렀다고 가정하기 위해 스레드를 잠시 재운다.
-		 */
-		Thread.sleep( 100L );
-		LocalDateTime nowTime = LocalDateTime.now();
-		
-		//then
-		assertThat( nowTime.isAfter( post.getCreatedAt() ) ).isTrue();
-		assertThat( nowTime.isAfter( post.getUpdatedAt() ) ).isTrue();
-		assertThat( post.getViewCount() ).isEqualTo( 0 );
-		
-		assertThat( nowTime.isAfter( secretPost.getCreatedAt() ) ).isTrue();
-		assertThat( nowTime.isAfter( secretPost.getUpdatedAt() ) ).isTrue();
-		assertThat( secretPost.getViewCount() ).isEqualTo( 0 );
+		persistHelper.deleteAll( Post.class );
+		persistHelper.deleteAll( SecretPost.class );
+		persistHelper.deleteAll( User.class );
+		assertThat( persistHelper.countRow( Post.class ) ).isEqualTo( 0 );
+		assertThat( persistHelper.countRow( SecretPost.class ) ).isEqualTo( 0 );
+		assertThat( persistHelper.countRow( User.class ) ).isEqualTo( 0 );
 	}
 	
 	@Test
-	public void persistenceTransitionAfterPersistUser() {
-		//given
+	public void idAfterPersist() {
+		//given : id가 null인지 확인
 		assertThat( owner.getId() ).isNull();
 		assertThat( post.getId() ).isNull();
 		assertThat( secretPost.getId() ).isNull();
 		
-		//when
-		persistHelper.persist( owner );
-		persistHelper.clearEntityManager();
-		
-		//then
+		//when : 유저 및 게시물 저장
+		persistHelper.persit( owner, post, secretPost );
+
+		//then : id가 null이 아닌지 확인
 		assertThat( owner.getId() ).isNotNull();
 		assertThat( post.getId() ).isNotNull();
 		assertThat( secretPost.getId() ).isNotNull();
 	}
 	
 	@Test
+	// 유저가 지워지면 유저의 게시물은 자동으로 지워져야함.
+	// 유저가 회원 탈퇴하는 경우
 	public void persistenceTransitionAfterDeleteUser() {
-		//given
-		assertThat( owner.getId() ).isNull();
-		assertThat( post.getId() ).isNull();
-		assertThat( secretPost.getId() ).isNull();
-		
-		persistHelper.persist( owner );
+		//given : 유저 및 게시물 저장
+		persistHelper.persit( owner, post, secretPost );
 		persistHelper.clearEntityManager();
 		
-		//when
+		//when : 게시물 주인인 유저만 삭제
 		User findOwnerInDB = persistHelper.find( User.class, owner.getId() );
-		
 		persistHelper.delete( findOwnerInDB );
 		persistHelper.clearEntityManager();
 		
+		//then : 게시물도 삭제되었는지 확인
 		Post findPost = persistHelper.find( Post.class, post.getId() );
 		SecretPost findSecretPost = persistHelper.find( SecretPost.class, secretPost.getId() );
-		
-		//then
 		assertThat( findPost ).isNull();
 		assertThat( findSecretPost ).isNull();
 	}
 	
 	@Test
 	public void viewCount() {
-		//given
-		assertThat( post.getViewCount() ).isEqualTo( 0 );
-		assertThat( secretPost.getViewCount() ).isEqualTo( 0 );
-		int count = 100;
+		//given : 유저 및 게시물 저장
+		int count = 5;
+		persistHelper.persit( owner, post, secretPost );
 		
-		//when
-		increaseViewCount( count );
-		
-		persistHelper.persist( owner );
+		//when : viewCount 증가
+		for( int i = 0; i < count; i++ ) {
+			persistHelper.update( post::increaseViewCount );
+			persistHelper.update( secretPost::increaseViewCount );
+		}
 		persistHelper.clearEntityManager();
 		
+		//then : viewCount 확인
 		Post findPost = persistHelper.find( Post.class, post.getId() );
 		SecretPost findSecretPost = persistHelper.find( SecretPost.class, secretPost.getId() );
-		
-		//then
 		assertThat( findPost.getViewCount() ).isEqualTo( count );
 		assertThat( findSecretPost.getViewCount() ).isEqualTo( count );
 	}
 	
-	public void increaseViewCount( int count ) {
-		for( int i = 0; i < count; i++ ) {
-			post.increaseViewCount();
-			secretPost.increaseViewCount();
-		}
-	}
 }

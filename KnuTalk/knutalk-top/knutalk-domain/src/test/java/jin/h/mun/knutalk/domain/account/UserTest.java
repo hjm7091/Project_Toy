@@ -2,10 +2,10 @@ package jin.h.mun.knutalk.domain.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
-
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jin.h.mun.knutalk.domain.PersistHelper;
@@ -15,105 +15,88 @@ import jin.h.mun.knutalk.dto.account.UserUpdateRequest;
 
 public class UserTest {
 	
-	private PersistHelper persistHelper;
+	private static PersistHelper persistHelper;
 	
 	private User user;
-
+	
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		persistHelper = new PersistHelper( "domain" );
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() {
+		persistHelper.closeAll();
+	}
+	
 	@Before
 	public void setUp() {
-		persistHelper = new PersistHelper( "domain" );
-		
 		user = new User( UserRegisterRequest.builder()
-						   .email( "hjm7091@naver.com" )
-						   .password( "1234" )
-						   .userName( "jin" )
-						   .picture( "picture1" )
-						   .build() );
+				   .email( "hjm7091@naver.com" )
+				   .password( "1234" )
+				   .userName( "jin" )
+				   .picture( "picture1" )
+				   .build() );
 	}
 	
 	@After
 	public void tearDown() {
-		persistHelper.closeAll();
-	}
-	
-	@Test
-	public void baseField() throws InterruptedException {
-		//given
-		/*
-		 * user가 생성된 시점과 테스트가 실행되는 시점의 텀이 너무 짧아 시간이 
-		 * 동일할 수 있으므로 시간이 조금 흘렀다고 가정하기 위해 스레드를 잠시 재운다.
-		 */
-		Thread.sleep( 100L );
-		LocalDateTime nowTime = LocalDateTime.now();
-		
-		//then
-		assertThat( nowTime.isAfter( user.getCreatedAt() ) ).isTrue();
-		assertThat( nowTime.isAfter( user.getUpdatedAt() ) ).isTrue();
+		persistHelper.deleteAll( User.class );
+		assertThat( persistHelper.countRow( User.class ) ).isEqualTo( 0 );
 	}
 	
 	@Test
 	public void idAfterPersist() {
-		//given
+		//given : user의 id가 null인지 확인
 		assertThat( user.getId() ).isNull();
 		
-		//when
+		//when : user를 저장
 		persistHelper.persist( user );
 		
-		//then
+		//then : user의 id가 null이 아닌지 확인
 		assertThat( user.getId() ).isNotNull();
 	}
 	
 	@Test
 	public void fieldAfterUpdate() {
-		//given
-		LocalDateTime startTime = LocalDateTime.now();
-		
-		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
-												.password( null )
-												.userName( null )
-												.picture( null )
-												.roleType( "admin" )
-												.build();
-		
+		//given : user를 저장한다, db에서 user를 찾기 위해 엔티티 매니저를 비운다.
 		persistHelper.persist( user );
 		persistHelper.clearEntityManager();
 		
-		//when
+		//when : user를 db에서 찾고 업데이트한다. db에서 user를 찾기 위해 엔티티 매니저를 비운다.
 		User findUserInDB = persistHelper.find( User.class, user.getId() );
 		
-		persistHelper.update( ( user, request ) -> {
-			user.changePassword( request.getPassword() );
-			user.changeUserName( request.getUserName() );
-			user.changePicture( request.getPicture() );
-			user.changeRoleType( RoleType.getRoleType( request.getRoleType() ) );
-		}, findUserInDB, userUpdateRequest );
+		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+				.password( null )
+				.userName( null )
+				.picture( "picture2" )
+				.roleType( "admin" )
+				.build();
 		
+		persistHelper.update( findUserInDB::update, userUpdateRequest );
 		persistHelper.clearEntityManager();
 		
+		//then : user를 db에서 찾는다. user의 필드가 업데이트 되었는지 확인한다. null값으로는 업데이트 되지 않아야함.
 		findUserInDB = persistHelper.find( User.class, user.getId() );
-		
-		//then
 		assertThat( findUserInDB.getPassword() ).isEqualTo( "1234" );
 		assertThat( findUserInDB.getUserName() ).isEqualTo( "jin" );
+		assertThat( findUserInDB.getPicture() ).isEqualTo( "picture2" );
 		assertThat( findUserInDB.getRoleType() ).isEqualTo( RoleType.ADMIN );
-		assertThat( findUserInDB.getUpdatedAt().isAfter( startTime ) ).isTrue();
 	}
 	
 	@Test
 	public void userAfterDelete() {
-		//given
+		//given : user를 저장한다, db에서 user를 찾기 위해 엔티티 매니저를 비운다.
 		persistHelper.persist( user );
 		persistHelper.clearEntityManager();
 		
-		//when
+		//when : user를 db에서 찾고 지운다. db에서 user를 찾기 위해 엔티티 매니저를 비운다.
 		User findUserInDB = persistHelper.find( User.class, user.getId() );
-		
 		persistHelper.delete( findUserInDB );
 		persistHelper.clearEntityManager();
 		
+		//then : user를 db에서 찾는다. user를 지웠으므로 null인지 확인한다.
 		findUserInDB = persistHelper.find( User.class, user.getId() );
-		
-		//then
 		assertThat( findUserInDB ).isNull();
 	}
 	

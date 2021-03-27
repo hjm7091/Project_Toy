@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 
 public class PersistHelper {
 
@@ -26,6 +27,12 @@ public class PersistHelper {
 		executeInTransaction( e -> em.persist( e ) , entity );
 	}
 	
+	public void persit( final Object... entities ) {
+		for ( Object entity : entities ) {
+			executeInTransaction( e -> em.persist( e ) , entity );
+		}
+	}
+	
 	public void delete( final Object entity ) {
 		executeInTransaction( e -> em.remove( e ), entity );
 	}
@@ -34,8 +41,29 @@ public class PersistHelper {
 		return em.find( entityClass, primaryKey );
 	}
 	
+	public <T> void update( final Consumer<T> updateAction, final T updateRequest ) {
+		executeInTransaction( updateAction, updateRequest );
+	}
+	
 	public <T, U> void update( final BiConsumer<T, U> updateAction, final T entity, final U dto ) {
 		executeInTransaction( updateAction, entity, dto );
+	}
+	
+	public void update( final Performer performer ) {
+		et.begin();
+		performer.perform();
+		et.commit();
+	}
+	
+	public <T> void deleteAll( final Class<T> entityClass ) {
+		Query deleteAllQuery = em.createQuery( "DELETE FROM " + entityClass.getSimpleName() );
+		et.begin();
+		deleteAllQuery.executeUpdate();
+		et.commit();
+	}
+	
+	public <T> Long countRow( final Class<T> entityClass ) {
+		return em.createQuery( "SELECT count(e) FROM " + entityClass.getSimpleName() + " e", Long.class ).getSingleResult();
 	}
 	
 	public void clearEntityManager() {

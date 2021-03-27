@@ -20,6 +20,7 @@ import jin.h.mun.knutalk.domain.account.enums.SocialType;
 import jin.h.mun.knutalk.domain.board.Post;
 import jin.h.mun.knutalk.domain.common.BaseField;
 import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
+import jin.h.mun.knutalk.dto.account.UserUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -60,7 +61,7 @@ public class User extends BaseField {
     @Enumerated( EnumType.STRING )
     private RoleType roleType;
 	
-	@OneToMany( mappedBy = "owner", cascade = { CascadeType.PERSIST, CascadeType.REMOVE } )
+	@OneToMany( mappedBy = "owner", cascade = CascadeType.REMOVE )
 	private List<Post> posts = new ArrayList<>();
 	
 	public User( UserRegisterRequest request ) {
@@ -111,5 +112,12 @@ public class User extends BaseField {
 			this.setUpdatedAt( LocalDateTime.now() );
 			this.picture = pictrue;
 		}
+	}
+	
+	public void update( final UserUpdateRequest request ) {
+		changePassword( request.getPassword() );
+		changeUserName( request.getUserName() );
+		changePicture( request.getPicture() );
+		changeRoleType( RoleType.getRoleType( request.getRoleType() ) );
 	}
 }

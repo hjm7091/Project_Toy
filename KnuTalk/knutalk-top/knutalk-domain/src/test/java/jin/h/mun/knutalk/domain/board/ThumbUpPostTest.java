@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jin.h.mun.knutalk.domain.PersistHelper;
@@ -17,7 +19,7 @@ import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
 
 public class ThumbUpPostTest {
 
-	private PersistHelper persistHelper;
+	private static PersistHelper persistHelper;
 	
 	private User jin;
 	
@@ -27,10 +29,18 @@ public class ThumbUpPostTest {
 	
 	private User user1, user2, user3, user4, user5;
 	
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		persistHelper = new PersistHelper( "domain" );
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() {
+		persistHelper.closeAll();
+	}
+	
 	@Before
 	public void setUp() {
-		persistHelper = new PersistHelper( "domain" );
-		
 		jin = new User( UserRegisterRequest.builder()
 							.email( "jin@naver.com" )
 							.password( "1234" )
@@ -56,72 +66,51 @@ public class ThumbUpPostTest {
 	
 	@After
 	public void tearDown() {
-		persistHelper.closeAll();
+		persistHelper.deleteAll( ThumbUpPost.class );
+		persistHelper.deleteAll( Post.class );
+		persistHelper.deleteAll( User.class );
+		assertThat( persistHelper.countRow( ThumbUpPost.class ) ).isEqualTo( 0 );
+		assertThat( persistHelper.countRow( Post.class ) ).isEqualTo( 0 );
+		assertThat( persistHelper.countRow( User.class ) ).isEqualTo( 0 );
 	}
 	
 	@Test
-	public void thumbUp() {
-		//given
-		persistHelper.persist( jin );
+	public void thumbUpToPost() {
+		//given : 유저 및 게시물 저장
+		persistHelper.persit( jin, postOfJin );
 		users.stream().forEach( user -> persistHelper.persist( user ) );
 		
-		//when
+		//when : thumbUpPost 저장
 		users.stream().forEach( user -> persistHelper.persist( new ThumbUpPost( user, postOfJin ) ) );
 		persistHelper.clearEntityManager();
 		
+		//then : 게시물의 thumbUpPost 갯수 확인
 		Post findPostInDB = persistHelper.find( Post.class , postOfJin.getId() );
-		
-		//then
-		assertThat( findPostInDB.thumbUpCount() ).isEqualTo( 5 );
+		assertThat( findPostInDB.thumbUpCount() ).isEqualTo( users.size() );
 	}
 	
 	@Test
-	// 유저를 저장하면 유저의 게시물은 자동으로 DB에 저장되어야함.
-	// 게시물을 저장하면 게시물의 up 정보는 자동으로 DB에 저장되어야함.
-	// 게시물의 up 정보가 DB에 저장되려면 게시물에 up을 한 사용자는 먼저 DB에 저장되어 있어야함.
-	public void persistenceTransitionAfterPersistUser() {
-		//given
-		ThumbUpPost thumbUpUser1 = new ThumbUpPost( user1, postOfJin );
-		ThumbUpPost thumbUpUser2 = new ThumbUpPost( user2, postOfJin );
-		assertThat( jin.getId() ).isNull();
-		assertThat( postOfJin.getId() ).isNull();
-		assertThat( thumbUpUser1.getId() ).isNull();
-		assertThat( thumbUpUser2.getId() ).isNull();
-		
-		//when
-		persistHelper.persist( user1 ); persistHelper.persist( user2 );
-		persistHelper.persist( jin );
-		
-		//then
-		assertThat( jin.getId() ).isNotNull();
-		assertThat( postOfJin.getId() ).isNotNull();
-		assertThat( thumbUpUser1.getId() ).isNotNull();
-		assertThat( thumbUpUser2.getId() ).isNotNull();
-		assertThat( postOfJin.thumbUpCount() ).isEqualTo( 2 );
-	}
-	
-	@Test
-	// 게시물이 지워지면 thumbUpCount 정보는 자동으로 DB에서 지워져야함.
+	// 게시물이 지워지면 thumbUpPost 정보는 자동으로 DB에서 지워져야함.
 	// 게시물 주인이 게시물을 지우는 경우.
 	public void persistenceTransitionAfterDeletePost() {
-		//given
-		ThumbUpPost thumbUpUser1 = new ThumbUpPost( user1, postOfJin );
-		ThumbUpPost thumbUpUser2 = new ThumbUpPost( user2, postOfJin );
-		persistHelper.persist( user1 ); persistHelper.persist( user2 );
-		persistHelper.persist( jin );
+		//given : 유저, 게시물, thumbUpPost 저장
+		persistHelper.persit( jin, user1, user2, postOfJin );
+		
+		ThumbUpPost thumbUpByUser1 = new ThumbUpPost( user1, postOfJin );
+		ThumbUpPost thumbUpByUser2 = new ThumbUpPost( user2, postOfJin );
+		persistHelper.persit( thumbUpByUser1, thumbUpByUser2 );
 		persistHelper.clearEntityManager();
 		
-		//when
+		//when : 게시물을 지운다.
 		Post findPostInDB = persistHelper.find( Post.class, postOfJin.getId() );	
 		persistHelper.delete( findPostInDB );
 		persistHelper.clearEntityManager();
 		
-		ThumbUpPost thumbUpByUser1 = persistHelper.find( ThumbUpPost.class, thumbUpUser1.getId() );
-		ThumbUpPost thumbUpByUser2 = persistHelper.find( ThumbUpPost.class, thumbUpUser2.getId() );
-		
-		//then
-		assertThat( thumbUpByUser1 ).isNull();
-		assertThat( thumbUpByUser2 ).isNull();
+		//then : thumbUpPost 정보가 지워졌는지 확인
+		ThumbUpPost findThumbUpByUser1InDB = persistHelper.find( ThumbUpPost.class, thumbUpByUser1.getId() );
+		ThumbUpPost findThumbUpByUser2InDB = persistHelper.find( ThumbUpPost.class, thumbUpByUser2.getId() );
+		assertThat( findThumbUpByUser1InDB ).isNull();
+		assertThat( findThumbUpByUser2InDB ).isNull();
 	}
 
 }

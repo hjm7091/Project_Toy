@@ -3,7 +3,9 @@ package jin.h.mun.knutalk.domain.board;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jin.h.mun.knutalk.domain.PersistHelper;
@@ -13,7 +15,7 @@ import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
 
 public class CommentTest {
 	
-	private PersistHelper persistHelper;
+	private static PersistHelper persistHelper;
 	
 	private User jin;
 	
@@ -21,10 +23,18 @@ public class CommentTest {
 	
 	private User hak;
 	
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		persistHelper = new PersistHelper( "domain" );
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() {
+		persistHelper.closeAll();
+	}
+	
 	@Before
 	public void setUp() {
-		persistHelper = new PersistHelper( "domain" );
-		
 		//게시물 주인
 		jin = new User( UserRegisterRequest.builder()
 				.email( "jin@gmail.com" )
@@ -45,33 +55,35 @@ public class CommentTest {
 		postOfJin = new Post( postRegisterRequest, jin );
 		
 	}
-
+	
 	@After
 	public void tearDown() {
-		persistHelper.closeAll();
+		persistHelper.deleteAll( Comment.class );
+		persistHelper.deleteAll( Post.class );
+		persistHelper.deleteAll( User.class );
+		assertThat( persistHelper.countRow( Comment.class ) ).isEqualTo( 0 );
+		assertThat( persistHelper.countRow( Post.class ) ).isEqualTo( 0 );
+		assertThat( persistHelper.countRow( User.class ) ).isEqualTo( 0 );
 	}
 
 	@Test
 	public void writeComment() {
-		//given
-		persistHelper.persist( jin );
-		persistHelper.persist( hak );
+		//given : 유저 및 게시물 저장
+		persistHelper.persit( jin, hak, postOfJin );
 		String content = "hello. my name is hak!!";
-		
 		Comment comment = Comment.builder()
 							.writer( hak )
 							.targetPost( postOfJin )
 							.content( content )
 							.build();
 		
-		//when
+		//when : 코멘트 저장
 		persistHelper.persist( comment );
 		persistHelper.clearEntityManager();
 		
+		//then : 게시물의 코멘트 갯수 확인, 코멘트가 쓰여진 게시물, 코멘트가 쓰여진 게시물의 주인, 코멘트 내용 확인
 		Post findPostInDB = persistHelper.find( Post.class, postOfJin.getId() );
 		Comment findCommentInDB = persistHelper.find( Comment.class, comment.getId() );
-		
-		//then
 		assertThat( findPostInDB.getComments().size() ).isEqualTo( 1 );
 		assertThat( findCommentInDB.getPost() ).isEqualTo( postOfJin );
 		assertThat( findCommentInDB.getPost().getOwner() ).isEqualTo( jin );

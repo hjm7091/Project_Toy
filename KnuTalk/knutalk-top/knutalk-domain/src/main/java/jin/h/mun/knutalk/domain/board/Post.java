@@ -58,10 +58,10 @@ public class Post extends BaseField {
 	@JoinColumn( name = "userId" )
 	private User owner;
 	
-	@OneToMany( mappedBy = "post", cascade = { CascadeType.PERSIST, CascadeType.REMOVE } )
+	@OneToMany( mappedBy = "post", cascade = CascadeType.REMOVE )
 	private List<Comment> comments = new ArrayList<>();
 	
-	@OneToMany( mappedBy = "post" ,cascade = { CascadeType.PERSIST, CascadeType.REMOVE } )
+	@OneToMany( mappedBy = "post" ,cascade = CascadeType.REMOVE )
 	private List<ThumbUpPost> thumbUpPosts = new ArrayList<>();
 	
 	public Post( PostRegisterRequest request, User owner ) {

@@ -14,17 +14,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter(value = AccessLevel.PRIVATE)
+@Getter @Setter( value = AccessLevel.PRIVATE )
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
 @Entity
-@Table(name = "tbSecretPost")
-@DiscriminatorValue("SECRET")
+@Table( name = "tbSecretPost" )
+@DiscriminatorValue( "SECRET" )
 public class SecretPost extends Post {
 
-	@Column(name = "postPassword", nullable = false)
+	@Column( name = "postPassword", nullable = false )
 	String password;
 	
-	@Column(name = "postAnonymous", nullable = false)
+	@Column( name = "postAnonymous", nullable = false )
 	Boolean anonymous;
 	
 	public SecretPost( SecretPostRegisterRequest request, User owner ) {
@@ -39,8 +39,8 @@ public class SecretPost extends Post {
 		owner.getPosts().add( this );
 	}
 	
-	public void changePassword(String password) {
-		this.setUpdatedAt(LocalDateTime.now());
+	public void changePassword( String password ) {
+		this.setUpdatedAt( LocalDateTime.now() );
 		this.password = password;
 	}
 }

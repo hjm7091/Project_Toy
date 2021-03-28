@@ -17,13 +17,15 @@ import jin.h.mun.knutalk.domain.account.User;
 import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
 import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
 
-public class ThumbUpPostTest {
+public class ThumbUpCommentTest {
 
 	private static PersistHelper persistHelper;
 	
-	private User jin;
+	private User jin, hak;
 	
 	private Post postOfJin;
+	
+	private Comment commentOfHak;
 	
 	private List<User> users;
 	
@@ -33,21 +35,21 @@ public class ThumbUpPostTest {
 	public static void setUpBeforeClass() {
 		persistHelper = new PersistHelper( "domain" );
 	}
-	
+
 	@AfterClass
 	public static void tearDownAfterClass() {
 		persistHelper.closeAll();
 	}
-	
+
 	@Before
 	public void setUp() {
 		//게시물 주인
 		jin = new User( UserRegisterRequest.builder()
-							.email( "jin@naver.com" )
-							.password( "1234" )
-							.userName( "jin" )
-							.picture( "picture1" )
-							.build() );
+				.email( "jin@naver.com" )
+				.password( "1234" )
+				.userName( "jin" )
+				.picture( "picture1" )
+				.build() );
 		
 		//jin의 게시물
 		PostRegisterRequest postRegisterRequest = PostRegisterRequest.builder()
@@ -55,6 +57,18 @@ public class ThumbUpPostTest {
 													.content( "content1" )
 													.build();
 		postOfJin = new Post( postRegisterRequest, jin );
+		
+		//게시물에 글을 쓸 유저
+		hak = new User( UserRegisterRequest.builder()
+				.email( "hak@gmail.com" )
+				.password( "1234" )
+				.userName( "hak" ).build() );
+		
+		commentOfHak = Comment.builder()
+				.writer( hak )
+				.targetPost( postOfJin )
+				.content( "hello. my name is hak!!" )
+				.build();
 		
 		user1 = User.builder().email( "user1@test.com" ).userName( "user1" ).build();
 		user2 = User.builder().email( "user2@test.com" ).userName( "user2" ).build();
@@ -64,51 +78,55 @@ public class ThumbUpPostTest {
 		
 		users = Stream.of( user1, user2, user3, user4, user5 ).collect( Collectors.toList() );
 	}
-	
+
 	@After
 	public void tearDown() {
-		persistHelper.deleteAll( ThumbUpPost.class );
+		persistHelper.deleteAll( ThumbUpComment.class );
+		persistHelper.deleteAll( Comment.class );
 		persistHelper.deleteAll( Post.class );
 		persistHelper.deleteAll( User.class );
 		assertThat( persistHelper.countRow( ThumbUpPost.class ) ).isEqualTo( 0 );
+		assertThat( persistHelper.countRow( Comment.class ) ).isEqualTo( 0 );
 		assertThat( persistHelper.countRow( Post.class ) ).isEqualTo( 0 );
 		assertThat( persistHelper.countRow( User.class ) ).isEqualTo( 0 );
 	}
-	
+
 	@Test
-	public void thumbUpToPost() {
-		//given : 유저 및 게시물 저장
+	public void thumbUpComment() {
+		//given : 유저, 게시물, 코멘트 저장
 		persistHelper.persit( jin, postOfJin );
+		persistHelper.persit( hak, commentOfHak );
 		users.stream().forEach( user -> persistHelper.persist( user ) );
 		
-		//when : thumbUpPost 저장
-		users.stream().forEach( user -> persistHelper.persist( new ThumbUpPost( user, postOfJin ) ) );
+		//when : thumbUpComment 저장
+		users.stream().forEach( user -> persistHelper.persist( new ThumbUpComment( user, commentOfHak ) ) );
 		persistHelper.clearEntityManager();
 		
-		//then : 게시물의 thumbUpPost 갯수 확인
-		Post findPostInDB = persistHelper.find( Post.class , postOfJin.getId() );
-		assertThat( findPostInDB.thumbUpCount() ).isEqualTo( users.size() );
+		//then : 코멘트의 thumbUpComment 갯수 확인
+		Comment findCommentInDB = persistHelper.find( Comment.class, commentOfHak.getId() );
+		assertThat( findCommentInDB.thumbUpCount() ).isEqualTo( users.size() );
 	}
 	
 	@Test
-	// 게시물이 지워지면 thumbUpPost 정보는 자동으로 DB에서 지워져야함.
-	// 게시물 주인이 게시물을 지우는 경우.
-	public void persistenceTransitionAfterDeletePost() {
-		//given : 유저, 게시물, thumbUpPost 저장
-		persistHelper.persit( jin, user1, user2, postOfJin );
-		ThumbUpPost thumbUpByUser1 = new ThumbUpPost( user1, postOfJin );
-		ThumbUpPost thumbUpByUser2 = new ThumbUpPost( user2, postOfJin );
+	// 코멘트가 지워지면 thumbUpComment 정보는 자동으로 DB에서 지워져야함.
+	// 코멘트를 작성한 사람이 코멘트를 지우는 경우.
+	public void persistenceTransitionAfterDeleteComment() {
+		//given : 유저, 게시물, 코멘트, thumbUpComment 저장
+		persistHelper.persit( jin, postOfJin, hak, commentOfHak );
+		persistHelper.persit( user1, user2 );
+		ThumbUpComment thumbUpByUser1 = new ThumbUpComment( user1, commentOfHak );
+		ThumbUpComment thumbUpByUser2 = new ThumbUpComment( user2, commentOfHak );
 		persistHelper.persit( thumbUpByUser1, thumbUpByUser2 );
 		persistHelper.clearEntityManager();
 		
-		//when : 게시물을 지운다.
-		Post findPostInDB = persistHelper.find( Post.class, postOfJin.getId() );	
-		persistHelper.delete( findPostInDB );
+		//when : 코멘트를 지운다.
+		Comment findCommentInDB = persistHelper.find( Comment.class, commentOfHak.getId() );
+		persistHelper.delete( findCommentInDB );
 		persistHelper.clearEntityManager();
 		
-		//then : thumbUpPost 정보가 지워졌는지 확인
-		ThumbUpPost findThumbUpByUser1InDB = persistHelper.find( ThumbUpPost.class, thumbUpByUser1.getId() );
-		ThumbUpPost findThumbUpByUser2InDB = persistHelper.find( ThumbUpPost.class, thumbUpByUser2.getId() );
+		//then : thumbUpComment 정보가 지워졌는지 확인
+		ThumbUpComment findThumbUpByUser1InDB = persistHelper.find( ThumbUpComment.class, thumbUpByUser1.getId() );
+		ThumbUpComment findThumbUpByUser2InDB = persistHelper.find( ThumbUpComment.class, thumbUpByUser2.getId() );
 		assertThat( findThumbUpByUser1InDB ).isNull();
 		assertThat( findThumbUpByUser2InDB ).isNull();
 	}

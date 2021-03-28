@@ -1,5 +1,9 @@
 package jin.h.mun.knutalk.domain.board;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import jin.h.mun.knutalk.domain.account.User;
@@ -43,6 +48,9 @@ public class Comment extends BaseField {
 	@Column( name = "commentContent", nullable = false )
 	private String content;
 	
+	@OneToMany( mappedBy = "comment", cascade = CascadeType.REMOVE )
+	private List<ThumbUpComment> thumbUpComments = new ArrayList<>();
+	
 	@Builder
 	public Comment( User writer, Post targetPost, String content ) {
 		
@@ -52,5 +60,9 @@ public class Comment extends BaseField {
 		
 		targetPost.getComments().add( this );
 		
+	}
+	
+	public int thumbUpCount() {
+		return thumbUpComments.size();
 	}
 }

@@ -21,7 +21,7 @@ public class UserTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		persistHelper = new PersistHelper( "domain" );
+		persistHelper = new PersistHelper();
 	}
 	
 	@AfterClass

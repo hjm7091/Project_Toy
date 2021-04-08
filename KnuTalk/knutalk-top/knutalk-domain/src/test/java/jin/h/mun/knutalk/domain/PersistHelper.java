@@ -17,8 +17,8 @@ public class PersistHelper {
 	
 	private EntityTransaction et;
 
-	public PersistHelper( final String persistenceUnitName ) {
-		emf = Persistence.createEntityManagerFactory( persistenceUnitName );
+	public PersistHelper() {
+		emf = Persistence.createEntityManagerFactory( "knutalk" );
 		em = emf.createEntityManager();
 		et = em.getTransaction();
 	}
@@ -74,7 +74,7 @@ public class PersistHelper {
 		em.close();
 		emf.close();
 	}
-	
+
 	private <T> void executeInTransaction( final Consumer<T> consumer, final T entity ) {
 		et.begin();
 		consumer.accept( entity );

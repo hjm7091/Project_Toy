@@ -78,7 +78,7 @@ public class ThumbUpPostTest {
 	@Test
 	public void thumbUpToPost() {
 		//given : 유저 및 게시물 저장
-		persistHelper.persit( jin, postOfJin );
+		persistHelper.persist( jin, postOfJin );
 		users.stream().forEach( user -> persistHelper.persist( user ) );
 		
 		//when : thumbUpPost 저장
@@ -95,10 +95,10 @@ public class ThumbUpPostTest {
 	// 게시물 주인이 게시물을 지우는 경우.
 	public void persistenceTransitionAfterDeletePost() {
 		//given : 유저, 게시물, thumbUpPost 저장
-		persistHelper.persit( jin, user1, user2, postOfJin );
+		persistHelper.persist( jin, user1, user2, postOfJin );
 		ThumbUpPost thumbUpByUser1 = new ThumbUpPost( user1, postOfJin );
 		ThumbUpPost thumbUpByUser2 = new ThumbUpPost( user2, postOfJin );
-		persistHelper.persit( thumbUpByUser1, thumbUpByUser2 );
+		persistHelper.persist( thumbUpByUser1, thumbUpByUser2 );
 		persistHelper.clearEntityManager();
 		
 		//when : 게시물을 지운다.

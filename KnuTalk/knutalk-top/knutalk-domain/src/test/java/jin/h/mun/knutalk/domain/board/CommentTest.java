@@ -69,7 +69,7 @@ public class CommentTest {
 	@Test
 	public void writeComment() {
 		//given : 유저 및 게시물 저장
-		persistHelper.persit( jin, hak, postOfJin );
+		persistHelper.persist( jin, hak, postOfJin );
 		String content = "hello. my name is hak!!";
 		Comment comment = Comment.builder()
 							.writer( hak )

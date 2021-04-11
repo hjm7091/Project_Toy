@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,5 +64,29 @@ public class UserFindRepositoryTest {
         //then
         assertThat( findUser.isPresent() ).isTrue();
         assertThat( findUser.get() ).isEqualTo( user );
+    }
+
+    @Test
+    public void findByUserName() {
+        //given
+        String userName = "jin";
+        User user1 = User.builder()
+                .email( "hjm7091@naver.com" )
+                .userName( userName )
+                .build();
+        User user2 = User.builder()
+                .email( "hjm7091@daum.net" )
+                .userName( userName )
+                .build();
+        testEntityManager.persist( user1 );
+        testEntityManager.persist( user2 );
+
+        //when
+        List<User> findUsers = userFindRepository.findByUserName(userName);
+
+        //then
+        assertThat( findUsers.size() ).isEqualTo( 2 );
+        assertThat( findUsers.contains( user1 ) ).isTrue();
+        assertThat( findUsers.contains( user2 ) ).isTrue();
     }
 }

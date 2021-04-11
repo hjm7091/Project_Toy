@@ -77,7 +77,7 @@ public class PostTest {
 		assertThat( secretPost.getId() ).isNull();
 		
 		//when : 유저 및 게시물 저장
-		persistHelper.persit( owner, post, secretPost );
+		persistHelper.persist( owner, post, secretPost );
 
 		//then : id가 null이 아닌지 확인
 		assertThat( owner.getId() ).isNotNull();
@@ -90,7 +90,7 @@ public class PostTest {
 	// 유저가 회원 탈퇴하는 경우
 	public void persistenceTransitionAfterDeleteUser() {
 		//given : 유저 및 게시물 저장
-		persistHelper.persit( owner, post, secretPost );
+		persistHelper.persist( owner, post, secretPost );
 		persistHelper.clearEntityManager();
 		
 		//when : 게시물 주인인 유저만 삭제
@@ -109,7 +109,7 @@ public class PostTest {
 	public void viewCount() {
 		//given : 유저 및 게시물 저장
 		int count = 5;
-		persistHelper.persit( owner, post, secretPost );
+		persistHelper.persist( owner, post, secretPost );
 		
 		//when : viewCount 증가
 		for( int i = 0; i < count; i++ ) {

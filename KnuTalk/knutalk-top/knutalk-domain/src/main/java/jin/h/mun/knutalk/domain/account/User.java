@@ -41,7 +41,7 @@ public class User extends BaseField {
 	@Column( name = "userId" )
 	private Long id;
 	
-	@Column( name = "userEmail", nullable = false )
+	@Column( name = "userEmail", unique = true, nullable = false )
 	private String email;
 	
 	@Column( name = "userPassword" )

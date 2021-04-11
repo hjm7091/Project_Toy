@@ -11,30 +11,27 @@ import javax.persistence.Query;
 
 public class PersistHelper {
 
-	private EntityManagerFactory emf;
+	private final EntityManagerFactory emf;
 	
-	private EntityManager em;
+	private final EntityManager em;
 	
-	private EntityTransaction et;
-
 	public PersistHelper() {
 		emf = Persistence.createEntityManagerFactory( "knutalk" );
 		em = emf.createEntityManager();
-		et = em.getTransaction();
 	}
 	
 	public void persist( final Object entity ) {
-		executeInTransaction( e -> em.persist( e ) , entity );
+		executeInTransaction( em::persist, entity );
 	}
 	
-	public void persit( final Object... entities ) {
+	public void persist( final Object... entities ) {
 		for ( Object entity : entities ) {
-			executeInTransaction( e -> em.persist( e ) , entity );
+			executeInTransaction( em::persist, entity );
 		}
 	}
 	
 	public void delete( final Object entity ) {
-		executeInTransaction( e -> em.remove( e ), entity );
+		executeInTransaction( em::remove, entity );
 	}
 	
 	public <T> T find( final Class<T> entityClass, final Object primaryKey ) {
@@ -50,41 +47,46 @@ public class PersistHelper {
 	}
 	
 	public void update( final Performer performer ) {
-		et.begin();
-		performer.perform();
-		et.commit();
+		executeInTransaction( performer );
 	}
 	
 	public <T> void deleteAll( final Class<T> entityClass ) {
 		Query deleteAllQuery = em.createQuery( "DELETE FROM " + entityClass.getSimpleName() );
-		et.begin();
-		deleteAllQuery.executeUpdate();
-		et.commit();
+		executeInTransaction( deleteAllQuery::executeUpdate );
 	}
 	
 	public <T> Long countRow( final Class<T> entityClass ) {
 		return em.createQuery( "SELECT count(e) FROM " + entityClass.getSimpleName() + " e", Long.class ).getSingleResult();
 	}
-	
-	public void clearEntityManager() {
-		em.clear();
-	}
-	
-	public void closeAll() {
-		em.close();
-		emf.close();
-	}
 
 	private <T> void executeInTransaction( final Consumer<T> consumer, final T entity ) {
-		et.begin();
-		consumer.accept( entity );
-		et.commit();
+		executeInTransaction( () -> consumer.accept( entity ) );
 	}
 	
 	private <T, U> void executeInTransaction( final BiConsumer<T, U> consumer, final T entity, final U dto ) {
-		et.begin();
-		consumer.accept( entity, dto );
-		et.commit();
+		executeInTransaction( () -> consumer.accept( entity, dto ) );
+	}
+
+	private void executeInTransaction( final Performer performer ) {
+		EntityTransaction tx = null;
+		try {
+			tx = em.getTransaction();
+			tx.begin();
+			performer.perform();
+			tx.commit();
+		} catch ( Exception e ) {
+			if ( tx != null ) tx.rollback();
+			throw e;
+		}
+	}
+
+	public void clearEntityManager() {
+		em.clear();
+	}
+
+	public void closeAll() {
+		em.close();
+		emf.close();
 	}
 	
 }

@@ -13,6 +13,8 @@ import jin.h.mun.knutalk.domain.account.enums.RoleType;
 import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
 import jin.h.mun.knutalk.dto.account.UserUpdateRequest;
 
+import javax.persistence.PersistenceException;
+
 public class UserTest {
 	
 	private static PersistHelper persistHelper;
@@ -99,5 +101,31 @@ public class UserTest {
 		findUserInDB = persistHelper.find( User.class, user.getId() );
 		assertThat( findUserInDB ).isNull();
 	}
-	
+
+	@Test( expected = PersistenceException.class )
+	public void saveUsingSameEmail() {
+	    //given : 이메일이 동일한 두 유저 생성
+		User user1 = User.builder()
+				.email( "hjm7091@naver.com" )
+				.userName( "jin" )
+				.build();
+		User user2 = User.builder()
+				.email( "hjm7091@naver.com" )
+				.userName( "jin" )
+				.build();
+
+		//when : 유저를 저장
+		persistHelper.persist( user1, user2 );
+	}
+
+	@Test( expected = PersistenceException.class )
+	public void saveWithoutEmail() {
+	    //given : 이메일이 없는 유저 생성
+		User user1 = User.builder()
+				.userName( "jin" )
+				.build();
+
+	    //when : 유저를 저장
+		persistHelper.persist( user1 );
+	}
 }

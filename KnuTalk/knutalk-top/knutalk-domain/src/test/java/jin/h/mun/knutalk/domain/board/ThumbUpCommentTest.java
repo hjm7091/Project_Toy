@@ -94,8 +94,8 @@ public class ThumbUpCommentTest {
 	@Test
 	public void thumbUpComment() {
 		//given : 유저, 게시물, 코멘트 저장
-		persistHelper.persit( jin, postOfJin );
-		persistHelper.persit( hak, commentOfHak );
+		persistHelper.persist( jin, postOfJin );
+		persistHelper.persist( hak, commentOfHak );
 		users.stream().forEach( user -> persistHelper.persist( user ) );
 		
 		//when : thumbUpComment 저장
@@ -112,11 +112,11 @@ public class ThumbUpCommentTest {
 	// 코멘트를 작성한 사람이 코멘트를 지우는 경우.
 	public void persistenceTransitionAfterDeleteComment() {
 		//given : 유저, 게시물, 코멘트, thumbUpComment 저장
-		persistHelper.persit( jin, postOfJin, hak, commentOfHak );
-		persistHelper.persit( user1, user2 );
+		persistHelper.persist( jin, postOfJin, hak, commentOfHak );
+		persistHelper.persist( user1, user2 );
 		ThumbUpComment thumbUpByUser1 = new ThumbUpComment( user1, commentOfHak );
 		ThumbUpComment thumbUpByUser2 = new ThumbUpComment( user2, commentOfHak );
-		persistHelper.persit( thumbUpByUser1, thumbUpByUser2 );
+		persistHelper.persist( thumbUpByUser1, thumbUpByUser2 );
 		persistHelper.clearEntityManager();
 		
 		//when : 코멘트를 지운다.

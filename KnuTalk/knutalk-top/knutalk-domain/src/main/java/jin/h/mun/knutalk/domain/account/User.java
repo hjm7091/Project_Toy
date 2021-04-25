@@ -4,16 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import jin.h.mun.knutalk.domain.account.enums.RoleType;
 import jin.h.mun.knutalk.domain.account.enums.SocialType;
@@ -34,14 +25,14 @@ import lombok.ToString;
 @EqualsAndHashCode( of = { "id" }, callSuper = false )
 @ToString( of = { "id", "email", "userName" } )
 @Entity
-@Table( name = "tbUser" )
+@Table( name = "tbUser", uniqueConstraints = @UniqueConstraint( columnNames = { "userId", "userEmail" } ))
 public class User extends BaseField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
 	@Column( name = "userId" )
 	private Long id;
 	
-	@Column( name = "userEmail", unique = true, nullable = false )
+	@Column( name = "userEmail", nullable = false )
 	private String email;
 	
 	@Column( name = "userPassword" )
@@ -86,32 +77,36 @@ public class User extends BaseField {
 		this.setUpdatedAt( LocalDateTime.now() );
 	}
 		
-	public void changePassword( final String password ) {
+	public User changePassword( final String password ) {
 		if ( password != null ) {
 			this.setUpdatedAt( LocalDateTime.now() );
 			this.password = password;
 		}
+		return this;
 	}
 	
-	public void changeUserName( final String userName ) {
+	public User changeUserName( final String userName ) {
 		if ( userName != null ) {
 			this.setUpdatedAt( LocalDateTime.now() );
 			this.userName = userName;
 		}
+		return this;
 	}
 	
-	public void changeRoleType( final RoleType roleType ) {
+	public User changeRoleType( final RoleType roleType ) {
 		if ( roleType != null ) {
 			this.setUpdatedAt( LocalDateTime.now() );
 			this.roleType = roleType;
 		}
+		return this;
 	}
 	
-	public void changePicture( final String pictrue ) {
+	public User changePicture( final String pictrue ) {
 		if ( pictrue != null ) {
 			this.setUpdatedAt( LocalDateTime.now() );
 			this.picture = pictrue;
 		}
+		return this;
 	}
 	
 	public void update( final UserUpdateRequest request ) {

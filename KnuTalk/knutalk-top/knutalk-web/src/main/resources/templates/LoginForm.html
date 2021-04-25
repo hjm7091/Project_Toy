@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>login</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+	<!-- 
+	<div th:replace="layout/header::header"></div>
+	 -->
+
+    <div class="container" style="text-align: center;">
+        <br/>
+        <h2>소셜 로그인</h2><br/><br/>
+        <div th:if="${session.user == null}">
+        	<a href="javascript:;" class="btn_social" data-social="google"><img th:src="@{/images/google.png}" width="40px" height="40px"/></a>
+        	<a href="javascript:;" class="btn_social" data-social="facebook"><img th:src="@{/images/facebook.png}" width="40px" height="40px"/></a>
+        	<a href="javascript:;" class="btn_social" data-social="kakao"><img th:src="@{/images/kakao.png}" width="40px" height="40px"/></a>
+        	<a href="javascript:;" class="btn_social" data-social="naver"><img th:src="@{/images/naver.png}" width="40px" height="40px"/></a>
+        </div>
+        <div th:if="${session.user != null}">
+        	<h4 th:text="${'반갑습니다. ' + session.user.name + '님'}"></h4>
+        	<br>
+        	<a href="/logout">로그아웃</a>
+        </div>
+    </div>
+
+	<!--
+    <div th:replace="layout/footer::footer"></div>
+	 -->
+	 
+    <script th:src="@{/jquery/jquery.min.js}"></script>
+    <script>
+        $('.btn_social').click(function () {
+            var socialType = $(this).data('social');
+            console.log(socialType);
+            location.href="/login/oauth2/authorization/"+socialType;
+        });
+    </script>
+
+</body>
+</html>

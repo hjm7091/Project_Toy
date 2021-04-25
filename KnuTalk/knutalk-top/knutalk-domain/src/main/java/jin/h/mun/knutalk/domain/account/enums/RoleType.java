@@ -1,5 +1,6 @@
 package jin.h.mun.knutalk.domain.account.enums;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -10,19 +11,19 @@ public enum RoleType {
 	ADMIN( "admin", "관리자" );
 
 	private final String ROLE_PREFIX = "ROLE_";
+
+	@Getter
     private final String name;
-    private final String description;
+
+	@Getter
+	private final String description;
     
 	public String getRoleType() { return ROLE_PREFIX + name.toUpperCase(); }
-	
-	public String getValue() { return name; }
-	
-	public String getDescription() { return description; }
 	
 	public static RoleType getRoleType( final String type ) {
 		
 		for ( RoleType roleType : RoleType.values() ) {
-			if ( roleType.getValue().equals( type ) ) {
+			if ( roleType.getName().equals( type ) ) {
 				return roleType;
 			}
 		}

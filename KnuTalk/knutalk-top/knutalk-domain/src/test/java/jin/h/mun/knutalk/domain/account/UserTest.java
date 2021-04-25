@@ -102,8 +102,8 @@ public class UserTest {
 		assertThat( findUserInDB ).isNull();
 	}
 
-	@Test( expected = PersistenceException.class )
-	public void saveUsingSameEmail() {
+	@Test
+	public void saveTwoUserHavingSameEmail() {
 	    //given : 이메일이 동일한 두 유저 생성
 		User user1 = User.builder()
 				.email( "hjm7091@naver.com" )
@@ -111,15 +111,19 @@ public class UserTest {
 				.build();
 		User user2 = User.builder()
 				.email( "hjm7091@naver.com" )
-				.userName( "jin" )
+				.userName( "hak" )
 				.build();
 
 		//when : 유저를 저장
 		persistHelper.persist( user1, user2 );
+
+		//then : 이메일은 같고 유저 아이디는 다른지 확인
+		assertThat( user1.getEmail() ).isEqualTo( user2.getEmail() );
+		assertThat( user1.getId() ).isNotEqualTo( user2.getId() );
 	}
 
 	@Test( expected = PersistenceException.class )
-	public void saveWithoutEmail() {
+	public void saveUserWithoutEmail() {
 	    //given : 이메일이 없는 유저 생성
 		User user1 = User.builder()
 				.userName( "jin" )

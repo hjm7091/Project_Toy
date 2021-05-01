@@ -1,21 +1,16 @@
 package jin.h.mun.knutalk.domain.board;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import jin.h.mun.knutalk.domain.PersistHelper;
+import jin.h.mun.knutalk.domain.account.User;
+import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
+import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
+import org.junit.jupiter.api.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import jin.h.mun.knutalk.domain.PersistHelper;
-import jin.h.mun.knutalk.domain.account.User;
-import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
-import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThumbUpPostTest {
 
@@ -29,17 +24,17 @@ public class ThumbUpPostTest {
 	
 	private User user1, user2, user3, user4, user5;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void setUpBeforeClass() {
 		persistHelper = new PersistHelper();
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void tearDownAfterClass() {
 		persistHelper.closeAll();
 	}
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		//게시물 주인
 		jin = new User( UserRegisterRequest.builder()
@@ -65,7 +60,7 @@ public class ThumbUpPostTest {
 		users = Stream.of( user1, user2, user3, user4, user5 ).collect( Collectors.toList() );
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		persistHelper.deleteAll( ThumbUpPost.class );
 		persistHelper.deleteAll( Post.class );
@@ -76,6 +71,7 @@ public class ThumbUpPostTest {
 	}
 	
 	@Test
+	@DisplayName( "게시물의 좋아요 갯수는 유저 수와 같아야 한다." )
 	public void thumbUpToPost() {
 		//given : 유저 및 게시물 저장
 		persistHelper.persist( jin, postOfJin );
@@ -91,8 +87,7 @@ public class ThumbUpPostTest {
 	}
 	
 	@Test
-	// 게시물이 지워지면 thumbUpPost 정보는 자동으로 DB에서 지워져야함.
-	// 게시물 주인이 게시물을 지우는 경우.
+	@DisplayName( "게시물이 지워지면 thumbUpPost 정보는 자동으로 DB 에서 지워져야함. (게시물 주인이 게시물을 지우는 경우)" )
 	public void persistenceTransitionAfterDeletePost() {
 		//given : 유저, 게시물, thumbUpPost 저장
 		persistHelper.persist( jin, user1, user2, postOfJin );

@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import jin.h.mun.knutalk.domain.account.User;
+import jin.h.mun.knutalk.domain.common.BaseTimeField;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
 @Entity
 @Table( name = "tbThumbUpPost" )
-public class ThumbUpPost {
+public class ThumbUpPost extends BaseTimeField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
 	@Column( name = "thumbUpPostId" )

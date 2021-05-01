@@ -42,10 +42,6 @@ public class PersistHelper {
 		executeInTransaction( updateAction, updateRequest );
 	}
 	
-	public <T, U> void update( final BiConsumer<T, U> updateAction, final T entity, final U dto ) {
-		executeInTransaction( updateAction, entity, dto );
-	}
-	
 	public void update( final Performer performer ) {
 		executeInTransaction( performer );
 	}
@@ -59,12 +55,8 @@ public class PersistHelper {
 		return em.createQuery( "SELECT count(e) FROM " + entityClass.getSimpleName() + " e", Long.class ).getSingleResult();
 	}
 
-	private <T> void executeInTransaction( final Consumer<T> consumer, final T entity ) {
-		executeInTransaction( () -> consumer.accept( entity ) );
-	}
-	
-	private <T, U> void executeInTransaction( final BiConsumer<T, U> consumer, final T entity, final U dto ) {
-		executeInTransaction( () -> consumer.accept( entity, dto ) );
+	private <T> void executeInTransaction( final Consumer<T> consumer, final T updateRequest ) {
+		executeInTransaction( () -> consumer.accept( updateRequest ) );
 	}
 
 	private void executeInTransaction( final Performer performer ) {

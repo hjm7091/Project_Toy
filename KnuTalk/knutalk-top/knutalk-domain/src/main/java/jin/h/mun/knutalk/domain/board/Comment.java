@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import jin.h.mun.knutalk.domain.account.User;
-import jin.h.mun.knutalk.domain.common.BaseField;
+import jin.h.mun.knutalk.domain.common.BaseTimeField;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -31,7 +31,7 @@ import lombok.ToString;
 @ToString( of = { "id", "content" } )
 @Entity
 @Table( name = "tbComment" )
-public class Comment extends BaseField {
+public class Comment extends BaseTimeField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
 	@Column( name = "commentId" )

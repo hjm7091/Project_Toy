@@ -9,7 +9,7 @@ import javax.persistence.*;
 import jin.h.mun.knutalk.domain.account.enums.RoleType;
 import jin.h.mun.knutalk.domain.account.enums.SocialType;
 import jin.h.mun.knutalk.domain.board.Post;
-import jin.h.mun.knutalk.domain.common.BaseField;
+import jin.h.mun.knutalk.domain.common.BaseTimeField;
 import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
 import jin.h.mun.knutalk.dto.account.UserUpdateRequest;
 import lombok.AccessLevel;
@@ -26,7 +26,7 @@ import lombok.ToString;
 @ToString( of = { "id", "email", "userName" } )
 @Entity
 @Table( name = "tbUser", uniqueConstraints = @UniqueConstraint( columnNames = { "userId", "userEmail" } ))
-public class User extends BaseField {
+public class User extends BaseTimeField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
 	@Column( name = "userId" )
@@ -61,8 +61,6 @@ public class User extends BaseField {
 		this.userName = request.getUserName();
 		this.picture = request.getPicture();
 		this.roleType = RoleType.USER;
-		this.setCreatedAt( LocalDateTime.now() );
-		this.setUpdatedAt( LocalDateTime.now() );
 	}
 	
 	@Builder
@@ -73,13 +71,10 @@ public class User extends BaseField {
 		this.picture = picture;
 		this.socialType = socialType;
 		this.roleType = roleType;
-		this.setCreatedAt( LocalDateTime.now() );
-		this.setUpdatedAt( LocalDateTime.now() );
 	}
 		
 	public User changePassword( final String password ) {
 		if ( password != null ) {
-			this.setUpdatedAt( LocalDateTime.now() );
 			this.password = password;
 		}
 		return this;
@@ -87,7 +82,6 @@ public class User extends BaseField {
 	
 	public User changeUserName( final String userName ) {
 		if ( userName != null ) {
-			this.setUpdatedAt( LocalDateTime.now() );
 			this.userName = userName;
 		}
 		return this;
@@ -95,7 +89,6 @@ public class User extends BaseField {
 	
 	public User changeRoleType( final RoleType roleType ) {
 		if ( roleType != null ) {
-			this.setUpdatedAt( LocalDateTime.now() );
 			this.roleType = roleType;
 		}
 		return this;
@@ -103,7 +96,6 @@ public class User extends BaseField {
 	
 	public User changePicture( final String pictrue ) {
 		if ( pictrue != null ) {
-			this.setUpdatedAt( LocalDateTime.now() );
 			this.picture = pictrue;
 		}
 		return this;

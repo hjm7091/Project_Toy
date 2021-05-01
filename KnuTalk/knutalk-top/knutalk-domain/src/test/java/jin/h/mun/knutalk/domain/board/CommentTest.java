@@ -1,17 +1,12 @@
 package jin.h.mun.knutalk.domain.board;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import jin.h.mun.knutalk.domain.PersistHelper;
 import jin.h.mun.knutalk.domain.account.User;
 import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
 import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
+import org.junit.jupiter.api.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommentTest {
 	
@@ -23,17 +18,17 @@ public class CommentTest {
 	
 	private User hak;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void setUpBeforeClass() {
 		persistHelper = new PersistHelper();
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void tearDownAfterClass() {
 		persistHelper.closeAll();
 	}
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		//게시물 주인
 		jin = new User( UserRegisterRequest.builder()
@@ -56,7 +51,7 @@ public class CommentTest {
 		
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		persistHelper.deleteAll( Comment.class );
 		persistHelper.deleteAll( Post.class );
@@ -67,6 +62,7 @@ public class CommentTest {
 	}
 
 	@Test
+	@DisplayName( "게시물의 코멘트는 유저가 작성한 코멘트와 같아야 한다." )
 	public void writeComment() {
 		//given : 유저 및 게시물 저장
 		persistHelper.persist( jin, hak, postOfJin );
@@ -83,11 +79,11 @@ public class CommentTest {
 		
 		//then : 게시물의 코멘트 갯수 확인, 코멘트가 쓰여진 게시물, 코멘트가 쓰여진 게시물의 주인, 코멘트 내용 확인
 		Post findPostInDB = persistHelper.find( Post.class, postOfJin.getId() );
-		Comment findCommentInDB = persistHelper.find( Comment.class, comment.getId() );
+		Comment findComment = findPostInDB.getComments().get( 0 );
 		assertThat( findPostInDB.getComments().size() ).isEqualTo( 1 );
-		assertThat( findCommentInDB.getPost() ).isEqualTo( postOfJin );
-		assertThat( findCommentInDB.getPost().getOwner() ).isEqualTo( jin );
-		assertThat( findCommentInDB.getContent() ).isEqualTo( content );
+		assertThat( findComment.getPost() ).isEqualTo( postOfJin );
+		assertThat( findComment.getPost().getOwner() ).isEqualTo( jin );
+		assertThat( findComment.getContent() ).isEqualTo( content );
 	}
 
 }

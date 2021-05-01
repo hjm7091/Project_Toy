@@ -1,18 +1,13 @@
 package jin.h.mun.knutalk.domain.board;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import jin.h.mun.knutalk.domain.PersistHelper;
 import jin.h.mun.knutalk.domain.account.User;
 import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
 import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
 import jin.h.mun.knutalk.dto.post.SecretPostRegisterRequest;
+import org.junit.jupiter.api.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostTest {
 
@@ -24,17 +19,17 @@ public class PostTest {
 	
 	private SecretPost secretPost;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void setUpBeforeClass() {
 		persistHelper = new PersistHelper();
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void tearDownAfterClass() {
 		persistHelper.closeAll();
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		owner = new User( UserRegisterRequest.builder()
 						   .email( "hjm7091@naver.com" )
@@ -59,7 +54,7 @@ public class PostTest {
 		secretPost = new SecretPost( secretPostRegisterRequest, owner );
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		persistHelper.deleteAll( Post.class );
 		persistHelper.deleteAll( SecretPost.class );
@@ -70,6 +65,7 @@ public class PostTest {
 	}
 	
 	@Test
+	@DisplayName( "persist 된 엔티티의 id는 null 이 아니어야 한다." )
 	public void idAfterPersist() {
 		//given : id가 null인지 확인
 		assertThat( owner.getId() ).isNull();
@@ -86,8 +82,7 @@ public class PostTest {
 	}
 	
 	@Test
-	// 유저가 지워지면 유저의 게시물은 자동으로 지워져야함.
-	// 유저가 회원 탈퇴하는 경우
+	@DisplayName( "유저가 지워지면 유저의 게시물은 자동으로 지워져야함. (유저가 회원 탈퇴하는 경우)" )
 	public void persistenceTransitionAfterDeleteUser() {
 		//given : 유저 및 게시물 저장
 		persistHelper.persist( owner, post, secretPost );
@@ -106,6 +101,7 @@ public class PostTest {
 	}
 	
 	@Test
+	@DisplayName( "조회수는 정상적으로 업데이트 되어야 한다." )
 	public void viewCount() {
 		//given : 유저 및 게시물 저장
 		int count = 5;

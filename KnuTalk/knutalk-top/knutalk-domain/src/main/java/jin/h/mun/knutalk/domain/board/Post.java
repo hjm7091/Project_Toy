@@ -21,7 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import jin.h.mun.knutalk.domain.account.User;
-import jin.h.mun.knutalk.domain.common.BaseField;
+import jin.h.mun.knutalk.domain.common.BaseTimeField;
 import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -39,7 +39,7 @@ import lombok.ToString;
 @Inheritance( strategy = InheritanceType.JOINED )
 @DiscriminatorColumn( name = "postType" )
 @DiscriminatorValue( "NORMAL" )
-public class Post extends BaseField {
+public class Post extends BaseTimeField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
 	@Column( name = "postId" )
@@ -67,20 +67,16 @@ public class Post extends BaseField {
 	public Post( PostRegisterRequest request, User owner ) {
 		this.title = request.getTitle();
 		this.content = request.getContent();
-		this.setCreatedAt( LocalDateTime.now() );
-		this.setUpdatedAt( LocalDateTime.now() );
-		
+
 		this.setOwner( owner );
 		owner.getPosts().add( this );
 	}
 	
 	public void changeTitle( String title ) {
-		this.setUpdatedAt( LocalDateTime.now() );
 		this.title = title;
 	}
 	
 	public void changeContent( String content ) {
-		this.setUpdatedAt( LocalDateTime.now() );
 		this.content = content;
 	}
 	

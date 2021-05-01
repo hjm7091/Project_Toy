@@ -1,21 +1,16 @@
 package jin.h.mun.knutalk.domain.board;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import jin.h.mun.knutalk.domain.PersistHelper;
+import jin.h.mun.knutalk.domain.account.User;
+import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
+import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
+import org.junit.jupiter.api.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import jin.h.mun.knutalk.domain.PersistHelper;
-import jin.h.mun.knutalk.domain.account.User;
-import jin.h.mun.knutalk.dto.account.UserRegisterRequest;
-import jin.h.mun.knutalk.dto.post.PostRegisterRequest;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThumbUpCommentTest {
 
@@ -31,17 +26,17 @@ public class ThumbUpCommentTest {
 	
 	private User user1, user2, user3, user4, user5;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void setUpBeforeClass() {
 		persistHelper = new PersistHelper();
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDownAfterClass() {
 		persistHelper.closeAll();
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		//게시물 주인
 		jin = new User( UserRegisterRequest.builder()
@@ -79,7 +74,7 @@ public class ThumbUpCommentTest {
 		users = Stream.of( user1, user2, user3, user4, user5 ).collect( Collectors.toList() );
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		persistHelper.deleteAll( ThumbUpComment.class );
 		persistHelper.deleteAll( Comment.class );
@@ -92,6 +87,7 @@ public class ThumbUpCommentTest {
 	}
 
 	@Test
+	@DisplayName( "코멘트의 좋아요 갯수는 유저 수와 같아야 한다." )
 	public void thumbUpComment() {
 		//given : 유저, 게시물, 코멘트 저장
 		persistHelper.persist( jin, postOfJin );
@@ -108,8 +104,7 @@ public class ThumbUpCommentTest {
 	}
 	
 	@Test
-	// 코멘트가 지워지면 thumbUpComment 정보는 자동으로 DB에서 지워져야함.
-	// 코멘트를 작성한 사람이 코멘트를 지우는 경우.
+	@DisplayName( "코멘트가 지워지면 thumbUpComment 정보는 자동으로 DB 에서 지워져야함. (코멘트를 작성한 사람이 코멘트를 지우는 경우)" )
 	public void persistenceTransitionAfterDeleteComment() {
 		//given : 유저, 게시물, 코멘트, thumbUpComment 저장
 		persistHelper.persist( jin, postOfJin, hak, commentOfHak );

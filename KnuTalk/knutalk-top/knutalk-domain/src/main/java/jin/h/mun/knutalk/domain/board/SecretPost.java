@@ -32,15 +32,12 @@ public class SecretPost extends Post {
 		this.setContent( request.getPostRegisterRequest().getContent() );
 		this.setPassword( request.getPassword() );
 		this.setAnonymous( request.getAnonymous() );
-		this.setCreatedAt( LocalDateTime.now() );
-		this.setUpdatedAt( LocalDateTime.now() );
-		
+
 		this.setOwner( owner );
 		owner.getPosts().add( this );
 	}
 	
 	public void changePassword( String password ) {
-		this.setUpdatedAt( LocalDateTime.now() );
 		this.password = password;
 	}
 }

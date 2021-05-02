@@ -1,5 +1,6 @@
 package jin.h.mun.rowdystory.domain.account.enums;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -10,17 +11,17 @@ public enum SocialType {
 	KAKAO( "kakao" ),
 	NAVER( "naver" );
 	
-    private final String ROLE_PREFIX = "ROLE_";
+    public final static String ROLE_PREFIX = "ROLE_";
+
+    @Getter
     private final String name;
 
     public String getSocialType() { return ROLE_PREFIX + name.toUpperCase(); }
 
-    public String getValue() { return name; }
-    
-    public static SocialType getSocialType( final String type ) {
+    public static SocialType getSocialTypeFrom( final String type ) {
     	
     	for ( SocialType socialType : SocialType.values() ) {
-    		if ( socialType.getValue().equals( type ) ) {
+    		if ( socialType.getName().equals( type ) ) {
     			return socialType;
     		}
     	}
@@ -28,8 +29,4 @@ public enum SocialType {
     	throw new IllegalArgumentException( "invalid parameter : " + type );
     }
 
-    public boolean isEquals( final String authority ) {
-        return this.name.equals( authority );
-    }
-	
 }

@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.common.BaseTimeField;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
+import jin.h.mun.rowdystory.dto.post.PostUpdateRequest;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,7 +30,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter @Setter( value = AccessLevel.PROTECTED )
+@Getter
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
 @EqualsAndHashCode( of = { "id" }, callSuper = false )
 @ToString( of = { "id", "title", "content" } )
@@ -42,41 +43,46 @@ public class Post extends BaseTimeField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
 	@Column( name = "postId" )
-	private Long id;
+	protected Long id;
 	
 	@Column( name = "postTitle", nullable = false )
-	private String title;
+	protected String title;
 	
 	@Column( name = "postContent", nullable = false )
-	private String content;
+	protected String content;
 	
 	@Column( name = "postViewCount" )
-	private Integer viewCount = 0;
+	protected Integer viewCount = 0;
 	
 	@ManyToOne( fetch = FetchType.LAZY )
 	@JoinColumn( name = "userId" )
-	private User owner;
+	protected User owner;
 	
 	@OneToMany( mappedBy = "post", cascade = CascadeType.REMOVE )
-	private List<Comment> comments = new ArrayList<>();
+	protected final List<Comment> comments = new ArrayList<>();
 	
 	@OneToMany( mappedBy = "post" ,cascade = CascadeType.REMOVE )
-	private List<ThumbUpPost> thumbUpPosts = new ArrayList<>();
+	protected final List<ThumbUpPost> thumbUpPosts = new ArrayList<>();
 	
 	public Post( PostRegisterRequest request, User owner ) {
 		this.title = request.getTitle();
 		this.content = request.getContent();
-
-		this.setOwner( owner );
+		this.owner = owner;
 		owner.getPosts().add( this );
 	}
 	
-	public void changeTitle( String title ) {
-		this.title = title;
+	public Post changeTitle( String title ) {
+		if ( title != null ) {
+			this.title = title;
+		}
+		return this;
 	}
 	
-	public void changeContent( String content ) {
-		this.content = content;
+	public Post changeContent( String content ) {
+		if ( content != null ) {
+			this.content = content;
+		}
+		return this;
 	}
 	
 	public void increaseViewCount() {
@@ -86,5 +92,9 @@ public class Post extends BaseTimeField {
 	public int thumbUpCount() {
 		return thumbUpPosts.size();
 	}
-	
+
+	public void update( PostUpdateRequest postUpdateRequest ) {
+		changeTitle( postUpdateRequest.getTitle() );
+		changeContent(postUpdateRequest.getContent() );
+	}
 }

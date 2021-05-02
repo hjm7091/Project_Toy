@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.data.repository.user;
+package jin.h.mun.rowdystory.data.repository.account;
 
 import java.util.List;
 import java.util.Optional;

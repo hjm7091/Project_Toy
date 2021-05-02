@@ -10,7 +10,7 @@ public enum RoleType {
     USER( "user", "일반 사용자" ),
 	ADMIN( "admin", "관리자" );
 
-	private final String ROLE_PREFIX = "ROLE_";
+	public final static String ROLE_PREFIX = "ROLE_";
 
 	@Getter
     private final String name;
@@ -20,15 +20,15 @@ public enum RoleType {
     
 	public String getRoleType() { return ROLE_PREFIX + name.toUpperCase(); }
 	
-	public static RoleType getRoleType( final String type ) {
+	public static RoleType getRoleTypeFrom( final String type ) {
 		
 		for ( RoleType roleType : RoleType.values() ) {
 			if ( roleType.getName().equals( type ) ) {
 				return roleType;
 			}
 		}
-		
-		throw new IllegalArgumentException( "invalid parameter : " + type );
+
+		return null;
 	}
     
 }

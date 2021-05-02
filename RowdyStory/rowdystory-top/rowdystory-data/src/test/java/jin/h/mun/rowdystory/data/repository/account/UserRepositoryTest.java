@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.data.repository.user;
+package jin.h.mun.rowdystory.data.repository.account;
 
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;

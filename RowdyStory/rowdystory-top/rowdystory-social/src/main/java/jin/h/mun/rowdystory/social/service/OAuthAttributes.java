@@ -146,7 +146,7 @@ public class OAuthAttributes {
                 .userName( name )
                 .email( email )
                 .picture( picture )
-                .socialType( SocialType.getSocialType( registrationId ) )
+                .socialType( SocialType.getSocialTypeFrom( registrationId ) )
                 .roleType( RoleType.USER )
                 .build();
     }

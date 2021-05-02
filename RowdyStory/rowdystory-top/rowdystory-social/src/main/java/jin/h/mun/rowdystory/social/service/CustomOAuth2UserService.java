@@ -1,6 +1,6 @@
 package jin.h.mun.rowdystory.social.service;
 
-import jin.h.mun.rowdystory.data.repository.user.UserRepository;
+import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.social.dto.SessionUser;
@@ -52,7 +52,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveOrUpdate( final OAuthAttributes attributes ) {
 
         String email = attributes.getEmail();
-        SocialType socialType = SocialType.getSocialType( attributes.getRegistrationId() );
+        SocialType socialType = SocialType.getSocialTypeFrom( attributes.getRegistrationId() );
 
         User user = userRepository.findByEmailAndSocialType( email, socialType )
                 .map( entity -> entity.changeUserName( attributes.getName() ).changePicture( attributes.getPicture() ) )

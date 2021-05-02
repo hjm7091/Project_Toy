@@ -7,12 +7,13 @@ import javax.persistence.Table;
 
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.dto.post.SecretPostRegisterRequest;
+import jin.h.mun.rowdystory.dto.post.SecretPostUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter( value = AccessLevel.PRIVATE )
+@Getter
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
 @Entity
 @Table( name = "tbSecretPost" )
@@ -26,16 +27,31 @@ public class SecretPost extends Post {
 	Boolean anonymous;
 	
 	public SecretPost( SecretPostRegisterRequest request, User owner ) {
-		this.setTitle( request.getPostRegisterRequest().getTitle() );
-		this.setContent( request.getPostRegisterRequest().getContent() );
-		this.setPassword( request.getPassword() );
-		this.setAnonymous( request.getAnonymous() );
-
-		this.setOwner( owner );
+		this.title = request.getPostRegisterRequest().getTitle();
+		this.content = request.getPostRegisterRequest().getContent();
+		this.password = request.getPassword();
+		this.anonymous = request.getAnonymous();
+		this.owner = owner;
 		owner.getPosts().add( this );
 	}
 	
-	public void changePassword( String password ) {
-		this.password = password;
+	public SecretPost changePassword( String password ) {
+		if ( password != null ) {
+			this.password = password;
+		}
+		return this;
+	}
+
+	public SecretPost changeAnonymous( Boolean anonymous ) {
+		if ( anonymous != null ) {
+			this.anonymous = anonymous;
+		}
+		return this;
+	}
+
+	public void update( SecretPostUpdateRequest secretPostUpdateRequest ) {
+		super.update( secretPostUpdateRequest.getPostUpdateRequest() );
+		changePassword( secretPostUpdateRequest.getPassword() );
+		changeAnonymous( secretPostUpdateRequest.getAnonymous() );
 	}
 }

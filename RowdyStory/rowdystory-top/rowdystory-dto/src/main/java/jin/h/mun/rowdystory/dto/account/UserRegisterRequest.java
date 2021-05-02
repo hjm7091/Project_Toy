@@ -12,9 +12,11 @@ public class UserRegisterRequest {
 
 	@NonNull
 	private String email;
-	
+
+	@NonNull
 	private String password;
-	
+
+	@NonNull
 	private String userName;
 	
 	private String picture;

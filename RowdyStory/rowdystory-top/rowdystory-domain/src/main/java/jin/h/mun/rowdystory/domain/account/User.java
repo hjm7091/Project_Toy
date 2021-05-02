@@ -1,27 +1,20 @@
 package jin.h.mun.rowdystory.domain.account;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.*;
-
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.domain.board.Post;
 import jin.h.mun.rowdystory.domain.common.BaseTimeField;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter @Setter( value = AccessLevel.PRIVATE )
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
-@EqualsAndHashCode( of = { "id" }, callSuper = false )
+@EqualsAndHashCode( of = { "id", "email" }, callSuper = false )
 @ToString( of = { "id", "email", "userName" } )
 @Entity
 @Table( name = "tbUser", uniqueConstraints = @UniqueConstraint( columnNames = { "userId", "userEmail" } ))
@@ -43,7 +36,7 @@ public class User extends BaseTimeField {
 	@Column( name = "userPicture" )
 	private String picture;
 	
-	@Column( name = "userSocialType" )
+	@Column( name = "userSocialType", updatable = false )
 	@Enumerated( EnumType.STRING )
 	private SocialType socialType;
 	
@@ -52,7 +45,7 @@ public class User extends BaseTimeField {
     private RoleType roleType;
 	
 	@OneToMany( mappedBy = "owner", cascade = CascadeType.REMOVE )
-	private List<Post> posts = new ArrayList<>();
+	private final List<Post> posts = new ArrayList<>();
 	
 	public User( UserRegisterRequest request ) {
 		this.email = request.getEmail();
@@ -63,7 +56,8 @@ public class User extends BaseTimeField {
 	}
 	
 	@Builder
-	public User( String email, String password, String userName, String picture, SocialType socialType, RoleType roleType ) {
+	public User( Long id, String email, String password, String userName, String picture, SocialType socialType, RoleType roleType ) {
+		this.id = id;
 		this.email = email;
 		this.password = password;
 		this.userName = userName;
@@ -93,9 +87,9 @@ public class User extends BaseTimeField {
 		return this;
 	}
 	
-	public User changePicture( final String pictrue ) {
-		if ( pictrue != null ) {
-			this.picture = pictrue;
+	public User changePicture( final String picture ) {
+		if ( picture != null ) {
+			this.picture = picture;
 		}
 		return this;
 	}
@@ -104,6 +98,6 @@ public class User extends BaseTimeField {
 		changePassword( request.getPassword() );
 		changeUserName( request.getUserName() );
 		changePicture( request.getPicture() );
-		changeRoleType( RoleType.getRoleType( request.getRoleType() ) );
+		changeRoleType( RoleType.getRoleTypeFrom( request.getRoleType() ) );
 	}
 }

@@ -1,12 +1,11 @@
 package jin.h.mun.rowdystory.domain;
 
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.function.Executable;
+
 import java.util.function.Consumer;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
 
 public class PersistHelper {
 
@@ -38,11 +37,11 @@ public class PersistHelper {
 	}
 	
 	public <T> void update( final Consumer<T> updateAction, final T updateRequest ) {
-		executeInTransaction( updateAction, updateRequest );
+		executeInTransaction( () -> updateAction.accept( updateRequest ) );
 	}
 	
-	public void update( final Performer performer ) {
-		executeInTransaction( performer );
+	public void update( final Executable executable ) {
+		executeInTransaction( executable );
 	}
 	
 	public <T> void deleteAll( final Class<T> entityClass ) {
@@ -54,18 +53,19 @@ public class PersistHelper {
 		return em.createQuery( "SELECT count(e) FROM " + entityClass.getSimpleName() + " e", Long.class ).getSingleResult();
 	}
 
-	private <T> void executeInTransaction( final Consumer<T> consumer, final T updateRequest ) {
-		executeInTransaction( () -> consumer.accept( updateRequest ) );
+	private <T> void executeInTransaction( final Consumer<T> consumer, final T parameter ) {
+		executeInTransaction( () -> consumer.accept( parameter ) );
 	}
 
-	private void executeInTransaction( final Performer performer ) {
+	@SneakyThrows
+	private void executeInTransaction( final Executable executable ) {
 		EntityTransaction tx = null;
 		try {
 			tx = em.getTransaction();
 			tx.begin();
-			performer.perform();
+			executable.execute();
 			tx.commit();
-		} catch ( Exception e ) {
+		} catch ( PersistenceException e ) {
 			if ( tx != null ) tx.rollback();
 			throw e;
 		}

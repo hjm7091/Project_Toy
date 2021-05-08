@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import jin.h.mun.rowdystory.domain.account.User;
+import jin.h.mun.rowdystory.domain.board.enums.PostType;
 import jin.h.mun.rowdystory.dto.post.SecretPostRegisterRequest;
 import jin.h.mun.rowdystory.dto.post.SecretPostUpdateRequest;
 import lombok.AccessLevel;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
 @Entity
 @Table( name = "tbSecretPost" )
-@DiscriminatorValue( "SECRET" )
+@DiscriminatorValue( PostType.Values.SECRET )
 public class SecretPost extends Post {
 
 	@Column( name = "postPassword", nullable = false )
@@ -27,6 +28,7 @@ public class SecretPost extends Post {
 	Boolean anonymous;
 	
 	public SecretPost( SecretPostRegisterRequest request, User owner ) {
+		this.postType = PostType.SECRET;
 		this.title = request.getPostRegisterRequest().getTitle();
 		this.content = request.getPostRegisterRequest().getContent();
 		this.password = request.getPassword();

@@ -2,6 +2,7 @@ package jin.h.mun.rowdystory.domain.board;
 
 import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.User;
+import jin.h.mun.rowdystory.domain.board.enums.PostType;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
 import jin.h.mun.rowdystory.dto.post.PostUpdateRequest;
@@ -74,6 +75,13 @@ public class PostTest {
 		assertThat( owner.getId() ).isNotNull();
 		assertThat( post.getId() ).isNotNull();
 		assertThat( secretPost.getId() ).isNotNull();
+	}
+
+	@Test
+	@DisplayName( "게시물의 타입은 NORMAL 또는 SECRET 이어야 한다." )
+	public void postType() {
+		assertThat( post.getPostType() ).isEqualTo( PostType.NORMAL );
+		assertThat( secretPost.getPostType() ).isEqualTo( PostType.SECRET );
 	}
 	
 	@Test

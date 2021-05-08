@@ -3,23 +3,10 @@ package jin.h.mun.rowdystory.domain.board;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import jin.h.mun.rowdystory.domain.account.User;
+import jin.h.mun.rowdystory.domain.board.enums.PostType;
 import jin.h.mun.rowdystory.domain.common.BaseTimeField;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
 import jin.h.mun.rowdystory.dto.post.PostUpdateRequest;
@@ -29,6 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DiscriminatorFormula;
+import org.hibernate.annotations.DiscriminatorOptions;
 
 @Getter
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
@@ -38,7 +27,7 @@ import lombok.ToString;
 @Table( name = "tbPost" )
 @Inheritance( strategy = InheritanceType.JOINED )
 @DiscriminatorColumn( name = "postType" )
-@DiscriminatorValue( "NORMAL" )
+@DiscriminatorValue( PostType.Values.NORMAL )
 public class Post extends BaseTimeField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
@@ -53,7 +42,11 @@ public class Post extends BaseTimeField {
 	
 	@Column( name = "postViewCount" )
 	protected Integer viewCount = 0;
-	
+
+	@Column( name = "postType", insertable = false, updatable = false )
+	@Enumerated( EnumType.STRING )
+	protected PostType postType;
+
 	@ManyToOne( fetch = FetchType.LAZY )
 	@JoinColumn( name = "userId" )
 	protected User owner;
@@ -65,6 +58,7 @@ public class Post extends BaseTimeField {
 	protected final List<ThumbUpPost> thumbUpPosts = new ArrayList<>();
 	
 	public Post( PostRegisterRequest request, User owner ) {
+		this.postType = PostType.NORMAL;
 		this.title = request.getTitle();
 		this.content = request.getContent();
 		this.owner = owner;

@@ -82,6 +82,10 @@ public class Post extends BaseTimeField {
 	public void increaseViewCount() {
 		this.viewCount++;
 	}
+
+	public void increaseViewCount( int count ) {
+		this.viewCount += count;
+	}
 	
 	public int thumbUpCount() {
 		return thumbUpPosts.size();

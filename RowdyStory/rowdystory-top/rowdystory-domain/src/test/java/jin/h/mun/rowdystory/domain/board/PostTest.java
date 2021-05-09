@@ -103,8 +103,8 @@ public class PostTest {
 	}
 	
 	@Test
-	@DisplayName( "조회수는 정상적으로 업데이트 되어야 한다." )
-	public void viewCount() {
+	@DisplayName( "파라미터 없는 조회수 증가 메소드는 조회수가 1 증가 되어야 함." )
+	public void viewCountWithoutParam() {
 		//given : 유저 및 게시물 저장
 		int count = 5;
 
@@ -116,6 +116,24 @@ public class PostTest {
 		persistHelper.clearEntityManager();
 		
 		//then : viewCount 확인
+		Post findPost = persistHelper.find( Post.class, post.getId() );
+		SecretPost findSecretPost = persistHelper.find( SecretPost.class, secretPost.getId() );
+		assertThat( findPost.getViewCount() ).isEqualTo( count );
+		assertThat( findSecretPost.getViewCount() ).isEqualTo( count );
+	}
+
+	@Test
+	@DisplayName( "파라미터 있는 조회수 증가 메소드는 조회수가 파라미터로 받은 수 만큼 증가 되어야 함." )
+	public void viewCountWithParam() {
+	    //given
+	    int count = 10;
+
+	    //when
+	    persistHelper.update( () -> post.increaseViewCount( count ) );
+		persistHelper.update( () -> secretPost.increaseViewCount( count ) );
+		persistHelper.clearEntityManager();
+
+	    //then
 		Post findPost = persistHelper.find( Post.class, post.getId() );
 		SecretPost findSecretPost = persistHelper.find( SecretPost.class, secretPost.getId() );
 		assertThat( findPost.getViewCount() ).isEqualTo( count );

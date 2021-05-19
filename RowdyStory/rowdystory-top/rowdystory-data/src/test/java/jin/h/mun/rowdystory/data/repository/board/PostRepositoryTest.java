@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
@@ -47,19 +49,23 @@ public class PostRepositoryTest {
 
         testEntityManager.persist( ownerOfPost );
 
-        int postCount = 50;
+        int postCount = 30;
 
-        for (int i = 1; i <= postCount; i++ ) {
+        for ( int i = 1; i <= postCount; i++ ) {
             PostRegisterRequest postRegisterRequest = PostRegisterRequest.builder()
                     .title( "post" + i )
                     .content( "this is normal post" + i )
                     .build();
-            posts.add( new Post( postRegisterRequest, ownerOfPost) );
+            posts.add( new Post( postRegisterRequest, ownerOfPost ) );
+        }
 
+        postCount = 40;
+
+        for ( int i = 1; i <= postCount; i++) {
             SecretPostRegisterRequest secretPostRegisterRequest = SecretPostRegisterRequest.builder()
                     .postRegisterRequest( new PostRegisterRequest( "secretPost" + i, "this is secret post" + i ) )
                     .anonymous( false ).password( Integer.toString( i ) ).build();
-            secretPosts.add( new SecretPost( secretPostRegisterRequest, ownerOfPost) );
+            secretPosts.add( new SecretPost( secretPostRegisterRequest, ownerOfPost ) );
         }
 
         postRepository.saveAll( posts );
@@ -123,14 +129,13 @@ public class PostRepositoryTest {
 
         int postCount = 5;
         for ( int i = 0; i < postCount; i++ ) {
-            postRepository.save( new Post( new PostRegisterRequest( "post" + i, "post" + i ), user ) );
-            postRepository.flush();
+            postRepository.saveAndFlush( new Post( new PostRegisterRequest( "post" + i, "post" + i ), user ) );
             Thread.sleep( 100L );
         }
         Sort createdDateDesc = Sort.by( Sort.Direction.DESC, "createdDate" );
 
         //when
-        List<Post> findPosts = postRepository.findPostBy( createdDateDesc );
+        List<Post> findPosts = postRepository.findAll( createdDateDesc );
 
         //then
         LocalDateTime prev = findPosts.get( 0 ).getCreatedDate();
@@ -140,4 +145,35 @@ public class PostRepositoryTest {
             prev = now;
         }
     }
+
+    @Test
+    @DisplayName( "게시물 타입에 따라 페이징된 게시물 찾기" )
+    public void findPostByPostTypeAndPaging() {
+        //given
+        int pageNum = 0, pageSize = 10;
+        PageRequest pageRequest = PageRequest.of( pageNum, pageSize );
+
+        //when
+        Page<Post> findPosts = postRepository.findAll( pageRequest );
+        Page<Post> findNormalPosts = postRepository.findPostByPostType( PostType.NORMAL, pageRequest );
+        Page<Post> findSecretPosts = postRepository.findPostByPostType( PostType.SECRET, pageRequest );
+
+        //then
+        assertThat( findPosts.getContent().size() ).isEqualTo( pageSize ); //조회된 데이터 수
+        assertThat( findPosts.getTotalElements() ).isEqualTo( posts.size() + secretPosts.size() ); //전체 데이터 수
+        assertThat( findPosts.getNumber() ).isEqualTo( pageNum ); //페이지 번호
+        assertThat( findPosts.getTotalPages() ).isEqualTo( ( posts.size() + secretPosts.size() ) / pageSize ); //전체 페이지 번호
+        assertThat( findPosts.isFirst() ).isTrue();
+        assertThat( findPosts.hasNext() ).isTrue();
+        assertThat( findPosts.hasPrevious() ).isFalse();
+
+        assertThat( findNormalPosts.getContent() ).allMatch( post -> post.getPostType() == PostType.NORMAL );
+        assertThat( findNormalPosts.getContent().size() ).isEqualTo( pageSize );
+        assertThat( findNormalPosts.getTotalPages() ).isEqualTo( posts.size() / pageSize );
+
+        assertThat( findSecretPosts.getContent() ).allMatch( post -> post.getPostType() == PostType.SECRET );
+        assertThat( findSecretPosts.getContent().size() ).isEqualTo( pageSize );
+        assertThat( findSecretPosts.getTotalPages() ).isEqualTo( secretPosts.size() / pageSize );
+    }
+
 }

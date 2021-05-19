@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<header class="header fixed-top" th:fragment="bodyHeader">
+
+    <!-- Bootstrap CSS -->
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">-->
+    <link rel="stylesheet" th:href="@{/bootstrap-4.5.3/css/bootstrap.min.css}" />
+
+    <div class="container topHeader">
+        <div class="row">
+            <div class="col-12">
+                <div class="text-right">
+                    <ul class="list-inline my-2" th:if="${session.user == null}">
+                        <li class="list-inline-item"><a class="text-dark" href="/account/login">로그인</a></li>
+                        <li class="list-inline-item"><a class="text-dark" href="/account/signUp">회원가입</a></li>
+                    </ul>
+                    <ul class="list-inline my-2" th:if="${session.user != null}">
+                        <li class="list-inline-item">
+                            <div class="pop" data-toggle="popover" title="" data-placement="bottom"
+                                    data-content="
+                                        <ul class='list-group'>
+                                            <a href='/myPage' class='list-group-item list-group-item-action text-center'>마이페이지</a>
+                                            <a href='/logout' class='list-group-item list-group-item-action text-center'>로그아웃</a>
+                                        </ul>
+                                        "
+                                    th:text="${session.user.email}">
+                                유저 정보
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/home">Rowdy Story</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbars">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" th:classappend="${freePosts} ? 'active' : ''">
+                        <a class="nav-link" href="/api/v1/freePosts">자유게시판</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">QnA게시판</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown" data-toggle="dropdown">거래게시판</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown">
+                            <a class="dropdown-item" href="#">판매게시판</a>
+                            <a class="dropdown-item" href="#">구매게시판</a>
+                            <a class="dropdown-item" href="#">나눔게시판</a>
+                        </div>
+                    </li>
+                </ul>
+                <form class="form-inline">
+                    <input class="form-control my-2 mr-2" type="search" placeholder="제목을 입력하세요." aria-label="Search">
+                    <button class="btn btn-outline-info" type="submit">검색</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+</header>

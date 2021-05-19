@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="utf-8">
+
+    <title>Rowdy Story</title>
+    <style>
+        section {
+            margin-top: 120px;
+        }
+        section a {
+            color: black;
+        }
+        section a:hover {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="common/header :: header"></div>
+
+    <section class="container">
+        <div class="row">
+            <div class="col-md-6 mt-4">
+                <div class="d-flex mb-2">
+                    <div><h5><strong>자유게시판</strong></h5></div>
+                    <div class="ml-auto mt-1">
+                        <a href="/api/v1/freePosts">
+                            <small>more</small>
+                            <svg class="bi bi-three-dots" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 mt-4">
+                <div class="d-flex mb-2">
+                    <div><h5><strong>QnA게시판</strong></h5></div>
+                    <div class="ml-auto mt-1">
+                        <a href="#">
+                            <small>more</small>
+                            <svg class="bi bi-three-dots" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong class="mb-1">글 제목</strong>
+                            <small class="mt-1">글쓴이 명</small>
+                        </div>
+                        <small class="float-right">Donec id elit non mi porta.</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="d-flex mb-2">
+                    <div><h5><strong>거래게시판</strong></h5></div>
+                    <div class="ml-auto mt-1">
+                        <a href="#">
+                            <small>more</small>
+                            <svg class="bi bi-three-dots" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="row row-cols-1 row-cols-md-4">
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a short card.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="http://placehold.it/50X50" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div th:replace="common/footer :: footer"></div>
+</body>
+</html>

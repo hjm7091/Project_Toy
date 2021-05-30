@@ -21,6 +21,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+		<!-- rowdystory dependencies -->
+		<dependency>
+			<groupId>jin.h.mun</groupId>
+			<artifactId>rowdystory-dto</artifactId>
+			<version>${rowdystory.version}</version>
+		</dependency>
 	</dependencies>
   
 </project>

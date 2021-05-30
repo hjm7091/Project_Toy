@@ -14,14 +14,14 @@ class RoleTypeTest {
         RoleType guest = RoleType.GUEST, user = RoleType.USER, admin = RoleType.ADMIN;
 
         //when
-        String guestRoleType = guest.getRoleType();
-        String userRoleType = user.getRoleType();
-        String adminRoleType = admin.getRoleType();
+        String guestRoleName = guest.getRoleName();
+        String userRoleName = user.getRoleName();
+        String adminRoleName = admin.getRoleName();
 
         //then
-        assertThat( guestRoleType ).startsWith( RoleType.ROLE_PREFIX );
-        assertThat( userRoleType ).startsWith( RoleType.ROLE_PREFIX );
-        assertThat( adminRoleType ).startsWith( RoleType.ROLE_PREFIX );
+        assertThat( guestRoleName ).startsWith( RoleType.ROLE_PREFIX );
+        assertThat( userRoleName ).startsWith( RoleType.ROLE_PREFIX );
+        assertThat( adminRoleName ).startsWith( RoleType.ROLE_PREFIX );
     }
 
 }

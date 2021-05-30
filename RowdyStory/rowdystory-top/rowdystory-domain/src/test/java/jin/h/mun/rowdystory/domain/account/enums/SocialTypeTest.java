@@ -18,16 +18,16 @@ class SocialTypeTest {
         SocialType naver = SocialType.NAVER;
 
         //when
-        String googleSocialType = google.getSocialType();
-        String facebookSocialType = facebook.getSocialType();
-        String kakaoSocialType = kakao.getSocialType();
-        String naverSocialType = naver.getSocialType();
+        String googleSocialName = google.getSocialName();
+        String facebookSocialName = facebook.getSocialName();
+        String kakaoSocialName = kakao.getSocialName();
+        String naverSocialName = naver.getSocialName();
 
         //then
-        assertThat( googleSocialType ).startsWith( SocialType.ROLE_PREFIX );
-        assertThat( facebookSocialType ).startsWith( SocialType.ROLE_PREFIX );
-        assertThat( kakaoSocialType ).startsWith( SocialType.ROLE_PREFIX );
-        assertThat( naverSocialType ).startsWith( SocialType.ROLE_PREFIX );
+        assertThat( googleSocialName ).startsWith( SocialType.ROLE_PREFIX );
+        assertThat( facebookSocialName ).startsWith( SocialType.ROLE_PREFIX );
+        assertThat( kakaoSocialName ).startsWith( SocialType.ROLE_PREFIX );
+        assertThat( naverSocialName ).startsWith( SocialType.ROLE_PREFIX );
     }
 
     @Test

@@ -3,7 +3,6 @@ package jin.h.mun.rowdystory.social.service;
 import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
-import jin.h.mun.rowdystory.social.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,10 +40,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes oAuthAttributes = OAuthAttributes.of( registrationId, userNameAttributeName, oAuth2User.getAttributes() );
 
         User user = saveOrUpdate( oAuthAttributes );
-        httpSession.setAttribute( "user", new SessionUser( user ) );
+        httpSession.setAttribute( "user", user.toDTO() );
 
         return new DefaultOAuth2User(
-                Collections.singleton( new SimpleGrantedAuthority( user.getRoleType().getName() ) ),
+                Collections.singleton( new SimpleGrantedAuthority( user.getRoleType().getRoleName() ) ),
                 oAuthAttributes.getAttributes(),
                 oAuthAttributes.getNameAttributeKey() );
     }

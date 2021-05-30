@@ -16,7 +16,7 @@ public enum SocialType {
     @Getter
     private final String name;
 
-    public String getSocialType() { return ROLE_PREFIX + name.toUpperCase(); }
+    public String getSocialName() { return ROLE_PREFIX + name.toUpperCase(); }
 
     public static SocialType getSocialTypeFrom( final String type ) {
     	

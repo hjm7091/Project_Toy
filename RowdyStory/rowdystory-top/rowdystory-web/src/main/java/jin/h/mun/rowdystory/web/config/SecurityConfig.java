@@ -1,12 +1,20 @@
 package jin.h.mun.rowdystory.web.config;
 
+import jin.h.mun.rowdystory.domain.account.enums.RoleType;
+import jin.h.mun.rowdystory.service.account.CustomUserDetailsService;
+import jin.h.mun.rowdystory.web.controller.account.handler.CustomLoginFailureHandler;
+import jin.h.mun.rowdystory.web.controller.account.handler.CustomLoginSuccessHandler;
 import jin.h.mun.rowdystory.social.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.context.request.RequestContextListener;
 
 @Configuration
@@ -16,6 +24,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
+    private final CustomUserDetailsService customUserDetailsService;
+
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
+
+    private final CustomLoginFailureHandler customLoginFailureHandler;
+
     @Override
     protected void configure( HttpSecurity http ) throws Exception {
         http
@@ -23,14 +37,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .headers().frameOptions().disable() //h2-console을 위한 설정
             .and()
                 .authorizeRequests()
-                    .antMatchers( "/", "/home", "/account/**" ).permitAll()
-                    .antMatchers( "/custom/**", "/images/**", "/bootstrap/**", "/bootstrap-4.5.3/**", "/jquery/**" ).permitAll()
-                    .antMatchers( "/h2-console/**", "/profile" ).permitAll()
-                    .anyRequest().authenticated()
+                    .antMatchers( "/", "/home" ).permitAll()
+            .and()
+                .authorizeRequests()
+                    .antMatchers( "/h2-console/**", "/profile" ).hasAuthority( RoleType.ADMIN.getRoleName() )
+                    .antMatchers( "/api/**" ).hasAnyAuthority( RoleType.ADMIN.getRoleName(), RoleType.USER.getRoleName() )
+            .and()
+                .formLogin()
+                    .loginPage( "/account/login" )
+                    .usernameParameter( "email" )
+                    .successHandler( customLoginSuccessHandler )
+                    .failureHandler( customLoginFailureHandler )
+                    .permitAll()
             .and()
                 .logout()
                 .logoutUrl( "/logout" )
                 .logoutSuccessUrl( "/home" )
+                .invalidateHttpSession( true ) //로그아웃 시 세션정보를 제거할 지 여부를 지정한다. 기본값은 TRUE 이고 세션정보를 제거한다.
             .and()
                 .oauth2Login()
                     .loginPage( "/account/login" )
@@ -39,7 +62,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .defaultSuccessUrl( "/home" )
                         .userInfoEndpoint()
                         .userService( customOAuth2UserService );
+    }
 
+    @Override
+    public void configure( WebSecurity web ) throws Exception {
+        web.ignoring()
+            .antMatchers( "/custom/**", "/images/**", "/bootstrap/**", "/bootstrap-4.5.3/**", "/jquery/**" )
+            .antMatchers( "/favicon.ico" );
+    }
+
+    @Override
+    protected void configure( AuthenticationManagerBuilder auth ) throws Exception {
+        auth.userDetailsService( customUserDetailsService ).passwordEncoder( passwordEncoder() );
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     /*

@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.web.controller;
+package jin.h.mun.rowdystory.web.controller.home;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping( path = { "/", "/home" } )
+    @GetMapping( path = { HomeURL.ROOT, HomeURL.HOME } )
     public String home() {
-        return "home";
+        return HomeURL.HOME;
     }
 
 }

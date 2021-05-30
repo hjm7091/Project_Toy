@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.social.annotation;
+package jin.h.mun.rowdystory.web.controller.account.session;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target( ElementType.PARAMETER )
 @Retention( RetentionPolicy.RUNTIME )
-public @interface SocialUser {
+public @interface SessionUser {
 
 }

@@ -4,6 +4,7 @@ import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.domain.board.Post;
 import jin.h.mun.rowdystory.domain.common.BaseTimeField;
+import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
 import lombok.*;
@@ -99,5 +100,15 @@ public class User extends BaseTimeField {
 		changeUserName( request.getUserName() );
 		changePicture( request.getPicture() );
 		changeRoleType( RoleType.getRoleTypeFrom( request.getRoleType() ) );
+	}
+
+	public UserDTO toDTO() {
+		return UserDTO.builder()
+				.id( this.id )
+				.email( this.email )
+				.password( this.password )
+				.userName( this.userName )
+				.picture( this.picture )
+				.build();
 	}
 }

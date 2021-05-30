@@ -1,15 +1,47 @@
 package jin.h.mun.rowdystory.web.controller.account;
 
-import jin.h.mun.rowdystory.social.annotation.SocialUser;
-import jin.h.mun.rowdystory.social.dto.SessionUser;
+import jin.h.mun.rowdystory.dto.account.UserDTO;
+import jin.h.mun.rowdystory.dto.account.UserLoginRequest;
+import jin.h.mun.rowdystory.service.account.LoginErrorDistinctionService;
+import jin.h.mun.rowdystory.service.account.LoginErrorDistinctionService.DistinctionResult;
+import jin.h.mun.rowdystory.web.controller.account.session.SessionUser;
+import jin.h.mun.rowdystory.web.controller.home.HomeURL;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
+@Slf4j
+@RequiredArgsConstructor
 @Controller
 public class AccountController {
 
-	@RequestMapping( "/account/login" )
-	public String loginForm( @SocialUser SessionUser user ) {
-		return "account/login";
+	private final LoginErrorDistinctionService loginErrorDistinctionService;
+
+	@GetMapping( AccountURL.LOGIN )
+	public String login( UserLoginRequest userLoginRequest, @SessionUser UserDTO userDTO ) {
+
+		log.info( "userDTO : {}", userDTO );
+
+		if ( userDTO != null )
+			return HomeURL.HOME;
+
+		return AccountURL.LOGIN;
+	}
+
+	/*
+	 * 이 메소드는 CustomLoginFailureHandler 에 의해서만 호출됨. 따라서 identificationResult 는 반드시 에러가 있어야함.
+	 */
+	@PostMapping( AccountURL.LOGIN )
+	public String loginFailure( UserLoginRequest userLoginRequest, BindingResult bindingResult ) {
+
+		log.info( "userLoginRequest : {}", userLoginRequest );
+
+		DistinctionResult distinctionResult = loginErrorDistinctionService.distinguish( userLoginRequest );
+		bindingResult.addError( distinctionResult.getFieldError() );
+
+		return AccountURL.LOGIN;
 	}
 }

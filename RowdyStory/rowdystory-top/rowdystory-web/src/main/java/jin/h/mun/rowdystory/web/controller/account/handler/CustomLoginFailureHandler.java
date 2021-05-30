@@ -1,0 +1,26 @@
+package jin.h.mun.rowdystory.web.controller.account.handler;
+
+import jin.h.mun.rowdystory.web.controller.account.AccountURL;
+import jin.h.mun.rowdystory.web.controller.home.HomeURL;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Slf4j
+@Component
+public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
+
+    @Override
+    public void onAuthenticationFailure( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+                                         AuthenticationException e ) throws IOException, ServletException {
+        log.info( "exception message : {}", e.getMessage() );
+
+        httpServletRequest.getRequestDispatcher( HomeURL.ROOT + AccountURL.LOGIN ).forward( httpServletRequest, httpServletResponse );
+    }
+}

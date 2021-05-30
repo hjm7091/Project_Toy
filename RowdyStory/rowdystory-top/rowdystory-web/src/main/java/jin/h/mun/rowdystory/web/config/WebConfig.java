@@ -1,36 +1,37 @@
 package jin.h.mun.rowdystory.web.config;
 
-import java.util.List;
-
-import jin.h.mun.rowdystory.social.resolver.SocialUserArgumentResolver;
+import jin.h.mun.rowdystory.web.controller.account.session.SessionUserArgumentResolver;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.resource.PathResourceResolver;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
 public class WebConfig extends WebMvcConfigurationSupport {
 
-	private final SocialUserArgumentResolver socialUserArgumentResolver;
+	private final SessionUserArgumentResolver sessionUserArgumentResolver;
 	
-	private static final String[] RESOURCE_LOCATIONS = { "classpath:/static/" };
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+			"classpath:/META-INF/resources/", "classpath:/resources/",
+			"classpath:/static/", "classpath:/public/" };
 	
 	@Override
 	protected void addResourceHandlers( final ResourceHandlerRegistry registry ) {
         registry
 	        .addResourceHandler( "/**" )
-	        .addResourceLocations( RESOURCE_LOCATIONS )
-	        .setCachePeriod( 3600 )
-	        .resourceChain( true )
-	        .addResolver( new PathResourceResolver() );
+	        .addResourceLocations( CLASSPATH_RESOURCE_LOCATIONS )
+	        .setCacheControl( CacheControl.noCache() );
+//	        .resourceChain( true )
+//	        .addResolver( new PathResourceResolver() );
 	}
-	
+
 	@Override
 	protected void addArgumentResolvers( final List<HandlerMethodArgumentResolver> argumentResolvers ) {
-		argumentResolvers.add( socialUserArgumentResolver );
+		argumentResolvers.add( sessionUserArgumentResolver );
 	}
 }

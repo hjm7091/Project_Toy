@@ -10,7 +10,7 @@
 	</parent>
   
 	<artifactId>rowdystory-web</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
   
 	<name>rowdystory-web</name>
 	<description>
@@ -74,8 +74,8 @@
 		</dependency>
 		<dependency>
 			<groupId>jin.h.mun</groupId>
-			<artifactId>rowdystory-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>rowdystory-service</artifactId>
+			<version>${rowdystory.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -1,9 +1,9 @@
-package jin.h.mun.rowdystory.social.resolver;
+package jin.h.mun.rowdystory.web.controller.account.session;
 
 import javax.servlet.http.HttpSession;
 
 import jin.h.mun.rowdystory.domain.account.User;
-import jin.h.mun.rowdystory.social.annotation.SocialUser;
+import jin.h.mun.rowdystory.dto.account.UserDTO;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,15 +15,15 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component
-public class SocialUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class SessionUserArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private final HttpSession httpSession;
 	
 	@Override
 	public boolean supportsParameter( final MethodParameter parameter ) {
-		boolean isSocialUserAnnotation = parameter.getParameterAnnotation( SocialUser.class ) != null;
-		boolean isUserClass = User.class.equals( parameter.getParameterType() );
-		return isSocialUserAnnotation && isUserClass;
+		boolean isSessionUserAnnotation = parameter.getParameterAnnotation( SessionUser.class ) != null;
+		boolean isUserDTOClass = UserDTO.class.equals( parameter.getParameterType() );
+		return isSessionUserAnnotation && isUserDTOClass;
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public enum RoleType {
 	@Getter
 	private final String description;
     
-	public String getRoleType() { return ROLE_PREFIX + name.toUpperCase(); }
+	public String getRoleName() { return ROLE_PREFIX + name.toUpperCase(); }
 	
 	public static RoleType getRoleTypeFrom( final String type ) {
 		

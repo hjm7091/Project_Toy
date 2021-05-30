@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.data.config;
+package jin.h.mun.rowdystory.web.config;
 
 import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.data.repository.board.PostRepository;
@@ -8,36 +8,45 @@ import jin.h.mun.rowdystory.domain.board.Post;
 import jin.h.mun.rowdystory.domain.board.SecretPost;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
 import jin.h.mun.rowdystory.dto.post.SecretPostRegisterRequest;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Objects;
-
+@RequiredArgsConstructor
 @Configuration
 public class DataConfig {
 
+    private final PasswordEncoder passwordEncoder;
+
     @Bean
-    public CommandLineRunner initSampleData( final UserRepository userRepository, final PostRepository postRepository ) {
+    public CommandLineRunner testData( @NonNull final UserRepository userRepository, @NonNull final PostRepository postRepository ) {
         return args -> {
 
-            Objects.requireNonNull( userRepository );
-            Objects.requireNonNull( postRepository );
-
             User admin = User.builder()
-                    .email( "hjm7091@naver.com" )
+                    .email( "admin" )
                     .userName( "admin" )
-                    .password( "1234" )
+                    .password( passwordEncoder.encode( "123456" ) )
                     .roleType( RoleType.ADMIN )
                     .build();
 
+            User jin = User.builder()
+                    .email( "jin@test.com" )
+                    .userName( "jin" )
+                    .password( passwordEncoder.encode("123456") )
+                    .roleType( RoleType.USER )
+                    .build();
+
             userRepository.save( admin );
+            userRepository.save( jin );
 
             Post normalPost = new Post( new PostRegisterRequest( "normal post", "this is normal post" ), admin );
 
             SecretPostRegisterRequest secretPostRegisterRequest = SecretPostRegisterRequest.builder()
                     .postRegisterRequest( new PostRegisterRequest( "secret post", "this is secret post" ) )
-                    .anonymous( false ).password( "11111" ).build();
+                    .anonymous( false ).password( passwordEncoder.encode( "123456" ) ).build();
             SecretPost secretPost = new SecretPost( secretPostRegisterRequest, admin );
 
             postRepository.save( normalPost );

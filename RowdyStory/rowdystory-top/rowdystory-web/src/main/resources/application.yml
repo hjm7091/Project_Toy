@@ -9,9 +9,6 @@ spring:
   devtools:
     livereload:
       enabled: true
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
 
 #logging:
 #  level:

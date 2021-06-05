@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.social.provider;
+package jin.h.mun.rowdystory.service.account.social.provider;
 
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;

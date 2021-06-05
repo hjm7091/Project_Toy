@@ -1,10 +1,10 @@
-package jin.h.mun.rowdystory.social.config;
+package jin.h.mun.rowdystory.service.account.social.config;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import jin.h.mun.rowdystory.social.provider.CustomOAuth2Provider;
+import jin.h.mun.rowdystory.service.account.social.provider.CustomOAuth2Provider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.annotation.Bean;

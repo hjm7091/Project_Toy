@@ -1,7 +1,10 @@
 package jin.h.mun.rowdystory.domain.account.enums;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.security.InvalidParameterException;
 
 @RequiredArgsConstructor
 public enum SocialType {
@@ -18,7 +21,7 @@ public enum SocialType {
 
     public String getSocialName() { return ROLE_PREFIX + name.toUpperCase(); }
 
-    public static SocialType getSocialTypeFrom( final String type ) {
+    public static SocialType getSocialTypeFrom( @NonNull final String type ) {
     	
     	for ( SocialType socialType : SocialType.values() ) {
     		if ( socialType.getName().equals( type ) ) {
@@ -26,7 +29,7 @@ public enum SocialType {
     		}
     	}
     	
-    	throw new IllegalArgumentException( "invalid parameter : " + type );
+    	throw new InvalidParameterException( "invalid parameter : " + type );
     }
 
 }

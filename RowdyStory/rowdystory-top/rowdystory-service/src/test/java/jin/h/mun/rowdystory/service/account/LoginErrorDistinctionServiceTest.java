@@ -4,14 +4,14 @@ import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserLoginRequest;
-import jin.h.mun.rowdystory.service.account.LoginErrorDistinctionService.DistinctionResult;
-import jin.h.mun.rowdystory.service.account.LoginErrorDistinctionService.ErrorMessage;
+import jin.h.mun.rowdystory.exception.account.ErrorMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.validation.FieldError;
 
 import java.util.Optional;
 
@@ -43,10 +43,10 @@ class LoginErrorDistinctionServiceTest {
         UserLoginRequest requestWithDifferentEmail = UserLoginRequest.builder().email( "test" ).password( jin.getPassword() ).build();
 
         //when
-        DistinctionResult distinctionResult = loginErrorDistinctionService.distinguish( requestWithDifferentEmail );
+        FieldError fieldError = loginErrorDistinctionService.distinguish( requestWithDifferentEmail );
 
         //then
-        assertThat( distinctionResult.getFieldError().getDefaultMessage() ).isEqualTo( ErrorMessage.email );
+        assertThat( fieldError.getDefaultMessage() ).isEqualTo( ErrorMessage.EMAIL_NOT_EXIST.getMessage() );
     }
 
     @Test
@@ -58,10 +58,10 @@ class LoginErrorDistinctionServiceTest {
         UserLoginRequest requestWithDifferentPassword = UserLoginRequest.builder().email( jin.getEmail() ).password( "1111" ).build();
 
         //when
-        DistinctionResult distinctionResult = loginErrorDistinctionService.distinguish( requestWithDifferentPassword );
+        FieldError fieldError = loginErrorDistinctionService.distinguish( requestWithDifferentPassword );
 
         //then
-        assertThat( distinctionResult.getFieldError().getDefaultMessage() ).isEqualTo( ErrorMessage.password );
+        assertThat( fieldError.getDefaultMessage() ).isEqualTo( ErrorMessage.PASSWORD_NOT_MATCH.getMessage() );
     }
 
     @Test
@@ -73,10 +73,10 @@ class LoginErrorDistinctionServiceTest {
         UserLoginRequest requestWithSameEmailAndPassword = UserLoginRequest.builder().email( jin.getEmail() ).password( "1234" ).build();
 
         //when
-        DistinctionResult distinctionResult = loginErrorDistinctionService.distinguish( requestWithSameEmailAndPassword );
+        FieldError fieldError = loginErrorDistinctionService.distinguish( requestWithSameEmailAndPassword );
 
         //then
-        assertThat( distinctionResult.getFieldError().getDefaultMessage() ).isEqualTo( ErrorMessage.social );
+        assertThat( fieldError.getDefaultMessage() ).isEqualTo( ErrorMessage.EMAIL_AlREADY_REGISTERED_SOCIAL_ACCOUNT.getMessage() );
     }
 
 }

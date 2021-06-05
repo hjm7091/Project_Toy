@@ -1,7 +1,10 @@
 package jin.h.mun.rowdystory.domain.account.enums;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.security.InvalidParameterException;
 
 @RequiredArgsConstructor
 public enum RoleType {
@@ -20,7 +23,7 @@ public enum RoleType {
     
 	public String getRoleName() { return ROLE_PREFIX + name.toUpperCase(); }
 	
-	public static RoleType getRoleTypeFrom( final String type ) {
+	public static RoleType getRoleTypeFrom( @NonNull final String type ) {
 		
 		for ( RoleType roleType : RoleType.values() ) {
 			if ( roleType.getName().equals( type ) ) {
@@ -28,7 +31,7 @@ public enum RoleType {
 			}
 		}
 
-		return null;
+		throw new InvalidParameterException( "invalid parameter : " + type );
 	}
     
 }

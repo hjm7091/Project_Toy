@@ -83,7 +83,7 @@ public class UserRepositoryTest {
         testEntityManager.persist( user2 );
 
         //when
-        List<User> findUsers = userRepository.findByUserName(userName);
+        List<User> findUsers = userRepository.findByUserName( userName );
 
         //then
         assertThat( findUsers.size() ).isEqualTo( 2 );

@@ -3,13 +3,13 @@ package jin.h.mun.rowdystory.web.controller.account;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserLoginRequest;
 import jin.h.mun.rowdystory.service.account.LoginErrorDistinctionService;
-import jin.h.mun.rowdystory.service.account.LoginErrorDistinctionService.DistinctionResult;
 import jin.h.mun.rowdystory.web.controller.account.session.SessionUser;
 import jin.h.mun.rowdystory.web.controller.home.HomeURL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -39,8 +39,8 @@ public class AccountController {
 
 		log.info( "userLoginRequest : {}", userLoginRequest );
 
-		DistinctionResult distinctionResult = loginErrorDistinctionService.distinguish( userLoginRequest );
-		bindingResult.addError( distinctionResult.getFieldError() );
+		FieldError fieldError = loginErrorDistinctionService.distinguish( userLoginRequest );
+		bindingResult.addError( fieldError );
 
 		return AccountURL.LOGIN;
 	}

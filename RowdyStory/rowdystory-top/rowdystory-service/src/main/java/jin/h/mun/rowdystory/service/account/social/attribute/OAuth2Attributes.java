@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.social.service;
+package jin.h.mun.rowdystory.service.account.social.attribute;
 
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
-public class OAuthAttributes {
+public class OAuth2Attributes {
 
     private final Map<String, Object> attributes;
     private final String registrationId;
@@ -21,7 +21,7 @@ public class OAuthAttributes {
     private final String picture;
 
     @Builder
-    public OAuthAttributes( Map<String, Object> attributes, String nameAttributeKey, String registrationId, String name, String email, String picture ) {
+    public OAuth2Attributes( Map<String, Object> attributes, String nameAttributeKey, String registrationId, String name, String email, String picture ) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.registrationId = registrationId;
@@ -30,7 +30,7 @@ public class OAuthAttributes {
         this.picture = picture;
     }
 
-    public static OAuthAttributes of( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
+    public static OAuth2Attributes of( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
     	
     	log.info( "registrationId : {}, userNameAttributeName : {}, attributes : {}", registrationId, userNameAttributeName, attributes );
         
@@ -65,8 +65,8 @@ public class OAuthAttributes {
 			email=hjm7091@naver.com
 		}
      */
-    private static OAuthAttributes ofCommon( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
-        return OAuthAttributes.builder()
+    private static OAuth2Attributes ofCommon( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
+        return OAuth2Attributes.builder()
                 .name( ( String ) attributes.get( "name" ) )
                 .email( ( String ) attributes.get( "email" ) )
                 .picture( ( String ) attributes.get( "picture" ) )
@@ -91,11 +91,11 @@ public class OAuthAttributes {
      * }
      */
     @SuppressWarnings( "unchecked" )
-    private static OAuthAttributes ofNaver( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
+    private static OAuth2Attributes ofNaver( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
     	
 		Map<String, Object> response = ( Map<String, Object> ) attributes.get( "response" );
 
-        return OAuthAttributes.builder()
+        return OAuth2Attributes.builder()
                 .name( ( String ) response.get( "name" ) )
                 .email( ( String ) response.get( "email" ) )
                 .picture( ( String ) response.get( "profile_image" ) )
@@ -125,13 +125,13 @@ public class OAuthAttributes {
 		kakao_account의 profile에 thumbnail_image_url, profile_image_url이 없을 수 있다.
      */
     @SuppressWarnings( "unchecked" )
-    private static OAuthAttributes ofKakao( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
+    private static OAuth2Attributes ofKakao( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
     	
     	Map<String, Object> kakaoAccount = ( Map<String, Object> ) attributes.get( "kakao_account" );
     	Map<String, Object> profile = ( Map<String, Object> ) kakaoAccount.get( "profile" );
-        Map<String, Object> properties = (Map<String, Object>) attributes.get( "properties" );
+        Map<String, Object> properties = ( Map<String, Object> ) attributes.get( "properties" );
 
-        return OAuthAttributes.builder()
+        return OAuth2Attributes.builder()
     			.name( ( String ) profile.get( "nickname" ) )
     			.email( ( String ) kakaoAccount.get( "email" ) )
     			.picture( ( String ) profile.getOrDefault( "profile_image_url", properties.get( "profile_image" ) ) )

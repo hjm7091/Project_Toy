@@ -18,7 +18,12 @@ import java.util.List;
 @EqualsAndHashCode( of = { "id", "email" }, callSuper = false )
 @ToString( of = { "id", "email", "userName" } )
 @Entity
-@Table( name = "tbUser", uniqueConstraints = @UniqueConstraint( columnNames = { "userId", "userEmail" } ))
+@Table(
+	name = "tbUser",
+	uniqueConstraints = {
+		@UniqueConstraint( columnNames = { "userEmail" } )
+	}
+)
 public class User extends BaseTimeField {
 
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY )
@@ -67,31 +72,23 @@ public class User extends BaseTimeField {
 		this.roleType = roleType;
 	}
 		
-	public User changePassword( final String password ) {
-		if ( password != null ) {
-			this.password = password;
-		}
+	public User changePassword( @NonNull final String password ) {
+		this.password = password;
 		return this;
 	}
 	
-	public User changeUserName( final String userName ) {
-		if ( userName != null ) {
-			this.userName = userName;
-		}
+	public User changeUserName( @NonNull final String userName ) {
+		this.userName = userName;
 		return this;
 	}
 	
-	public User changeRoleType( final RoleType roleType ) {
-		if ( roleType != null ) {
-			this.roleType = roleType;
-		}
+	public User changeRoleType( @NonNull final RoleType roleType ) {
+		this.roleType = roleType;
 		return this;
 	}
 	
-	public User changePicture( final String picture ) {
-		if ( picture != null ) {
-			this.picture = picture;
-		}
+	public User changePicture( @NonNull final String picture ) {
+		this.picture = picture;
 		return this;
 	}
 	
@@ -100,6 +97,10 @@ public class User extends BaseTimeField {
 		changeUserName( request.getUserName() );
 		changePicture( request.getPicture() );
 		changeRoleType( RoleType.getRoleTypeFrom( request.getRoleType() ) );
+	}
+
+	public boolean isSocialUser() {
+		return this.socialType != null;
 	}
 
 	public UserDTO toDTO() {

@@ -1,6 +1,5 @@
 package jin.h.mun.rowdystory.domain;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.function.Executable;
 
 import java.util.function.Consumer;
@@ -57,7 +56,6 @@ public class PersistHelper {
 		executeInTransaction( () -> consumer.accept( parameter ) );
 	}
 
-	@SneakyThrows
 	private void executeInTransaction( final Executable executable ) {
 		EntityTransaction tx = null;
 		try {
@@ -65,10 +63,20 @@ public class PersistHelper {
 			tx.begin();
 			executable.execute();
 			tx.commit();
-		} catch ( PersistenceException e ) {
+		} catch ( Throwable e ) {
 			if ( tx != null ) tx.rollback();
-			throw e;
+			throwExceptionByInstance( e );
 		}
+	}
+
+	private void throwExceptionByInstance( Throwable e ) {
+		if ( e instanceof PersistenceException )
+			throw ( PersistenceException ) e;
+
+		if ( e instanceof NullPointerException )
+			throw ( NullPointerException ) e;
+
+		throw new RuntimeException( e );
 	}
 
 	public void clearEntityManager() {

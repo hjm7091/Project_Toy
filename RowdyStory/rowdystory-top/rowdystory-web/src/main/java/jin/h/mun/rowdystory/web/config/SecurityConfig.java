@@ -1,10 +1,10 @@
 package jin.h.mun.rowdystory.web.config;
 
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
-import jin.h.mun.rowdystory.service.account.CustomUserDetailsService;
-import jin.h.mun.rowdystory.web.controller.account.handler.CustomLoginFailureHandler;
-import jin.h.mun.rowdystory.web.controller.account.handler.CustomLoginSuccessHandler;
-import jin.h.mun.rowdystory.social.service.CustomOAuth2UserService;
+import jin.h.mun.rowdystory.service.account.rowdy.FormLoginService;
+import jin.h.mun.rowdystory.web.controller.account.handler.FormLoginFailureHandler;
+import jin.h.mun.rowdystory.web.controller.account.handler.FormLoginSuccessHandler;
+import jin.h.mun.rowdystory.service.account.social.OAuth2LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,13 +22,13 @@ import org.springframework.web.context.request.RequestContextListener;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginService OAuth2LoginService;
 
-    private final CustomUserDetailsService customUserDetailsService;
+    private final FormLoginService formLoginService;
 
-    private final CustomLoginSuccessHandler customLoginSuccessHandler;
+    private final FormLoginSuccessHandler formLoginSuccessHandler;
 
-    private final CustomLoginFailureHandler customLoginFailureHandler;
+    private final FormLoginFailureHandler formLoginFailureHandler;
 
     @Override
     protected void configure( HttpSecurity http ) throws Exception {
@@ -46,8 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                     .loginPage( "/account/login" )
                     .usernameParameter( "email" )
-                    .successHandler( customLoginSuccessHandler )
-                    .failureHandler( customLoginFailureHandler )
+                    .successHandler( formLoginSuccessHandler )
+                    .failureHandler( formLoginFailureHandler )
                     .permitAll()
             .and()
                 .logout()
@@ -61,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                         .defaultSuccessUrl( "/home" )
                         .userInfoEndpoint()
-                        .userService( customOAuth2UserService );
+                        .userService( OAuth2LoginService );
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure( AuthenticationManagerBuilder auth ) throws Exception {
-        auth.userDetailsService( customUserDetailsService ).passwordEncoder( passwordEncoder() );
+        auth.userDetailsService( formLoginService ).passwordEncoder( passwordEncoder() );
     }
 
     @Bean

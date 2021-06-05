@@ -60,17 +60,12 @@
 		<dependency>
 			<groupId>jin.h.mun</groupId>
 			<artifactId>rowdystory-domain</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${rowdystory.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jin.h.mun</groupId>
 			<artifactId>rowdystory-data</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>jin.h.mun</groupId>
-			<artifactId>rowdystory-social</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${rowdystory.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jin.h.mun</groupId>

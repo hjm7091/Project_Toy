@@ -58,7 +58,7 @@ public class UserTest {
 	}
 	
 	@Test
-	@DisplayName( "값이 null 이 아니라면 user 의 필드는 업데이트 되어야 한다." )
+	@DisplayName( "업데이트 요청의 값이 null 이 아니라면 user 의 필드는 업데이트 되어야 한다." )
 	public void fieldUpdateWithValue() {
 		//given
 		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
@@ -81,7 +81,7 @@ public class UserTest {
 	}
 
 	@Test
-	@DisplayName( "값이 null 이라면 user 의 필드는 업데이트 되지 않아야 한다." )
+	@DisplayName( "업데이트 요청의 값에 null 이 존재한다면 NullPointerException 예외가 발생해야 한다." )
 	public void fieldUpdateWithNull() {
 	    //given
 		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
@@ -92,13 +92,7 @@ public class UserTest {
 				.build();
 
 	    //when
-		persistHelper.update( user::update, userUpdateRequest );
-
-	    //then
-		assertThat( user.getPassword() ).isNotNull();
-		assertThat( user.getUserName() ).isNotNull();
-		assertThat( user.getPicture() ).isNotNull();
-		assertThat( user.getRoleType() ).isNotNull();
+		assertThrows( NullPointerException.class, () -> persistHelper.update( user::update, userUpdateRequest ) );
 	}
 	
 	@Test
@@ -114,24 +108,20 @@ public class UserTest {
 	}
 
 	@Test
-	@DisplayName( "이메일이 같은 유저는 저장될 수 있지만 id는 달라야 한다." )
+	@DisplayName( "이메일이 같은 유저는 저장될 수 없다." )
 	public void saveTwoUserHavingSameEmail() {
 	    //given : 이메일이 동일한 두 유저 생성
-		User user1 = User.builder()
+		User jin = User.builder()
 				.email( "hjm7091@naver.com" )
 				.userName( "jin" )
 				.build();
-		User user2 = User.builder()
+		User hak = User.builder()
 				.email( "hjm7091@naver.com" )
 				.userName( "hak" )
 				.build();
 
 		//when : 유저를 저장
-		persistHelper.persist( user1, user2 );
-
-		//then : 이메일은 같고 유저 아이디는 다른지 확인
-		assertThat( user1.getEmail() ).isEqualTo( user2.getEmail() );
-		assertThat( user1.getId() ).isNotEqualTo( user2.getId() );
+		assertThrows( PersistenceException.class, () -> persistHelper.persist( jin, hak ) );
 	}
 
 	@Test

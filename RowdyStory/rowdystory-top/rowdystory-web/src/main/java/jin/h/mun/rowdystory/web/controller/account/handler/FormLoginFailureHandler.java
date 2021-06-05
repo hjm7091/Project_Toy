@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
+public class FormLoginFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,

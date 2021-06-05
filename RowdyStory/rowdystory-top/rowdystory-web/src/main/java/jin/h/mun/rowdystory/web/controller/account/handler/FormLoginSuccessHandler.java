@@ -18,7 +18,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class CustomLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
 

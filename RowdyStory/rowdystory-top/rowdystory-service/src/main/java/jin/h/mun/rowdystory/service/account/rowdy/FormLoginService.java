@@ -1,7 +1,9 @@
-package jin.h.mun.rowdystory.service.account;
+package jin.h.mun.rowdystory.service.account.rowdy;
 
 import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
+import jin.h.mun.rowdystory.exception.account.AlreadyRegisteredSocialException;
+import jin.h.mun.rowdystory.exception.account.ErrorMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +19,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class FormLoginService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -29,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // 이메일이 존재하지 않는 경우
         if ( !userOpt.isPresent() ) {
-            String message = "해당 이메일에 대한 정보가 없습니다. 이메일 주소를 확인해주세요.";
+            String message = ErrorMessage.EMAIL_NOT_EXIST.getMessage();
             log.error( message + " {}", email );
             throw new UsernameNotFoundException( message );
         }
@@ -37,10 +39,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userOpt.get();
 
         // 소셜 로그인으로 등록된 계정인 경우
-        if ( user.getSocialType() != null ) {
-            String message = "해당 계정은 소셜 로그인으로 등록된 계정입니다. 소셜 로그인을 통해 로그인해주세요.";
+        if ( user.isSocialUser() ) {
+            String message = ErrorMessage.EMAIL_AlREADY_REGISTERED_SOCIAL_ACCOUNT.getMessage();
             log.error( message + " {}", email );
-            throw new UsernameNotFoundException( message );
+            throw new AlreadyRegisteredSocialException( message );
         }
 
         List<SimpleGrantedAuthority> roles = new ArrayList<>();

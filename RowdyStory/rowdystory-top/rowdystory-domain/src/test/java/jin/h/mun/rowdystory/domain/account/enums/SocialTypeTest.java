@@ -3,6 +3,8 @@ package jin.h.mun.rowdystory.domain.account.enums;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.security.InvalidParameterException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -33,8 +35,8 @@ class SocialTypeTest {
     @Test
     @DisplayName( "getSocialTypeFrom() 호출시 파라미터가 유효하지 않으면 예외가 발생해야 한다." )
     public void getSocialTypeFromInvalidParameter() {
-        assertThrows( IllegalArgumentException.class, () -> SocialType.getSocialTypeFrom( null ) );
-        assertThrows( IllegalArgumentException.class, () -> SocialType.getSocialTypeFrom( "invalid" ) );
+        assertThrows( NullPointerException.class, () -> SocialType.getSocialTypeFrom( null ) );
+        assertThrows( InvalidParameterException.class, () -> SocialType.getSocialTypeFrom( "invalid" ) );
     }
 
     @Test

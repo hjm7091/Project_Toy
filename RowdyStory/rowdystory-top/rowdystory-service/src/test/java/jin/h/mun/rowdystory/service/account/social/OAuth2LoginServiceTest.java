@@ -5,8 +5,8 @@ import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.exception.account.DuplicatedEmailException;
-import jin.h.mun.rowdystory.service.account.social.dummy.DummyOAuth2User;
-import jin.h.mun.rowdystory.service.account.social.dummy.DummyOAuth2UserRequest;
+import jin.h.mun.rowdystory.service.account.social.factory.OAuth2UserFactory;
+import jin.h.mun.rowdystory.service.account.social.factory.OAuth2UserRequestFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -57,8 +58,9 @@ class OAuth2LoginServiceTest {
         when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.empty() );
         when( userRepository.save( any( User.class ) ) ).thenReturn( userWhoTriedSocialLogin );
 
-        OAuth2UserRequest googleOAuth2UserRequest = DummyOAuth2UserRequest.ofGoogle();
-        DummyOAuth2User googleOAuth2User = DummyOAuth2User.ofGoogleWithEmail( userWhoTriedSocialLogin.getEmail() );
+        OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
+        DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
+                .addAttribute( "email", userWhoTriedSocialLogin.getEmail() ).build();
         when( delegator.loadUser( googleOAuth2UserRequest ) ).thenReturn( googleOAuth2User );
 
         //when
@@ -77,8 +79,9 @@ class OAuth2LoginServiceTest {
         when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.of( userJoinedByForm ) );
         when( userRepository.save( any( User.class ) ) ).thenReturn( userWhoTriedSocialLogin );
 
-        OAuth2UserRequest googleOAuth2UserRequest = DummyOAuth2UserRequest.ofGoogle();
-        DummyOAuth2User googleOAuth2User = DummyOAuth2User.ofGoogleWithEmail( userWhoTriedSocialLogin.getEmail() );
+        OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
+        DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
+                .addAttribute( "email", userWhoTriedSocialLogin.getEmail() ).build();
         when( delegator.loadUser( googleOAuth2UserRequest ) ).thenReturn( googleOAuth2User );
 
         //when
@@ -94,8 +97,9 @@ class OAuth2LoginServiceTest {
         when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.of( userJoinedBySocial ) );
         when( userRepository.save( any( User.class ) ) ).thenReturn( userWhoTriedSocialLogin );
 
-        OAuth2UserRequest googleOAuth2UserRequest = DummyOAuth2UserRequest.ofGoogle();
-        DummyOAuth2User googleOAuth2User = DummyOAuth2User.ofGoogleWithEmail( userWhoTriedSocialLogin.getEmail() );
+        OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
+        DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
+                .addAttribute( "email", userWhoTriedSocialLogin.getEmail() ).build();
         when( delegator.loadUser( googleOAuth2UserRequest ) ).thenReturn( googleOAuth2User );
 
         //when
@@ -114,8 +118,9 @@ class OAuth2LoginServiceTest {
         when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.of( userWhoTriedSocialLogin ) );
         when( userRepository.save( any( User.class ) ) ).thenReturn( userWhoTriedSocialLogin );
 
-        OAuth2UserRequest googleOAuth2UserRequest = DummyOAuth2UserRequest.ofGoogle();
-        DummyOAuth2User googleOAuth2User = DummyOAuth2User.ofGoogleWithEmail( userWhoTriedSocialLogin.getEmail() );
+        OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
+        DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
+                .addAttribute( "email", userWhoTriedSocialLogin.getEmail() ).build();
         when( delegator.loadUser( googleOAuth2UserRequest ) ).thenReturn( googleOAuth2User );
 
         //when

@@ -1,26 +1,25 @@
-package jin.h.mun.rowdystory.service.account.social;
+package jin.h.mun.rowdystory.service.account.social.factory;
 
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
-import jin.h.mun.rowdystory.service.account.social.dummy.DummyOAuth2User;
-import jin.h.mun.rowdystory.service.account.social.dummy.DummyOAuth2UserRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DummyTest {
+public class FactoryTest {
 
     @Test
-    @DisplayName( "테스트에 사용할 DummyOAuth2UserRequest 의 값이 정상적인지 확인" )
+    @DisplayName( "테스트에 사용할 oAuth2UserRequest 의 값이 정상적인지 확인" )
     public void dummyOauth2UserRequest() {
         //given
-        OAuth2UserRequest googleOAuth2UserRequest = DummyOAuth2UserRequest.ofGoogle();
-        OAuth2UserRequest facebookOAuth2UserRequest = DummyOAuth2UserRequest.ofFacebook();
-        OAuth2UserRequest kakaoOAuth2UserRequest = DummyOAuth2UserRequest.ofKakao();
-        OAuth2UserRequest naverOAuth2UserRequest = DummyOAuth2UserRequest.ofNaver();
+        OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
+        OAuth2UserRequest facebookOAuth2UserRequest = OAuth2UserRequestFactory.ofFacebook();
+        OAuth2UserRequest kakaoOAuth2UserRequest = OAuth2UserRequestFactory.ofKakao();
+        OAuth2UserRequest naverOAuth2UserRequest = OAuth2UserRequestFactory.ofNaver();
 
         //when
         String googleRegistrationId = googleOAuth2UserRequest.getClientRegistration().getRegistrationId();
@@ -44,21 +43,23 @@ public class DummyTest {
     }
 
     @Test
-    @DisplayName( "테스트에 사용할 DummyOAuth2User 의 값이 정상적인지 확인" )
-    public void dummyOAuth2User() {
+    @DisplayName( "테스트에 사용할 oAuth2User 의 값이 정상적인지 확인" )
+    public void oAuth2User() {
         //given
-        DummyOAuth2User googleOAuth2User = DummyOAuth2User.ofGoogleWithEmail( "test@test.com" );
-        DummyOAuth2User facebookOAuth2User = DummyOAuth2User.ofFacebookWithEmail( "test@test.com" );
-        DummyOAuth2User kakaoOAuth2User = DummyOAuth2User.ofKakaoWithEmail( "test@test.com" );
-        DummyOAuth2User naverOAuth2User = DummyOAuth2User.ofNaverWithEmail( "test@test.com" );
+        DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
+                .addAttribute( "email", "test@test.com" ).build();
+        DefaultOAuth2User facebookOAuth2User = OAuth2UserFactory.ofFacebook()
+                .addAttribute( "email", "test@test.com" ).build();
+        DefaultOAuth2User kakaoOAuth2User = OAuth2UserFactory.ofKakao()
+                .addAttribute( "email", "test@test.com" ).build();
+        DefaultOAuth2User naverOAuth2User = OAuth2UserFactory.ofNaver()
+                .addAttribute( "email", "test@test.com" ).build();
 
         //when
         Map<String, Object> googleAttributes = googleOAuth2User.getAttributes();
         Map<String, Object> facebookAttributes = facebookOAuth2User.getAttributes();
         Map<String, Object> kakaoAttributes = kakaoOAuth2User.getAttributes();
         Map<String, Object> naverAttributes = naverOAuth2User.getAttributes();
-
-        System.out.println( googleAttributes );
 
         //then
         assertThat( googleAttributes.size() ).isEqualTo( 2 );

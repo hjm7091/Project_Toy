@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.service.account.social.dummy;
+package jin.h.mun.rowdystory.service.account.social.factory;
 
 import jin.h.mun.rowdystory.service.account.social.provider.CustomOAuth2Provider;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
@@ -8,13 +8,9 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 import java.time.Instant;
 
-public class DummyOAuth2UserRequest extends OAuth2UserRequest {
+public class OAuth2UserRequestFactory {
 
     private static final OAuth2AccessToken oAuth2AccessToken = new OAuth2AccessToken( OAuth2AccessToken.TokenType.BEARER, "token", Instant.MIN, Instant.MAX );
-
-    private DummyOAuth2UserRequest(ClientRegistration clientRegistration, OAuth2AccessToken accessToken ) {
-        super( clientRegistration, accessToken );
-    }
 
     public static OAuth2UserRequest ofGoogle() {
         ClientRegistration clientRegistration = CommonOAuth2Provider.GOOGLE.getBuilder( "google" )
@@ -23,7 +19,7 @@ public class DummyOAuth2UserRequest extends OAuth2UserRequest {
                 .scope( "email", "profile" )
                 .build();
 
-        return new DummyOAuth2UserRequest( clientRegistration, oAuth2AccessToken );
+        return new OAuth2UserRequest( clientRegistration, oAuth2AccessToken );
     }
 
     public static OAuth2UserRequest ofFacebook() {
@@ -33,7 +29,7 @@ public class DummyOAuth2UserRequest extends OAuth2UserRequest {
                 .scope( "email", "public_profile" )
                 .build();
 
-        return new DummyOAuth2UserRequest( clientRegistration, oAuth2AccessToken );
+        return new OAuth2UserRequest( clientRegistration, oAuth2AccessToken );
     }
 
     public static OAuth2UserRequest ofKakao() {

@@ -2,7 +2,6 @@ package jin.h.mun.rowdystory.web.controller.account;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserLoginRequest;
-import jin.h.mun.rowdystory.service.account.LoginErrorDistinctionService;
 import jin.h.mun.rowdystory.web.controller.account.session.SessionUser;
 import jin.h.mun.rowdystory.web.controller.home.HomeURL;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class AccountController {
 
-	private final LoginErrorDistinctionService loginErrorDistinctionService;
-
 	@GetMapping( AccountURL.LOGIN )
 	public String login( UserLoginRequest userLoginRequest, @SessionUser UserDTO userDTO ) {
 
@@ -31,15 +28,23 @@ public class AccountController {
 		return AccountURL.LOGIN;
 	}
 
-	/*
-	 * 이 메소드는 CustomLoginFailureHandler 에 의해서만 호출됨. 따라서 identificationResult 는 반드시 에러가 있어야함.
-	 */
-	@PostMapping( AccountURL.LOGIN )
-	public String loginFailure( UserLoginRequest userLoginRequest, BindingResult bindingResult ) {
+	@PostMapping( AccountURL.LOGIN_FAIL )
+	public String formLoginFailure( String message, UserLoginRequest userLoginRequest, BindingResult bindingResult ) {
 
-		log.info( "userLoginRequest : {}", userLoginRequest );
+		log.info( "form login failed. reason : {}", message );
 
-		FieldError fieldError = loginErrorDistinctionService.distinguish( userLoginRequest );
+		FieldError fieldError = new FieldError( "message", "email", message );
+		bindingResult.addError( fieldError );
+
+		return AccountURL.LOGIN;
+	}
+
+	@GetMapping( AccountURL.LOGIN_FAIL )
+	public String oauth2LoginFailure( String message, UserLoginRequest userLoginRequest, BindingResult bindingResult ) {
+
+		log.info( "oauth2 login failed. reason : {}", message );
+
+		FieldError fieldError = new FieldError( "message", "email", message );
 		bindingResult.addError( fieldError );
 
 		return AccountURL.LOGIN;

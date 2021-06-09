@@ -12,25 +12,8 @@
         <form role="form" th:action="@{/account/login}" th:object="${userLoginRequest}" method="post">
 
             <div class="row">
-                <!--존재하지 않는 이메일 오류-->
                 <div class="col-8 mx-auto mt-5 alert alert-danger alert-dismissible fade show" role="alert" th:if="${#fields.hasErrors('email')}">
                     <div th:errors="*{email}">error message</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="location.href = '/account/login'">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <!--일치하지 않는 비밀번호 오류-->
-                <div class="col-8 mx-auto mt-5 alert alert-danger alert-dismissible fade show" role="alert" th:if="${#fields.hasErrors('password')}">
-                    <div th:errors="*{password}">error message</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="location.href = '/account/login'">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <!--소셜 계정으로 일반 로그인 시도 오류-->
-                <div class="col-8 mx-auto mt-5 alert alert-danger alert-dismissible fade show" role="alert" th:if="${#fields.hasErrors('social')}">
-                    <div th:errors="*{social}">error message</div>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="location.href = '/account/login'">
                         <span aria-hidden="true">&times;</span>
                     </button>

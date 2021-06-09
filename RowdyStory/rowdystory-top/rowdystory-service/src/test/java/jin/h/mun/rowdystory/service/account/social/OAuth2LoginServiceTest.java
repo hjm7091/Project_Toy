@@ -18,13 +18,12 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.servlet.http.HttpSession;
-
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith( SpringExtension.class )
@@ -34,21 +33,10 @@ class OAuth2LoginServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private HttpSession httpSession;
-
-    @Mock
     private OAuth2UserService<OAuth2UserRequest, OAuth2User> delegator;
 
     @InjectMocks
     private OAuth2LoginService oAuth2LoginService;
-
-    @Test
-    @DisplayName( "mocking 이 정상적으로 되었는지 확인" )
-    public void contextLoads() {
-        assertThat( oAuth2LoginService.getUserRepository() ).isNotNull();
-        assertThat( oAuth2LoginService.getHttpSession() ).isNotNull();
-        assertThat( oAuth2LoginService.getDelegator() ).isNotNull();
-    }
 
     @Test
     @DisplayName( "DB에 중복되는 이메일을 가지고 있는 다른 유저가 없는 경우에는 소셜 로그인 성공" )

@@ -4,6 +4,7 @@ import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.data.repository.board.PostRepository;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
+import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.domain.board.Post;
 import jin.h.mun.rowdystory.domain.board.SecretPost;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
@@ -33,10 +34,11 @@ public class DataConfig {
                     .build();
 
             User jin = User.builder()
-                    .email( "jin@test.com" )
+                    .email( "hjm7091@naver.com" )
                     .userName( "jin" )
                     .password( passwordEncoder.encode("123456") )
                     .roleType( RoleType.USER )
+                    .socialType( SocialType.GOOGLE )
                     .build();
 
             userRepository.save( admin );

@@ -2,18 +2,22 @@ package jin.h.mun.rowdystory.web.config;
 
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.service.account.rowdy.FormLoginService;
-import jin.h.mun.rowdystory.web.controller.account.handler.FormLoginFailureHandler;
-import jin.h.mun.rowdystory.web.controller.account.handler.FormLoginSuccessHandler;
 import jin.h.mun.rowdystory.service.account.social.OAuth2LoginService;
+import jin.h.mun.rowdystory.web.controller.account.AccountURL;
+import jin.h.mun.rowdystory.web.controller.account.handler.LoginFailureHandler;
+import jin.h.mun.rowdystory.web.controller.account.handler.FormLoginSuccessHandler;
+import jin.h.mun.rowdystory.web.controller.account.handler.OAuth2LoginSuccessHandler;
+import jin.h.mun.rowdystory.web.controller.home.HomeURL;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.context.request.RequestContextListener;
 
@@ -28,7 +32,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final FormLoginSuccessHandler formLoginSuccessHandler;
 
-    private final FormLoginFailureHandler formLoginFailureHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    private final LoginFailureHandler loginFailureHandler;
 
     @Override
     protected void configure( HttpSecurity http ) throws Exception {
@@ -37,31 +43,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .headers().frameOptions().disable() //h2-console을 위한 설정
             .and()
                 .authorizeRequests()
-                    .antMatchers( "/", "/home" ).permitAll()
+                    .antMatchers( HomeURL.ROOT, HomeURL.ROOT_HOME ).permitAll()
             .and()
                 .authorizeRequests()
                     .antMatchers( "/h2-console/**", "/profile" ).hasAuthority( RoleType.ADMIN.getRoleName() )
                     .antMatchers( "/api/**" ).hasAnyAuthority( RoleType.ADMIN.getRoleName(), RoleType.USER.getRoleName() )
             .and()
                 .formLogin()
-                    .loginPage( "/account/login" )
+                    .loginPage( AccountURL.ROOT_LOGIN )
                     .usernameParameter( "email" )
                     .successHandler( formLoginSuccessHandler )
-                    .failureHandler( formLoginFailureHandler )
+                    .failureHandler( loginFailureHandler )
                     .permitAll()
             .and()
                 .logout()
-                .logoutUrl( "/logout" )
-                .logoutSuccessUrl( "/home" )
-                .invalidateHttpSession( true ) //로그아웃 시 세션정보를 제거할 지 여부를 지정한다. 기본값은 TRUE 이고 세션정보를 제거한다.
+                .logoutUrl( AccountURL.ROOT_LOGOUT )
+                .logoutSuccessUrl( HomeURL.ROOT_HOME )
+                .invalidateHttpSession( true ) // 로그아웃 시 세션정보를 제거할 지 여부를 지정한다. 기본값은 TRUE 이고 세션정보를 제거한다.
             .and()
                 .oauth2Login()
-                    .loginPage( "/account/login" )
+                    .loginPage( AccountURL.ROOT_LOGIN )
                     .authorizationEndpoint().baseUri( "/login/oauth2/authorization/" )
                     .and()
-                        .defaultSuccessUrl( "/home" )
+                        .defaultSuccessUrl( HomeURL.ROOT_HOME )
                         .userInfoEndpoint()
-                        .userService( OAuth2LoginService );
+                        .userService( OAuth2LoginService )
+                    .and()
+                        .successHandler( oAuth2LoginSuccessHandler )
+                        .failureHandler( loginFailureHandler );
     }
 
     @Override
@@ -73,12 +82,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure( AuthenticationManagerBuilder auth ) throws Exception {
-        auth.userDetailsService( formLoginService ).passwordEncoder( passwordEncoder() );
+        auth.authenticationProvider( daoAuthenticationProvider() );
+    }
+
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService( formLoginService );
+        daoAuthenticationProvider.setPasswordEncoder( passwordEncoder() );
+        daoAuthenticationProvider.setHideUserNotFoundExceptions( false ); // true 로 설정하면 UsernameNotFoundException -> BadCredentialsException 으로 숨겨짐, 보안상 true 가 더 안전함.
+        return daoAuthenticationProvider;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     /*

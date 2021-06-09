@@ -6,6 +6,7 @@ import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.exception.account.DuplicatedEmailException;
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
 import jin.h.mun.rowdystory.service.account.social.attribute.OAuth2Attributes;
+import jin.h.mun.rowdystory.service.account.social.user.RowdyOAuth2User;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +17,17 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 
 @Service
 @Slf4j
-@Getter
 public class OAuth2LoginService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private HttpSession httpSession;
 
     @Autowired
     @Qualifier( "defaultOAuth2UserService" )
@@ -57,12 +52,10 @@ public class OAuth2LoginService implements OAuth2UserService<OAuth2UserRequest, 
         OAuth2Attributes oAuth2Attributes = OAuth2Attributes.of( registrationId, userNameAttributeName, oAuth2User.getAttributes() );
 
         User user = saveOrUpdate( oAuth2Attributes );
-        httpSession.setAttribute( "user", user.toDTO() );
 
-        return new DefaultOAuth2User(
+        return new RowdyOAuth2User(
                 Collections.singleton( new SimpleGrantedAuthority( user.getRoleType().getRoleName() ) ),
-                oAuth2Attributes.getAttributes(),
-                oAuth2Attributes.getNameAttributeKey() );
+                oAuth2Attributes );
     }
 
     private User saveOrUpdate( final OAuth2Attributes attributes ) {

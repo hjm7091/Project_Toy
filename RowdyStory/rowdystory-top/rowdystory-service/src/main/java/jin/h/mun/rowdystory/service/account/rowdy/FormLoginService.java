@@ -12,9 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,26 +30,20 @@ public class FormLoginService implements UserDetailsService {
         Optional<User> userOpt = userRepository.findByEmail( email );
 
         // 이메일이 존재하지 않는 경우
-        if ( !userOpt.isPresent() ) {
+        User user = userOpt.orElseThrow( () -> {
             String message = ErrorMessage.EMAIL_NOT_EXIST.getMessage();
-            log.error( message + " {}", email );
-            throw new UsernameNotFoundException( message );
-        }
-
-        User user = userOpt.get();
+            return new UsernameNotFoundException( message );
+        } );
 
         // 소셜 로그인으로 등록된 계정인 경우
         if ( user.isSocialUser() ) {
             String message = ErrorMessage.EMAIL_AlREADY_REGISTERED_SOCIAL_ACCOUNT.getMessage();
-            log.error( message + " {}", email );
             throw new AlreadyRegisteredSocialException( message );
         }
 
-        List<SimpleGrantedAuthority> roles = new ArrayList<>();
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton( new SimpleGrantedAuthority( user.getRoleType().getRoleName() ) );
 
-        roles.add( new SimpleGrantedAuthority( user.getRoleType().getRoleName() ) );
-
-        return new org.springframework.security.core.userdetails.User( email, user.getPassword(), roles );
+        return new org.springframework.security.core.userdetails.User( email, user.getPassword(), authorities );
     }
 
 }

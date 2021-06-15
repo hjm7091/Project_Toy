@@ -9,7 +9,6 @@ import jin.h.mun.rowdystory.domain.board.Post;
 import jin.h.mun.rowdystory.domain.board.SecretPost;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
 import jin.h.mun.rowdystory.dto.post.SecretPostRegisterRequest;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +22,7 @@ public class DataConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
-    public CommandLineRunner testData( @NonNull final UserRepository userRepository, @NonNull final PostRepository postRepository ) {
+    public CommandLineRunner testData( final UserRepository userRepository, final PostRepository postRepository ) {
         return args -> {
 
             User admin = User.builder()

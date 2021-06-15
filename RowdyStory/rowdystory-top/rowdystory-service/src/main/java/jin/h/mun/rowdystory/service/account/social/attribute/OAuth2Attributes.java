@@ -1,5 +1,6 @@
 package jin.h.mun.rowdystory.service.account.social.attribute;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import jin.h.mun.rowdystory.domain.account.User;
@@ -92,7 +93,9 @@ public class OAuth2Attributes {
      */
     @SuppressWarnings( "unchecked" )
     private static OAuth2Attributes ofNaver( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
-    	
+
+        throwExceptionIfNotContainsKeys( attributes, "response" );
+
 		Map<String, Object> response = ( Map<String, Object> ) attributes.get( "response" );
 
         return OAuth2Attributes.builder()
@@ -126,10 +129,16 @@ public class OAuth2Attributes {
      */
     @SuppressWarnings( "unchecked" )
     private static OAuth2Attributes ofKakao( final String registrationId, final String userNameAttributeName, final Map<String, Object> attributes ) {
-    	
+
+        throwExceptionIfNotContainsKeys( attributes, "kakao_account" );
+        throwExceptionIfNotContainsKeys( attributes, "properties" );
+
     	Map<String, Object> kakaoAccount = ( Map<String, Object> ) attributes.get( "kakao_account" );
-    	Map<String, Object> profile = ( Map<String, Object> ) kakaoAccount.get( "profile" );
         Map<String, Object> properties = ( Map<String, Object> ) attributes.get( "properties" );
+
+        throwExceptionIfNotContainsKeys( kakaoAccount, "profile" );
+
+    	Map<String, Object> profile = ( Map<String, Object> ) kakaoAccount.get( "profile" );
 
         return OAuth2Attributes.builder()
     			.name( ( String ) profile.get( "nickname" ) )
@@ -151,4 +160,15 @@ public class OAuth2Attributes {
                 .build();
     }
 
+    private static void throwExceptionIfNotContainsKeys( final Map<String, Object> map, final String... keys ) {
+        if ( !map.keySet().containsAll( Arrays.asList( keys ) ) )
+            throw new InvalidAttributesException( "map must contain keys : " + Arrays.toString( keys ) );
+    }
+
+    protected static class InvalidAttributesException extends RuntimeException {
+
+        public InvalidAttributesException( String message ) {
+            super( message );
+        }
+    }
 }

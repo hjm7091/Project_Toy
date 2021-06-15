@@ -2,6 +2,8 @@ package jin.h.mun.rowdystory.domain.account;
 
 import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
+import jin.h.mun.rowdystory.domain.account.enums.SocialType;
+import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
 import org.junit.jupiter.api.*;
@@ -56,6 +58,31 @@ public class UserTest {
 	public void socialTypeAfterPersist() {
 		assertThat( user.getSocialType() ).isNull();
 	}
+
+	@Test
+	@DisplayName( "소셜 유저 여부 체크" )
+	public void isSocialUser() {
+		//given
+		User normalUser = User.builder().build();
+		User googleUser = User.builder().socialType( SocialType.GOOGLE ).build();
+
+		//then
+		assertThat( normalUser.isSocialUser() ).isFalse();
+		assertThat( googleUser.isSocialUser() ).isTrue();
+	}
+
+	@Test
+	@DisplayName( "UserDTO 확인" )
+	public void toDTO() {
+	    //given
+		UserDTO userDTO = user.toDTO();
+
+		//then
+		assertThat( userDTO.getEmail() ).isEqualTo( user.getEmail() );
+		assertThat( userDTO.getPassword() ).isEqualTo( user.getPassword() );
+		assertThat( userDTO.getUserName() ).isEqualTo( user.getUserName() );
+		assertThat( userDTO.getPicture() ).isEqualTo( user.getPicture() );
+	}
 	
 	@Test
 	@DisplayName( "업데이트 요청의 값이 null 이 아니라면 user 의 필드는 업데이트 되어야 한다." )
@@ -68,11 +95,11 @@ public class UserTest {
 				.roleType( "admin" )
 				.build();
 
-		//when : user 를 업데이트한다.
+		//when
 		persistHelper.update( user::update, userUpdateRequest );
 		persistHelper.clearEntityManager();
 		
-		//then :
+		//then
 		User findUserInDB = persistHelper.find( User.class, user.getId() );
 		assertThat( findUserInDB.getPassword() ).isEqualTo( userUpdateRequest.getPassword() );
 		assertThat( findUserInDB.getUserName() ).isEqualTo( userUpdateRequest.getUserName() );
@@ -81,18 +108,12 @@ public class UserTest {
 	}
 
 	@Test
-	@DisplayName( "업데이트 요청의 값에 null 이 존재한다면 NullPointerException 예외가 발생해야 한다." )
+	@DisplayName( "change 메서드 호출시 파라미터가 null 이라면 NullPointerException 예외가 발생해야 한다." )
 	public void fieldUpdateWithNull() {
-	    //given
-		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
-				.password( null )
-				.userName( null )
-				.picture( null )
-				.roleType( null )
-				.build();
-
-	    //when
-		assertThrows( NullPointerException.class, () -> persistHelper.update( user::update, userUpdateRequest ) );
+		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changePassword, null ) );
+		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changeUserName, null ) );
+		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changePicture, null ) );
+		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changeRoleType, null ) );
 	}
 	
 	@Test

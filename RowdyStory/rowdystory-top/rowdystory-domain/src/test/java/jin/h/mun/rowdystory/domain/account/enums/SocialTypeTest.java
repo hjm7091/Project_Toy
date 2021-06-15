@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SocialTypeTest {
 
     @Test
-    @DisplayName( "getSocialType() 호출시 결과 값은 'ROLE_'로 시작해야 한다." )
-    public void getSocialType() {
+    @DisplayName( "getSocialName 메서드 호출시 결과 값은 'ROLE_'로 시작해야 한다." )
+    public void getSocialName() {
         //given
         SocialType google = SocialType.GOOGLE;
         SocialType facebook = SocialType.FACEBOOK;
@@ -33,14 +33,14 @@ class SocialTypeTest {
     }
 
     @Test
-    @DisplayName( "getSocialTypeFrom() 호출시 파라미터가 유효하지 않으면 예외가 발생해야 한다." )
+    @DisplayName( "getSocialTypeFrom 메서드 호출시 파라미터가 유효하지 않으면 예외가 발생해야 한다." )
     public void getSocialTypeFromInvalidParameter() {
         assertThrows( NullPointerException.class, () -> SocialType.getSocialTypeFrom( null ) );
         assertThrows( InvalidParameterException.class, () -> SocialType.getSocialTypeFrom( "invalid" ) );
     }
 
     @Test
-    @DisplayName( "getSocialTypeFrom() 호출시 파라미터가 유효하면 해당 파라미터에 맞는 소셜 타입이 반환되어야 한다." )
+    @DisplayName( "getSocialTypeFrom 메서드 호출시 파라미터가 유효하면 해당 파라미터에 맞는 소셜 타입이 반환되어야 한다." )
     public void getSocialTypeFromValidParameter() {
         assertThat( SocialType.getSocialTypeFrom( "google" ) ).isEqualTo( SocialType.GOOGLE );
         assertThat( SocialType.getSocialTypeFrom( "facebook" ) ).isEqualTo( SocialType.FACEBOOK );

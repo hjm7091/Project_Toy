@@ -7,7 +7,6 @@ import jin.h.mun.rowdystory.exception.account.DuplicatedEmailException;
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
 import jin.h.mun.rowdystory.service.account.social.attribute.OAuth2Attributes;
 import jin.h.mun.rowdystory.service.account.social.user.RowdyOAuth2User;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +20,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -63,20 +63,21 @@ public class OAuth2LoginService implements OAuth2UserService<OAuth2UserRequest, 
         String email = attributes.getEmail();
         SocialType socialType = SocialType.getSocialTypeFrom( attributes.getRegistrationId() );
 
-        User user = userRepository.findByEmail( email )
-                .map( findUser -> {
+        Optional<User> userOpt = userRepository.findByEmail( email );
 
-                    throwExceptionByUserCondition( findUser, socialType );
+        if ( userOpt.isPresent() ) {
+            User user = userOpt.get();
 
-                    return findUser.changeUserName( attributes.getName() ).changePicture( attributes.getPicture() );
-                } )
-                .orElse( attributes.toUserEntity() );
+            throwExceptionByUserCondition( user, socialType );
 
-        return userRepository.save( user );
+            return user.changeUserName( attributes.getName() ).changePicture( attributes.getPicture() );
+        }
+
+        return userRepository.save( attributes.toUserEntity() );
     }
 
-    private void throwExceptionByUserCondition( User findUserInDB, SocialType socialTypeFromOAuth2 ) {
-        if ( !findUserInDB.isSocialUser() || findUserInDB.getSocialType() != socialTypeFromOAuth2 ) {
+    private void throwExceptionByUserCondition( User findUser, SocialType acquiredSocialType ) {
+        if ( !findUser.isSocialUser() || findUser.getSocialType() != acquiredSocialType ) {
             String message = ErrorMessage.EMAIL_ALREADY_EXIST.getMessage();
             throw new DuplicatedEmailException( message );
         }

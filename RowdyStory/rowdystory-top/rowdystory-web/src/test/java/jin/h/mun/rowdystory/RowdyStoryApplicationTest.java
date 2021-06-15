@@ -17,4 +17,9 @@ public class RowdyStoryApplicationTest {
 		assertThat( rowdyStoryApplication ).isNotNull();
 	}
 
+	@Test
+	public void run() {
+		RowdyStoryApplication.main( new String[]{} );
+	}
+
 }

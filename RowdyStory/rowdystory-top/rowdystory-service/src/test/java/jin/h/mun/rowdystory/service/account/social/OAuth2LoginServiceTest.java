@@ -7,11 +7,13 @@ import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.exception.account.DuplicatedEmailException;
 import jin.h.mun.rowdystory.service.account.social.factory.OAuth2UserFactory;
 import jin.h.mun.rowdystory.service.account.social.factory.OAuth2UserRequestFactory;
+import jin.h.mun.rowdystory.service.account.social.user.RowdyOAuth2User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -39,6 +41,16 @@ class OAuth2LoginServiceTest {
     private OAuth2LoginService oAuth2LoginService;
 
     @Test
+    @DisplayName( "defaultOAuth2UserService 메서드를 호출하면 DefaultOAuth2UserService 가 반환 되어야함." )
+    public void defaultOAuth2UserService() {
+        //given
+        DefaultOAuth2UserService defaultOAuth2UserService = oAuth2LoginService.defaultOAuth2UserService();
+
+        //then
+        assertThat( defaultOAuth2UserService ).isNotNull();
+    }
+
+    @Test
     @DisplayName( "DB에 중복되는 이메일을 가지고 있는 다른 유저가 없는 경우에는 소셜 로그인 성공" )
     public void oauth2LoginWithUniqueEmail() {
         //given
@@ -55,17 +67,16 @@ class OAuth2LoginServiceTest {
         OAuth2User oAuth2User = oAuth2LoginService.loadUser( googleOAuth2UserRequest );
 
         //then
-        assertThat( oAuth2User ).isNotNull();
+        assertThat( oAuth2User.getClass() ).isEqualTo( RowdyOAuth2User.class );
     }
 
     @Test
     @DisplayName( "DB에 중복되는 이메일을 가지고 있는 일반 유저가 있는 경우에는 소셜 로그인 실패" )
-    public void oauth2LoginDuplicatedEmailForm() {
+    public void oauth2LoginDuplicatedEmailByForm() {
         //given
         User userJoinedByForm = User.builder().id( 1L ).email( "form@test.com" ).roleType( RoleType.USER ).build();
         User userWhoTriedSocialLogin = User.builder().email( "jin@test.com" ).roleType( RoleType.USER ).socialType( SocialType.GOOGLE ).build();
         when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.of( userJoinedByForm ) );
-        when( userRepository.save( any( User.class ) ) ).thenReturn( userWhoTriedSocialLogin );
 
         OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
         DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
@@ -78,12 +89,11 @@ class OAuth2LoginServiceTest {
 
     @Test
     @DisplayName( "DB에 중복되는 이메일을 가지고 있는 다른 타입의 소셜 유저가 있는 경우에는 소셜 로그인 실패" )
-    public void oauth2LoginDuplicatedEmailSocial() {
+    public void oauth2LoginDuplicatedEmailBySocial() {
         //given
-        User userJoinedBySocial = User.builder().id( 2L ).email( "social@test.com" ).roleType( RoleType.USER ).socialType( SocialType.FACEBOOK ).build();
+        User userJoinedByFacebook = User.builder().id( 2L ).email( "social@test.com" ).roleType( RoleType.USER ).socialType( SocialType.FACEBOOK ).build();
         User userWhoTriedSocialLogin = User.builder().email( "jin@test.com" ).roleType( RoleType.USER ).socialType( SocialType.GOOGLE ).build();
-        when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.of( userJoinedBySocial ) );
-        when( userRepository.save( any( User.class ) ) ).thenReturn( userWhoTriedSocialLogin );
+        when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.of( userJoinedByFacebook ) );
 
         OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
         DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
@@ -95,24 +105,28 @@ class OAuth2LoginServiceTest {
     }
 
     @Test
-    @DisplayName(
-        "동일한 계정으로 소셜 로그인 재시도시 필드가 없데이트 된다. " +
-        "NullPointerException 이 발생한다면 User 의 change 메소드가 호출된 것으로 생각할 수 있다. " +
-        "따라서 DummyOAuth2User 에 변경될 필드의 값을 비워둔다."
-    )
-    public void retryOauth2Login() {
+    @DisplayName( "동일한 계정으로 소셜 로그인 재시도시 필드가 없데이트 된다. " )
+    public void retryOauth2LoginWithSameSocialAndSameEmail() {
         //given
-        User userWhoTriedSocialLogin = User.builder().email( "jin@test.com" ).roleType( RoleType.USER ).socialType( SocialType.GOOGLE ).build();
+        String userNameBefore = "jin", pictureBefore = "picture1";
+        User userWhoTriedSocialLogin = User.builder().email( "jin@test.com" ).userName( userNameBefore ).picture( pictureBefore )
+                .roleType( RoleType.USER ).socialType( SocialType.GOOGLE ).build();
         when( userRepository.findByEmail( anyString() ) ).thenReturn( Optional.of( userWhoTriedSocialLogin ) );
-        when( userRepository.save( any( User.class ) ) ).thenReturn( userWhoTriedSocialLogin );
 
+        String userNameAfter = "hak", pictureAfter = "picture2";
         OAuth2UserRequest googleOAuth2UserRequest = OAuth2UserRequestFactory.ofGoogle();
         DefaultOAuth2User googleOAuth2User = OAuth2UserFactory.ofGoogle()
-                .addAttribute( "email", userWhoTriedSocialLogin.getEmail() ).build();
+                .addAttribute( "email", userWhoTriedSocialLogin.getEmail() )
+                .addAttribute( "name", userNameAfter )
+                .addAttribute( "picture", pictureAfter ).build();
         when( delegator.loadUser( googleOAuth2UserRequest ) ).thenReturn( googleOAuth2User );
 
         //when
-        assertThrows( NullPointerException.class, () -> oAuth2LoginService.loadUser( googleOAuth2UserRequest ) );
+        OAuth2User oAuth2User = oAuth2LoginService.loadUser( googleOAuth2UserRequest );
+
+        //then
+        assertThat( userWhoTriedSocialLogin.getUserName() ).isEqualTo( userNameAfter );
+        assertThat( userWhoTriedSocialLogin.getPicture() ).isEqualTo( pictureAfter );
     }
 
 }

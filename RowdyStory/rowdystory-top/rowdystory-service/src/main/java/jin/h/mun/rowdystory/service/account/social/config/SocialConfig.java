@@ -1,10 +1,8 @@
 package jin.h.mun.rowdystory.service.account.social.config;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import jin.h.mun.rowdystory.service.account.social.provider.CustomOAuth2Provider;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +12,10 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 
-import lombok.extern.slf4j.Slf4j;
+import java.security.InvalidParameterException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
@@ -27,10 +28,13 @@ public class SocialConfig {
 	private String naverClientId;
 
 	@Value( "${naver.oauth2.client-secret}" )
-	private String naverclientSecret;
-	
+	private String naverClientSecret;
+
+	@Autowired
+	private OAuth2ClientProperties oAuth2ClientProperties;
+
 	@Bean
-	public ClientRegistrationRepository clientRegistrationRepository( final OAuth2ClientProperties oAuth2ClientProperties ) {
+	public ClientRegistrationRepository clientRegistrationRepository() {
 		
         List<ClientRegistration> clientRegistrations = oAuth2ClientProperties.getRegistration().keySet().stream()
 	        .map( client -> getRegistration( oAuth2ClientProperties, client ) )
@@ -49,7 +53,7 @@ public class SocialConfig {
     	// naver client
     	ClientRegistration naverClientRegistration = CustomOAuth2Provider.NAVER.getBuilder( "naver" )
     			.clientId( naverClientId )
-    			.clientSecret( naverclientSecret )
+    			.clientSecret( naverClientSecret )
     			.jwkSetUri( "naver" )
     			.build();
     	
@@ -78,7 +82,7 @@ public class SocialConfig {
                     .build();
         }
         
-        throw new IllegalArgumentException( "invalid parameter : " + client );
+        throw new InvalidParameterException( "invalid parameter : " + client );
     }
 	
 }

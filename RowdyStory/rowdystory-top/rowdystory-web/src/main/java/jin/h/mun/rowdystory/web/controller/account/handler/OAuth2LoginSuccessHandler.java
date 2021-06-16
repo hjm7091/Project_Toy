@@ -2,6 +2,7 @@ package jin.h.mun.rowdystory.web.controller.account.handler;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.service.account.social.user.RowdyOAuth2User;
+import jin.h.mun.rowdystory.web.session.SessionDefine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -25,7 +26,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         log.info( "email : {}", rowdyOAuth2User.getOAuth2Attributes().getEmail() );
 
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute( "user", UserDTO.builder().email( rowdyOAuth2User.getOAuth2Attributes().getEmail() ).build() );
+        httpSession.setAttribute( SessionDefine.USER.getName(), UserDTO.builder().email( rowdyOAuth2User.getOAuth2Attributes().getEmail() ).build() );
 
         super.onAuthenticationSuccess( request, response, authentication );
     }

@@ -2,8 +2,8 @@ package jin.h.mun.rowdystory.web.controller.account;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserLoginRequest;
-import jin.h.mun.rowdystory.web.controller.account.session.SessionUser;
 import jin.h.mun.rowdystory.web.controller.home.HomeURL;
+import jin.h.mun.rowdystory.web.session.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

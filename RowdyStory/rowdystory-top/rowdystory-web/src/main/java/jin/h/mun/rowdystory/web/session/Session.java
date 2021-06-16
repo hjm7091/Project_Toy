@@ -1,12 +1,14 @@
-package jin.h.mun.rowdystory.web.controller.account.session;
+package jin.h.mun.rowdystory.web.session;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target( ElementType.PARAMETER )
+@Target( { ElementType.PARAMETER, ElementType.ANNOTATION_TYPE } )
 @Retention( RetentionPolicy.RUNTIME )
-public @interface SessionUser {
+public @interface Session {
+
+    SessionDefine sessionDefine();
 
 }

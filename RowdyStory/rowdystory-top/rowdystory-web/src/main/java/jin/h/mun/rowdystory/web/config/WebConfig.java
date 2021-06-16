@@ -1,6 +1,6 @@
 package jin.h.mun.rowdystory.web.config;
 
-import jin.h.mun.rowdystory.web.controller.account.session.SessionUserArgumentResolver;
+import jin.h.mun.rowdystory.web.session.SessionArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
@@ -14,7 +14,7 @@ import java.util.List;
 @Configuration
 public class WebConfig extends WebMvcConfigurationSupport {
 
-	private final SessionUserArgumentResolver sessionUserArgumentResolver;
+	private final SessionArgumentResolver sessionArgumentResolver;
 	
 	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
 			"classpath:/META-INF/resources/", "classpath:/resources/",
@@ -32,6 +32,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
 
 	@Override
 	protected void addArgumentResolvers( final List<HandlerMethodArgumentResolver> argumentResolvers ) {
-		argumentResolvers.add( sessionUserArgumentResolver );
+		argumentResolvers.add( sessionArgumentResolver );
 	}
 }

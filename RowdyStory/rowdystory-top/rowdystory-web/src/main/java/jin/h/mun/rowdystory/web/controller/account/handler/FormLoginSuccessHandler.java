@@ -1,6 +1,7 @@
 package jin.h.mun.rowdystory.web.controller.account.handler;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
+import jin.h.mun.rowdystory.web.session.SessionDefine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -22,7 +23,7 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         log.info( "email : {}", authentication.getName() );
 
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute( "user", UserDTO.builder().email( authentication.getName() ).build() );
+        httpSession.setAttribute( SessionDefine.USER.getName(), UserDTO.builder().email( authentication.getName() ).build() );
 
         super.onAuthenticationSuccess( request, response, authentication );
     }

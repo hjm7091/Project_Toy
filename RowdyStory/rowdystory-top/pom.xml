@@ -28,7 +28,6 @@
 		<module>rowdystory-dto</module>
 		<module>rowdystory-domain</module>
 		<module>rowdystory-data</module>
-		<module>rowdystory-api</module>
 		<module>rowdystory-exception</module>
 	</modules>
   

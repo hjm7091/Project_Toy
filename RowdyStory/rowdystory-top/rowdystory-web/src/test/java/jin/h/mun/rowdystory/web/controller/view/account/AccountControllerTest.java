@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.web.controller.account;
+package jin.h.mun.rowdystory.web.controller.view.account;
 
 import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
@@ -6,8 +6,11 @@ import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
-import jin.h.mun.rowdystory.web.controller.home.HomeURL;
-import org.junit.jupiter.api.*;
+import jin.h.mun.rowdystory.web.controller.view.home.HomeView;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +48,7 @@ class AccountControllerTest {
         requestBuilder = formLogin()
                 .userParameter( "email" )
                 .passwordParam( "password" )
-                .loginProcessingUrl( AccountURL.ROOT_LOGIN );
+                .loginProcessingUrl( AccountView.ROOT_LOGIN );
 
         initUserData();
     }
@@ -79,10 +82,10 @@ class AccountControllerTest {
     @DisplayName( "세션 정보 없는 경우 /account/login 호출시 login.html 리턴" )
     public void getLoginPageWithNoSession() throws Exception {
         //when
-        mockMvc.perform( get( AccountURL.ROOT_LOGIN ) )
+        mockMvc.perform( get( AccountView.ROOT_LOGIN ) )
 //                .andDo( print() )
                 .andExpect( status().isOk() )
-                .andExpect( view().name( AccountURL.LOGIN ) )
+                .andExpect( view().name( AccountView.LOGIN ) )
                 .andExpect( model().attributeExists( "userLoginRequest" ) );
     }
 
@@ -94,10 +97,10 @@ class AccountControllerTest {
         sessionAttrs.put( "user", UserDTO.builder().email( "test@test.com" ).build() );
 
         //when
-        mockMvc.perform( get( AccountURL.ROOT_LOGIN ).sessionAttrs( sessionAttrs ) )
+        mockMvc.perform( get( AccountView.ROOT_LOGIN ).sessionAttrs( sessionAttrs ) )
 //                .andDo( print() )
                 .andExpect( status().isOk() )
-                .andExpect( view().name( HomeURL.HOME ) );
+                .andExpect( view().name( HomeView.HOME ) );
     }
 
     @Test
@@ -152,7 +155,7 @@ class AccountControllerTest {
         mockMvc.perform( requestBuilder )
 //                .andDo( print() )
                 .andExpect( status().is3xxRedirection() )
-                .andExpect( redirectedUrl( HomeURL.ROOT ) );
+                .andExpect( redirectedUrl( HomeView.ROOT ) );
     }
 
     @Test
@@ -160,18 +163,18 @@ class AccountControllerTest {
     public void loginFailure() throws Exception {
         //given
         String errorMessage = "에러 메시지";
-        String failUrl = "/account/loginFail?message=" + errorMessage;
+        String failUrl = AccountView.ROOT_LOGIN_FAIL + "?message=" + errorMessage;
 
         //when
         mockMvc.perform( post( failUrl ) )
 //                .andDo( print() )
-                .andExpect( view().name( AccountURL.LOGIN ) )
+                .andExpect( view().name( AccountView.LOGIN ) )
                 .andExpect( model().attributeExists( "userLoginRequest" ) )
                 .andExpect( content().string( containsString( errorMessage ) ) );
 
         mockMvc.perform( get( failUrl ) )
 //                .andDo( print() )
-                .andExpect( view().name( AccountURL.LOGIN ) )
+                .andExpect( view().name( AccountView.LOGIN ) )
                 .andExpect( model().attributeExists( "userLoginRequest" ) )
                 .andExpect( content().string( containsString( errorMessage ) ) );
     }

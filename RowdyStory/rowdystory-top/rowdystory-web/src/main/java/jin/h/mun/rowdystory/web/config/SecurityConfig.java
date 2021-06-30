@@ -3,11 +3,12 @@ package jin.h.mun.rowdystory.web.config;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.service.account.rowdy.FormLoginService;
 import jin.h.mun.rowdystory.service.account.social.OAuth2LoginService;
-import jin.h.mun.rowdystory.web.controller.account.AccountURL;
-import jin.h.mun.rowdystory.web.controller.account.handler.LoginFailureHandler;
-import jin.h.mun.rowdystory.web.controller.account.handler.FormLoginSuccessHandler;
-import jin.h.mun.rowdystory.web.controller.account.handler.OAuth2LoginSuccessHandler;
-import jin.h.mun.rowdystory.web.controller.home.HomeURL;
+import jin.h.mun.rowdystory.web.controller.api.account.AccountAPI;
+import jin.h.mun.rowdystory.web.controller.view.account.AccountView;
+import jin.h.mun.rowdystory.web.controller.view.account.handler.LoginFailureHandler;
+import jin.h.mun.rowdystory.web.controller.view.account.handler.FormLoginSuccessHandler;
+import jin.h.mun.rowdystory.web.controller.view.account.handler.OAuth2LoginSuccessHandler;
+import jin.h.mun.rowdystory.web.controller.view.home.HomeView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,14 +44,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .headers().frameOptions().disable() //h2-console을 위한 설정
             .and()
                 .authorizeRequests()
-                    .antMatchers( HomeURL.ROOT, HomeURL.ROOT_HOME ).permitAll()
+                    .antMatchers( HomeView.ROOT, HomeView.ROOT_HOME ).permitAll()
+                    .antMatchers( AccountAPI.BASE + "/**" ).permitAll()
             .and()
                 .authorizeRequests()
                     .antMatchers( "/h2-console/**", "/profile" ).hasAuthority( RoleType.ADMIN.getRoleName() )
                     .antMatchers( "/api/**" ).hasAnyAuthority( RoleType.ADMIN.getRoleName(), RoleType.USER.getRoleName() )
             .and()
                 .formLogin()
-                    .loginPage( AccountURL.ROOT_LOGIN )
+                    .loginPage( AccountView.ROOT_LOGIN )
                     .usernameParameter( "email" )
                     .passwordParameter( "password" )
                     .successHandler( formLoginSuccessHandler )
@@ -58,15 +60,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
             .and()
                 .logout()
-                .logoutUrl( AccountURL.ROOT_LOGOUT )
-                .logoutSuccessUrl( HomeURL.ROOT_HOME )
+                .logoutUrl( AccountView.ROOT_LOGOUT )
+                .logoutSuccessUrl( HomeView.ROOT_HOME )
                 .invalidateHttpSession( true ) // 로그아웃 시 세션정보를 제거할 지 여부를 지정한다. 기본값은 TRUE 이고 세션정보를 제거한다.
             .and()
                 .oauth2Login()
-                    .loginPage( AccountURL.ROOT_LOGIN )
+                    .loginPage( AccountView.ROOT_LOGIN )
                     .authorizationEndpoint().baseUri( "/login/oauth2/authorization/" )
                     .and()
-                        .defaultSuccessUrl( HomeURL.ROOT_HOME )
+                        .defaultSuccessUrl( HomeView.ROOT_HOME )
                         .userInfoEndpoint()
                         .userService( OAuth2LoginService )
                     .and()

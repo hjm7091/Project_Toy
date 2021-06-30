@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.web.controller.account.handler;
+package jin.h.mun.rowdystory.web.controller.view.account.handler;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.web.session.SessionDefine;

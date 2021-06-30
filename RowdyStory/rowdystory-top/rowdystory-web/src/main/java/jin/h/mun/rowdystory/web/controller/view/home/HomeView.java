@@ -1,6 +1,6 @@
-package jin.h.mun.rowdystory.web.controller.home;
+package jin.h.mun.rowdystory.web.controller.view.home;
 
-public class HomeURL {
+public class HomeView {
 
     public static final String ROOT = "/";
     public static final String HOME = "home";

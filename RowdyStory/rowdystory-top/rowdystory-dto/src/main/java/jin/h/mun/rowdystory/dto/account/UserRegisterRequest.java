@@ -1,13 +1,12 @@
 package jin.h.mun.rowdystory.dto.account;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserRegisterRequest {
 
 	@NonNull
@@ -21,11 +20,4 @@ public class UserRegisterRequest {
 	
 	private String picture;
 
-	@Builder
-	public UserRegisterRequest( final String email, final String password, final String userName, final String picture ) {
-		this.email = email;
-		this.password = password;
-		this.userName = userName;
-		this.picture = picture;
-	}
 }

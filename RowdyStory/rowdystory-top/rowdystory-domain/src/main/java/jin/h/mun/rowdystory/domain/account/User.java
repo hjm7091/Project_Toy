@@ -92,11 +92,12 @@ public class User extends BaseTimeField {
 		return this;
 	}
 	
-	public void update( final UserUpdateRequest request ) {
+	public User update( final UserUpdateRequest request ) {
 		changePassword( request.getPassword() );
 		changeUserName( request.getUserName() );
 		changePicture( request.getPicture() );
 		changeRoleType( RoleType.getRoleTypeFrom( request.getRoleType() ) );
+		return this;
 	}
 
 	public boolean isSocialUser() {
@@ -107,7 +108,6 @@ public class User extends BaseTimeField {
 		return UserDTO.builder()
 				.id( this.id )
 				.email( this.email )
-				.password( this.password )
 				.userName( this.userName )
 				.picture( this.picture )
 				.build();

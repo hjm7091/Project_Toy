@@ -79,7 +79,6 @@ public class UserTest {
 
 		//then
 		assertThat( userDTO.getEmail() ).isEqualTo( user.getEmail() );
-		assertThat( userDTO.getPassword() ).isEqualTo( user.getPassword() );
 		assertThat( userDTO.getUserName() ).isEqualTo( user.getUserName() );
 		assertThat( userDTO.getPicture() ).isEqualTo( user.getPicture() );
 	}

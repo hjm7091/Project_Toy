@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.web.controller.home;
+package jin.h.mun.rowdystory.web.controller.view.home;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ class HomeControllerTest {
 
     @Test
     public void home() throws Exception {
-        mockMvc.perform( get( HomeURL.ROOT ) )
+        mockMvc.perform( get( HomeView.ROOT ) )
                 .andExpect( status().isOk() )
-                .andExpect( view().name( HomeURL.HOME ) );
+                .andExpect( view().name( HomeView.HOME ) );
 
-        mockMvc.perform( get( HomeURL.ROOT_HOME ) )
+        mockMvc.perform( get( HomeView.ROOT_HOME ) )
                 .andExpect( status().isOk() )
-                .andExpect( view().name( HomeURL.HOME ) );
+                .andExpect( view().name( HomeView.HOME ) );
     }
 
 }

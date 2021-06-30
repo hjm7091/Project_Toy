@@ -11,7 +11,6 @@ public class UserDTO {
 
     private final Long id;
     private final String email;
-    private final String password;
     private final String userName;
     private final String picture;
 

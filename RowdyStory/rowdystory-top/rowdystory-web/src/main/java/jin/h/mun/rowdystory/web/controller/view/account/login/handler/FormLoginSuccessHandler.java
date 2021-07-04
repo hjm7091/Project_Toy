@@ -1,7 +1,6 @@
-package jin.h.mun.rowdystory.web.controller.view.account.handler;
+package jin.h.mun.rowdystory.web.controller.view.account.login.handler;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.service.account.social.user.RowdyOAuth2User;
 import jin.h.mun.rowdystory.web.session.SessionDefine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -16,17 +15,15 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess( HttpServletRequest request, HttpServletResponse response, Authentication authentication ) throws IOException, ServletException {
 
-        RowdyOAuth2User rowdyOAuth2User = ( RowdyOAuth2User ) authentication.getPrincipal();
-
-        log.info( "email : {}", rowdyOAuth2User.getOAuth2Attributes().getEmail() );
+        log.info( "email : {}", authentication.getName() );
 
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute( SessionDefine.USER.getName(), UserDTO.builder().email( rowdyOAuth2User.getOAuth2Attributes().getEmail() ).build() );
+        httpSession.setAttribute( SessionDefine.USER.getName(), UserDTO.builder().email( authentication.getName() ).build() );
 
         super.onAuthenticationSuccess( request, response, authentication );
     }

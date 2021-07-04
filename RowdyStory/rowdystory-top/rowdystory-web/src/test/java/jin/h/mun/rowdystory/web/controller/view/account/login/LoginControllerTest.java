@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.web.controller.view.account;
+package jin.h.mun.rowdystory.web.controller.view.account.login;
 
 import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
@@ -6,7 +6,10 @@ import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
-import jin.h.mun.rowdystory.web.controller.view.home.HomeView;
+import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
+import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountView;
+import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeMapping;
+import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AccountControllerTest {
+class LoginControllerTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,7 +51,7 @@ class AccountControllerTest {
         requestBuilder = formLogin()
                 .userParameter( "email" )
                 .passwordParam( "password" )
-                .loginProcessingUrl( AccountView.ROOT_LOGIN );
+                .loginProcessingUrl( AccountMapping.LOGIN );
 
         initUserData();
     }
@@ -79,25 +82,31 @@ class AccountControllerTest {
     }
 
     @Test
-    @DisplayName( "세션 정보 없는 경우 /account/login 호출시 login.html 리턴" )
+    @DisplayName( "세션 정보 없는 경우 로그인 페이지 호출시 login.html 리턴" )
     public void getLoginPageWithNoSession() throws Exception {
+        //given
+        String[] attributes = {
+            LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
+            LoginAttributes.FIND_PASSWORD_URI, LoginAttributes.JOIN_URI
+        };
+
         //when
-        mockMvc.perform( get( AccountView.ROOT_LOGIN ) )
+        mockMvc.perform( get( AccountMapping.LOGIN ) )
 //                .andDo( print() )
                 .andExpect( status().isOk() )
                 .andExpect( view().name( AccountView.LOGIN ) )
-                .andExpect( model().attributeExists( "userLoginRequest" ) );
+                .andExpect( model().attributeExists( attributes ) );
     }
 
     @Test
-    @DisplayName( "세션 정보 있는 경우 /account/login 호출시 home.html 리턴" )
+    @DisplayName( "세션 정보 있는 경우 로그인 페이지 호출시 home.html 리턴" )
     public void getLoginPageWithSession() throws Exception {
         //given
         HashMap<String, Object> sessionAttrs = new HashMap<>();
         sessionAttrs.put( "user", UserDTO.builder().email( "test@test.com" ).build() );
 
         //when
-        mockMvc.perform( get( AccountView.ROOT_LOGIN ).sessionAttrs( sessionAttrs ) )
+        mockMvc.perform( get( AccountMapping.LOGIN ).sessionAttrs( sessionAttrs ) )
 //                .andDo( print() )
                 .andExpect( status().isOk() )
                 .andExpect( view().name( HomeView.HOME ) );
@@ -108,7 +117,7 @@ class AccountControllerTest {
     public void doFormLoginWithNonExistEmail() throws Exception {
         //given
         requestBuilder.user( "test@test.com" ).password( "123456" );
-        String expectedUrl = "/account/loginFail?message=" + ErrorMessage.EMAIL_NOT_EXIST.getMessage();
+        String expectedUrl = AccountMapping.LOGIN_FAIL + "?message=" + ErrorMessage.EMAIL_NOT_EXIST.getMessage();
 
         //when
         mockMvc.perform( requestBuilder )
@@ -122,7 +131,7 @@ class AccountControllerTest {
     public void doFormLoginWithSocialAccount() throws Exception {
         //given
         requestBuilder.user( socialUser.getEmail() ).password( socialUser.getPassword() );
-        String expectedUrl = "/account/loginFail?message=" + ErrorMessage.EMAIL_AlREADY_REGISTERED_SOCIAL_ACCOUNT.getMessage();
+        String expectedUrl = AccountMapping.LOGIN_FAIL + "?message=" + ErrorMessage.EMAIL_AlREADY_REGISTERED_SOCIAL_ACCOUNT.getMessage();
 
         //when
         mockMvc.perform( requestBuilder )
@@ -136,7 +145,7 @@ class AccountControllerTest {
     public void doFormLoginWithUnMatchedPassword() throws Exception {
         //given
         requestBuilder.user( formUser.getEmail() ).password( "1111111" );
-        String expectedUrl = "/account/loginFail?message=" + ErrorMessage.PASSWORD_NOT_MATCH.getMessage();
+        String expectedUrl = AccountMapping.LOGIN_FAIL + "?message=" + ErrorMessage.PASSWORD_NOT_MATCH.getMessage();
 
         //when
         mockMvc.perform( requestBuilder )
@@ -155,7 +164,7 @@ class AccountControllerTest {
         mockMvc.perform( requestBuilder )
 //                .andDo( print() )
                 .andExpect( status().is3xxRedirection() )
-                .andExpect( redirectedUrl( HomeView.ROOT ) );
+                .andExpect( redirectedUrl( HomeMapping.ROOT ) );
     }
 
     @Test
@@ -163,19 +172,24 @@ class AccountControllerTest {
     public void loginFailure() throws Exception {
         //given
         String errorMessage = "에러 메시지";
-        String failUrl = AccountView.ROOT_LOGIN_FAIL + "?message=" + errorMessage;
+        String failUrl = AccountMapping.LOGIN_FAIL + "?message=" + errorMessage;
+        String[] attributes = {
+            LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
+            LoginAttributes.FIND_PASSWORD_URI, LoginAttributes.JOIN_URI,
+            LoginAttributes.LOGIN_ERROR_STRING
+        };
 
         //when
         mockMvc.perform( post( failUrl ) )
 //                .andDo( print() )
                 .andExpect( view().name( AccountView.LOGIN ) )
-                .andExpect( model().attributeExists( "userLoginRequest" ) )
+                .andExpect( model().attributeExists( attributes ) )
                 .andExpect( content().string( containsString( errorMessage ) ) );
 
         mockMvc.perform( get( failUrl ) )
 //                .andDo( print() )
                 .andExpect( view().name( AccountView.LOGIN ) )
-                .andExpect( model().attributeExists( "userLoginRequest" ) )
+                .andExpect( model().attributeExists( attributes ) )
                 .andExpect( content().string( containsString( errorMessage ) ) );
     }
 

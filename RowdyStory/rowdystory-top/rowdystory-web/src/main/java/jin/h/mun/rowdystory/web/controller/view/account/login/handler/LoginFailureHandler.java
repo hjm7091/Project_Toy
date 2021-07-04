@@ -1,7 +1,7 @@
-package jin.h.mun.rowdystory.web.controller.view.account.handler;
+package jin.h.mun.rowdystory.web.controller.view.account.login.handler;
 
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
-import jin.h.mun.rowdystory.web.controller.view.account.AccountView;
+import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -27,7 +27,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         if ( e instanceof BadCredentialsException )
             message = ErrorMessage.PASSWORD_NOT_MATCH.getMessage();
 
-        String dispatchURL = AccountView.ROOT_LOGIN_FAIL + "?message=" + message;
+        String dispatchURL = AccountMapping.LOGIN_FAIL + "?message=" + message;
 
         httpServletRequest.getRequestDispatcher( dispatchURL ).forward( httpServletRequest, httpServletResponse );
     }

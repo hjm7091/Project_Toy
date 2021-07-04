@@ -1,5 +1,7 @@
 package jin.h.mun.rowdystory.web.controller.view.home;
 
+import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeMapping;
+import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeView;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,11 +21,11 @@ class HomeControllerTest {
 
     @Test
     public void home() throws Exception {
-        mockMvc.perform( get( HomeView.ROOT ) )
+        mockMvc.perform( get( HomeMapping.ROOT ) )
                 .andExpect( status().isOk() )
                 .andExpect( view().name( HomeView.HOME ) );
 
-        mockMvc.perform( get( HomeView.ROOT_HOME ) )
+        mockMvc.perform( get( HomeMapping.HOME ) )
                 .andExpect( status().isOk() )
                 .andExpect( view().name( HomeView.HOME ) );
     }

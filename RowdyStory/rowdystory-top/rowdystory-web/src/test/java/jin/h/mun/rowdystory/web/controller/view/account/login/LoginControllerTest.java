@@ -8,6 +8,7 @@ import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountView;
+import jin.h.mun.rowdystory.web.controller.view.account.register.RegisterAttributes;
 import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeMapping;
 import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeView;
 import org.junit.jupiter.api.AfterEach;
@@ -87,7 +88,7 @@ class LoginControllerTest {
         //given
         String[] attributes = {
             LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
-            LoginAttributes.FIND_PASSWORD_URI, LoginAttributes.JOIN_URI
+            LoginAttributes.FIND_PASSWORD_URI, RegisterAttributes.REGISTER_URI
         };
 
         //when
@@ -175,7 +176,7 @@ class LoginControllerTest {
         String failUrl = AccountMapping.LOGIN_FAIL + "?message=" + errorMessage;
         String[] attributes = {
             LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
-            LoginAttributes.FIND_PASSWORD_URI, LoginAttributes.JOIN_URI,
+            LoginAttributes.FIND_PASSWORD_URI, RegisterAttributes.REGISTER_URI,
             LoginAttributes.LOGIN_ERROR_STRING
         };
 

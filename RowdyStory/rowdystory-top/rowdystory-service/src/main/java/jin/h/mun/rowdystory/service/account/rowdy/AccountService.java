@@ -33,6 +33,10 @@ public class AccountService {
         return userRepository.findById( id ).map( User::toDTO );
     }
 
+    public boolean checkDuplicate( String email ) {
+        return userRepository.findByEmail( email ).isPresent();
+    }
+
     @Transactional
     public UserDTO register( UserRegisterRequest userRegisterRequest ) throws Exception {
         userRegisterRequest.setPassword( passwordEncoder.encode( userRegisterRequest.getPassword() ) );

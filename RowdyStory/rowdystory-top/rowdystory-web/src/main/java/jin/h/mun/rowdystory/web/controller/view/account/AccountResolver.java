@@ -6,7 +6,7 @@ public class AccountResolver {
         public static final String PREFIX = "account";
         public static final String LOGIN = PREFIX + "/login";
         public static final String FIND_PASSWORD = PREFIX + "/findPassword";
-        public static final String JOIN = PREFIX + "/join";
+        public static final String REGISTER = PREFIX + "/register";
     }
 
     public static class AccountMapping {
@@ -15,7 +15,7 @@ public class AccountResolver {
         public static final String LOGIN_FAIL = PREFIX + "/loginFail";
         public static final String LOGOUT = PREFIX + "/logout";
         public static final String FIND_PASSWORD = PREFIX + "/findPassword";
-        public static final String JOIN = PREFIX + "/join";
+        public static final String REGISTER = PREFIX + "/register";
     }
 
 }

@@ -136,4 +136,19 @@ class AccountServiceTest {
         assertThat( accountService.delete( 1L ) ).isTrue();
         assertThat( accountService.delete( 2L ) ).isFalse();
     }
+
+    @Test
+    @DisplayName( "이메일 중복 테스트" )
+    public void checkDuplicate() {
+        //given
+        String email = "jin@test.com";
+        User user = User.builder().email( email ).build();
+
+        //when
+        when( userRepository.findByEmail( email ) ).thenReturn( Optional.of( user ) );
+
+        //then
+        assertThat( accountService.checkDuplicate( email ) ).isTrue();
+        assertThat( accountService.checkDuplicate( "jin111@test.com" ) ).isFalse();
+    }
 }

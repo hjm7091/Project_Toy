@@ -20,14 +20,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-public class AccountApiController {
+public class AccountCURDController {
 
     private final AccountService accountService;
 
     @PostMapping( produces = MediaTypes.HAL_JSON_VALUE, consumes = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<UserDTO> register( @RequestBody UserRegisterRequest userRegisterRequest ) throws Exception {
         UserDTO userDTO = accountService.register( userRegisterRequest );
-        URI uri = linkTo( AccountApiController.class ).slash( userDTO.getId() ).toUri();
+        URI uri = linkTo( AccountCURDController.class ).slash( userDTO.getId() ).toUri();
         return ResponseEntity.created( uri ).body( userDTO );
     }
 

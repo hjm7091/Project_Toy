@@ -2,6 +2,7 @@ package jin.h.mun.rowdystory.web.controller.view.account.login;
 
 import jin.h.mun.rowdystory.dto.account.UserLoginRequest;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
+import jin.h.mun.rowdystory.web.controller.view.account.register.RegisterAttributes;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 public class LoginAttributes {
@@ -10,7 +11,6 @@ public class LoginAttributes {
     public static final String LOGIN_URI = "login";
     public static final String LOGIN_ERROR_STRING = "loginError";
     public static final String FIND_PASSWORD_URI = "findPassword";
-    public static final String JOIN_URI = "join";
 
     @ModelAttribute( LOGIN_REQUEST_OBJECT )
     public final UserLoginRequest loginRequest() {
@@ -18,13 +18,13 @@ public class LoginAttributes {
     }
 
     @ModelAttribute( LOGIN_URI )
-    public final String login() {
+    public final String loginUri() {
         return AccountMapping.LOGIN;
     }
 
     @ModelAttribute( FIND_PASSWORD_URI )
-    public final String findPassword() { return AccountMapping.FIND_PASSWORD; }
+    public final String findPasswordUri() { return AccountMapping.FIND_PASSWORD; }
 
-    @ModelAttribute( JOIN_URI )
-    public final String signUp() { return AccountMapping.JOIN; }
+    @ModelAttribute( RegisterAttributes.REGISTER_URI )
+    public final String registerUri() { return AccountMapping.REGISTER; }
 }

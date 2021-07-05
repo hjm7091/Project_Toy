@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="utf-8">
+    <title>Rowdy Story</title>
+</head>
+<body>
+    <div th:replace="common/header :: header"></div>
+
+    <section class="container section" style="margin-top: 120px;">
+        <div class="row">
+            <div class="col-8 mx-auto my-5 py-4 border">
+                <h5 class="ml-2"><strong>회원가입</strong></h5>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <form role="form" th:action="@{${register}}" th:object="${registerRequest}" method="post">
+                            <div class="form-row col-12">
+                                <label for="inputEmail"><strong>이메일 주소</strong></label>
+                                <div class="input-group">
+                                    <input type="text" th:field="*{email}" class="form-control" id="inputEmail" autocomplete="off" placeholder="이메일 주소를 입력해주세요.">
+                                    <div class="input-group-prepend">
+                                            <span class="input-group-text" id="addonEmail">
+                                                <svg class="bi bi-envelope" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                  <path fill-rule="evenodd" d="M14 3H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
+                                                  <path d="M.05 3.555C.017 3.698 0 3.847 0 4v.697l5.803 3.546L0 11.801V12c0 .306.069.596.192.856l6.57-4.027L8 9.586l1.239-.757 6.57 4.027c.122-.26.191-.55.191-.856v-.2l-5.803-3.557L16 4.697V4c0-.153-.017-.302-.05-.445L8 8.414.05 3.555z"/>
+                                                </svg>
+                                            </span>
+                                    </div>
+                                    <div id="alertEmail"></div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form-row col-12">
+                                <label for="inputName"><strong>이름</strong></label>
+                                <div class="input-group">
+                                    <input type="text" th:field="*{userName}" class="form-control" id="inputName" autocomplete="off" placeholder="닉네임을 입력해주세요.">
+                                    <div class="input-group-prepend">
+                                            <span class="input-group-text" id="addonName">
+                                                <svg class="bi bi-person" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M13 14s1 0 1-1-1-4-6-4-6 3-6 4 1 1 1 1h10zm-9.995-.944v-.002.002zM3.022 13h9.956a.274.274 0 0 0 .014-.002l.008-.002c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664a1.05 1.05 0 0 0 .022.004zm9.974.056v-.002.002zM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                                </svg>
+                                            </span>
+                                    </div>
+                                    <div id="alertName"></div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form-row col-12">
+                                <label for="inputPassword"><strong>비밀번호</strong></label>
+                                <div class="input-group">
+                                    <input type="password" th:field="*{password}" class="form-control" id="inputPassword" autocomplete="off" placeholder="비밀번호는 최소 6자 이상입니다.">
+                                    <div class="input-group-prepend">
+                                            <span class="input-group-text" id="addonPassword">
+                                                <svg class="bi bi-lock" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M11.5 8h-7a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1zm-7-1a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7zm0-3a3.5 3.5 0 1 1 7 0v3h-1V4a2.5 2.5 0 0 0-5 0v3h-1V4z"/>
+                                                </svg>
+                                            </span>
+                                    </div>
+                                    <div id="alertPassword"></div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form-row col-12">
+                                <label for="inputPasswordConfirm"><strong>비밀번호 확인</strong></label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="inputPasswordConfirm" autocomplete="off" placeholder="비밀번호는 최소 6자 이상입니다.">
+                                    <div class="input-group-prepend">
+                                            <span class="input-group-text" id="addonPasswordConfirm">
+                                                <svg class="bi bi-lock" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M11.5 8h-7a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1zm-7-1a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7zm0-3a3.5 3.5 0 1 1 7 0v3h-1V4a2.5 2.5 0 0 0-5 0v3h-1V4z"/>
+                                                </svg>
+                                            </span>
+                                    </div>
+                                    <div id="alertPasswordConfirm"></div>
+                                </div>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-info float-right mr-3" id="registerBtn" disabled>가입</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="common/footer :: footer"></div>
+    <script th:src="@{/custom/js/account/register.js}"></script>
+
+</body>
+</html>

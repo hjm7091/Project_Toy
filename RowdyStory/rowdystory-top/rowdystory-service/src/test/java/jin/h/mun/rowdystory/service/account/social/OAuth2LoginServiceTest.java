@@ -105,7 +105,7 @@ class OAuth2LoginServiceTest {
     }
 
     @Test
-    @DisplayName( "동일한 계정으로 소셜 로그인 재시도시 필드가 없데이트 된다. " )
+    @DisplayName( "동일한 계정으로 소셜 로그인 재시도시 필드가 업데이트 된다. " )
     public void retryOauth2LoginWithSameSocialAndSameEmail() {
         //given
         String userNameBefore = "jin", pictureBefore = "picture1";

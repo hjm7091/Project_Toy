@@ -6,12 +6,14 @@ import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
+import jin.h.mun.rowdystory.web.controller.attributes.account.LoginAttributes;
+import jin.h.mun.rowdystory.web.controller.attributes.home.HomeAttributes;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountView;
-import jin.h.mun.rowdystory.web.controller.view.account.register.RegisterAttributes;
+import jin.h.mun.rowdystory.web.controller.attributes.account.PasswordAttributes;
+import jin.h.mun.rowdystory.web.controller.attributes.account.RegisterAttributes;
 import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeMapping;
 import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeView;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 
@@ -32,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class LoginControllerTest {
 
     @Autowired
@@ -76,19 +80,14 @@ class LoginControllerTest {
         userRepository.save( socialUser );
     }
 
-    @AfterEach
-    public void tearDown() {
-        userRepository.delete( formUser );
-        userRepository.delete( socialUser );
-    }
-
     @Test
     @DisplayName( "세션 정보 없는 경우 로그인 페이지 호출시 login.html 리턴" )
     public void getLoginPageWithNoSession() throws Exception {
         //given
         String[] attributes = {
             LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
-            LoginAttributes.FIND_PASSWORD_URI, RegisterAttributes.REGISTER_URI
+            PasswordAttributes.PASSWORD_URI, RegisterAttributes.REGISTER_URI,
+            HomeAttributes.HOME_URI
         };
 
         //when
@@ -176,8 +175,8 @@ class LoginControllerTest {
         String failUrl = AccountMapping.LOGIN_FAIL + "?message=" + errorMessage;
         String[] attributes = {
             LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
-            LoginAttributes.FIND_PASSWORD_URI, RegisterAttributes.REGISTER_URI,
-            LoginAttributes.LOGIN_ERROR_STRING
+            PasswordAttributes.PASSWORD_URI, RegisterAttributes.REGISTER_URI,
+            LoginAttributes.LOGIN_ERROR_STRING, HomeAttributes.HOME_URI
         };
 
         //when

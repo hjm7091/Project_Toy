@@ -3,6 +3,7 @@ package jin.h.mun.rowdystory.web.controller.view.account.register;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.service.account.rowdy.AccountService;
+import jin.h.mun.rowdystory.web.controller.attributes.account.RegisterAttributes;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountView;
 import lombok.RequiredArgsConstructor;

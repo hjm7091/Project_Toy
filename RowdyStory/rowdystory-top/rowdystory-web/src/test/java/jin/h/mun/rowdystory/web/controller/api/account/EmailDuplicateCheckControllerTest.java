@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class EmailDuplicateCheckControllerTest {
 
     @Autowired
@@ -26,9 +27,8 @@ class EmailDuplicateCheckControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-//    @Test
+    @Test
     @DisplayName( "존재하는 이메일로 요청시 결과는 true" )
-    @Rollback( value = true )
     public void checkWithDuplicateEmail() throws Exception {
         //given
         User jin = User.builder()

@@ -1,10 +1,10 @@
-package jin.h.mun.rowdystory.web.controller.view.account.register;
+package jin.h.mun.rowdystory.web.controller.attributes.account;
 
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
-import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
+import jin.h.mun.rowdystory.web.controller.attributes.common.HeaderAttributes;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-public class RegisterAttributes {
+public class RegisterAttributes extends HeaderAttributes {
 
     public static final String REGISTER_REQUEST_OBJECT = "registerRequest";
     public static final String REGISTER_URI = "register";
@@ -12,10 +12,5 @@ public class RegisterAttributes {
     @ModelAttribute( REGISTER_REQUEST_OBJECT )
     public UserRegisterRequest registerRequest() {
         return new UserRegisterRequest();
-    }
-
-    @ModelAttribute( REGISTER_URI )
-    public String registerUri() {
-        return AccountMapping.REGISTER;
     }
 }

@@ -1,6 +1,7 @@
 package jin.h.mun.rowdystory.web.controller.view.account.login;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
+import jin.h.mun.rowdystory.web.controller.attributes.account.LoginAttributes;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
 import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountView;
 import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeView;

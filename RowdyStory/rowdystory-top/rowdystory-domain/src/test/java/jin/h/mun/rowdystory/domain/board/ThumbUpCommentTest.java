@@ -43,7 +43,6 @@ public class ThumbUpCommentTest {
 				.email( "jin@naver.com" )
 				.password( "1234" )
 				.userName( "jin" )
-				.picture( "picture1" )
 				.build() );
 		
 		//jin의 게시물

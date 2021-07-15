@@ -17,7 +17,5 @@ public class UserRegisterRequest {
 
 	@NonNull
 	private String userName;
-	
-	private String picture;
 
 }

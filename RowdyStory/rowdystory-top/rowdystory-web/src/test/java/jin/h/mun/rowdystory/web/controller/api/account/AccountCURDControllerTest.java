@@ -36,14 +36,13 @@ class AccountCURDControllerTest {
     private UserRepository userRepository;
 
     @Test
-    @DisplayName( "회원 가입" )
-    public void register() throws Exception {
+    @DisplayName( "회원 가입 (중복되지 않는 이메일)" )
+    public void registerWithUniqueEmail() throws Exception {
         //given
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
                 .email( "test@naver.com" )
                 .password( "1234" )
                 .userName( "test" )
-                .picture( "picture1" )
                 .build();
 
         //when
@@ -59,7 +58,25 @@ class AccountCURDControllerTest {
         UserDTO user = objectMapper.readValue( mvcResult.getResponse().getContentAsString(), User.class ).toDTO();
         assertThat( user.getEmail() ).isEqualTo( userRegisterRequest.getEmail() );
         assertThat( user.getUserName() ).isEqualTo( userRegisterRequest.getUserName() );
-        assertThat( user.getPicture() ).isEqualTo( userRegisterRequest.getPicture() );
+    }
+
+    @Test
+    @DisplayName( "회원 가입 (중복된 이메일)" )
+    public void registerWithNonUniqueEmail() throws Exception {
+        //given
+        userRepository.save( User.builder().email( "jin@test.com" ).build() );
+        UserRegisterRequest jin = UserRegisterRequest.builder()
+                .email( "jin@test.com" )
+                .password( "1234" )
+                .userName( "admin" ).build();
+
+        //when
+        mockMvc.perform( post( AccountAPI.BASE )
+                .accept( MediaTypes.HAL_JSON_VALUE )
+                .contentType( MediaTypes.HAL_JSON_VALUE )
+                .content( objectMapper.writeValueAsString( jin ) ) )
+//                .andDo( print() )
+                .andExpect( status().is5xxServerError() );
     }
 
     @Test
@@ -67,7 +84,7 @@ class AccountCURDControllerTest {
     public void getAll() throws Exception {
         mockMvc.perform( get( AccountAPI.BASE )
                 .accept( MediaTypes.HAL_JSON_VALUE ))
-                .andDo( print() )
+//                .andDo( print() )
                 .andExpect( status().isOk() );
     }
 
@@ -76,7 +93,7 @@ class AccountCURDControllerTest {
     public void getByValidId() throws Exception {
         mockMvc.perform( get( AccountAPI.BASE + "/{id}", 1L )
                 .accept( MediaTypes.HAL_JSON_VALUE ))
-                .andDo( print() )
+//                .andDo( print() )
                 .andExpect( status().isOk() );
     }
 
@@ -85,7 +102,7 @@ class AccountCURDControllerTest {
     public void getByInValidId() throws Exception {
         mockMvc.perform( get( AccountAPI.BASE + "/{id}", -1L )
                 .accept( MediaTypes.HAL_JSON_VALUE ))
-                .andDo( print() )
+//                .andDo( print() )
                 .andExpect( status().isNotFound() );
     }
 
@@ -105,7 +122,7 @@ class AccountCURDControllerTest {
                 .accept( MediaTypes.HAL_JSON_VALUE )
                 .contentType( MediaTypes.HAL_JSON_VALUE )
                 .content( objectMapper.writeValueAsString( userUpdateRequest ) ) )
-                .andDo( print() )
+//                .andDo( print() )
                 .andExpect( status().isOk() );
     }
 
@@ -123,25 +140,42 @@ class AccountCURDControllerTest {
                 .accept( MediaTypes.HAL_JSON_VALUE )
                 .contentType( MediaTypes.HAL_JSON_VALUE )
                 .content( objectMapper.writeValueAsString( userUpdateRequest ) ) )
-                .andDo( print() )
+//                .andDo( print() )
                 .andExpect( status().isNotFound() );
     }
 
     @Test
     @DisplayName( "회원 삭제 (유효한 id)" )
     public void deleteByValidId() throws Exception {
-        mockMvc.perform( delete( AccountAPI.BASE + "/{id}", 1L )
-                .accept( MediaTypes.HAL_JSON_VALUE ))
-                .andDo( print() )
-                .andExpect( status().isOk() );
+        //given
+        User savedUser = userRepository.save( User.builder().email( "jin@test.com" ).build() );
+
+        //when
+        MvcResult mvcResult = mockMvc.perform( delete( AccountAPI.BASE + "/{id}", savedUser.getId() )
+                .accept( MediaTypes.HAL_JSON_VALUE ) )
+//                .andDo( print() )
+                .andExpect( status().isOk() )
+                .andReturn();
+        boolean result = Boolean.parseBoolean( mvcResult.getResponse().getContentAsString() );
+
+        assertThat( result ).isTrue();
     }
 
     @Test
     @DisplayName( "회원 삭제 (유효하지 않은 id)" )
     public void deleteByInValidId() throws Exception {
-        mockMvc.perform( delete( AccountAPI.BASE + "/{id}", -1L )
+        //given
+        Long invalidId = -1L;
+
+        //when
+        MvcResult mvcResult = mockMvc.perform( delete( AccountAPI.BASE + "/{id}", invalidId )
                 .accept( MediaTypes.HAL_JSON_VALUE ))
-                .andDo( print() )
-                .andExpect( status().isNotFound() );
+//                .andDo( print() )
+                .andExpect( status().isOk() )
+                .andReturn();
+        boolean result = Boolean.parseBoolean( mvcResult.getResponse().getContentAsString() );
+
+        //then
+        assertThat( result ).isFalse();
     }
 }

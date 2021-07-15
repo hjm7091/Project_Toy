@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.web.session;
+package jin.h.mun.rowdystory.web.resolver.session;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import lombok.Getter;

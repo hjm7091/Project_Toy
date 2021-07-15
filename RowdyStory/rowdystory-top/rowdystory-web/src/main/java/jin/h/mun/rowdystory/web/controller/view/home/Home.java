@@ -1,6 +1,6 @@
 package jin.h.mun.rowdystory.web.controller.view.home;
 
-public class HomeResolver {
+public class Home {
 
     public static class HomeView {
         public static final String HOME = "home";

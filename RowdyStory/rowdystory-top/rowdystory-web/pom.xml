@@ -60,6 +60,13 @@
 			<version>1.5.7</version>
 		</dependency>
 
+		<!-- https://github.com/ronmamo/reflections -->
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.12</version>
+		</dependency>
+
 		<!-- rowdystory dependencies -->
 		<dependency>
 			<groupId>jin.h.mun</groupId>

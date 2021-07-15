@@ -2,7 +2,7 @@ package jin.h.mun.rowdystory.web.controller.view.account.login.handler;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.service.account.social.user.RowdyOAuth2User;
-import jin.h.mun.rowdystory.web.session.SessionDefine;
+import jin.h.mun.rowdystory.web.resolver.session.SessionDefine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;

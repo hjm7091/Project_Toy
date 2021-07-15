@@ -6,14 +6,11 @@ import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
-import jin.h.mun.rowdystory.web.controller.attributes.account.LoginAttributes;
-import jin.h.mun.rowdystory.web.controller.attributes.home.HomeAttributes;
-import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
-import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountView;
-import jin.h.mun.rowdystory.web.controller.attributes.account.PasswordAttributes;
-import jin.h.mun.rowdystory.web.controller.attributes.account.RegisterAttributes;
-import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeMapping;
-import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeView;
+import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountMapping;
+import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountView;
+import jin.h.mun.rowdystory.web.controller.view.attribute.ModelAttribute;
+import jin.h.mun.rowdystory.web.controller.view.home.Home.HomeMapping;
+import jin.h.mun.rowdystory.web.controller.view.home.Home.HomeView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 
+import static jin.h.mun.rowdystory.web.controller.view.attribute.AttributeKeyAndValueForView.LOGIN_ERROR_MESSAGE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -84,11 +82,7 @@ class LoginControllerTest {
     @DisplayName( "세션 정보 없는 경우 로그인 페이지 호출시 login.html 리턴" )
     public void getLoginPageWithNoSession() throws Exception {
         //given
-        String[] attributes = {
-            LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
-            PasswordAttributes.PASSWORD_URI, RegisterAttributes.REGISTER_URI,
-            HomeAttributes.HOME_URI
-        };
+        String[] attributes = ModelAttribute.of( AccountView.LOGIN ).keySet().toArray( new String[0] );
 
         //when
         mockMvc.perform( get( AccountMapping.LOGIN ) )
@@ -173,23 +167,21 @@ class LoginControllerTest {
         //given
         String errorMessage = "에러 메시지";
         String failUrl = AccountMapping.LOGIN_FAIL + "?message=" + errorMessage;
-        String[] attributes = {
-            LoginAttributes.LOGIN_REQUEST_OBJECT, LoginAttributes.LOGIN_URI,
-            PasswordAttributes.PASSWORD_URI, RegisterAttributes.REGISTER_URI,
-            LoginAttributes.LOGIN_ERROR_STRING, HomeAttributes.HOME_URI
-        };
+        String[] attributes = ModelAttribute.of( AccountView.LOGIN ).keySet().toArray( new String[0] );
 
         //when
         mockMvc.perform( post( failUrl ) )
 //                .andDo( print() )
                 .andExpect( view().name( AccountView.LOGIN ) )
                 .andExpect( model().attributeExists( attributes ) )
+                .andExpect( model().attributeExists( LOGIN_ERROR_MESSAGE.key ) )
                 .andExpect( content().string( containsString( errorMessage ) ) );
 
         mockMvc.perform( get( failUrl ) )
 //                .andDo( print() )
                 .andExpect( view().name( AccountView.LOGIN ) )
                 .andExpect( model().attributeExists( attributes ) )
+                .andExpect( model().attributeExists( LOGIN_ERROR_MESSAGE.key ) )
                 .andExpect( content().string( containsString( errorMessage ) ) );
     }
 

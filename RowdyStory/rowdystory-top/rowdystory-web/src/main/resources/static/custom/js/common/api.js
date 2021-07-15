@@ -1,0 +1,1 @@
+var ACCOUNT_API = "/api/v1/accounts";

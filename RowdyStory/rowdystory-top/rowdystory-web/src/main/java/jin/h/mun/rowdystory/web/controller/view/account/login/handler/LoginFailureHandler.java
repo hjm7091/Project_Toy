@@ -1,7 +1,7 @@
 package jin.h.mun.rowdystory.web.controller.view.account.login.handler;
 
 import jin.h.mun.rowdystory.exception.account.ErrorMessage;
-import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
+import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;

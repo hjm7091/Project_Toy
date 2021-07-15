@@ -1,11 +1,8 @@
 package jin.h.mun.rowdystory.web.controller.view.account.password;
 
-import jin.h.mun.rowdystory.web.controller.attributes.account.LoginAttributes;
-import jin.h.mun.rowdystory.web.controller.attributes.account.PasswordAttributes;
-import jin.h.mun.rowdystory.web.controller.attributes.account.RegisterAttributes;
-import jin.h.mun.rowdystory.web.controller.attributes.home.HomeAttributes;
-import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountMapping;
-import jin.h.mun.rowdystory.web.controller.view.account.AccountResolver.AccountView;
+import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountMapping;
+import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountView;
+import jin.h.mun.rowdystory.web.controller.view.attribute.ModelAttribute;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +26,7 @@ class PasswordControllerTest {
     @DisplayName( "비밀 번호 찾기 페이지 호출시 password.html 리턴" )
     public void getPasswordPage() throws Exception {
         //given
-        String[] attributes = {
-            PasswordAttributes.PASSWORD_REQUEST_OBJECT, PasswordAttributes.PASSWORD_URI,
-            LoginAttributes.LOGIN_URI, RegisterAttributes.REGISTER_URI, HomeAttributes.HOME_URI
-        };
+        String[] attributes = ModelAttribute.of( AccountView.PASSWORD ).keySet().toArray( new String[0] );
 
         //when
         mockMvc.perform( get( AccountMapping.PASSWORD ) )

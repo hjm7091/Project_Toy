@@ -22,6 +22,9 @@ import java.util.List;
 	name = "tbUser",
 	uniqueConstraints = {
 		@UniqueConstraint( columnNames = { "userEmail" } )
+	},
+	indexes = {
+		@Index( name = "i_userEmail", columnList = "userEmail" )
 	}
 )
 public class User extends BaseTimeField {
@@ -57,7 +60,6 @@ public class User extends BaseTimeField {
 		this.email = request.getEmail();
 		this.password = request.getPassword();
 		this.userName = request.getUserName();
-		this.picture = request.getPicture();
 		this.roleType = RoleType.USER;
 	}
 	

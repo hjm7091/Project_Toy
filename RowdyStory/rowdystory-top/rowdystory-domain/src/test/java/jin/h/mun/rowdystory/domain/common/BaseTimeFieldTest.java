@@ -33,7 +33,6 @@ class BaseTimeFieldTest {
                 .email( "hjm7091@naver.com" )
                 .password( "1234" )
                 .userName( "jin" )
-                .picture( "picture1" )
                 .build() );
     }
 

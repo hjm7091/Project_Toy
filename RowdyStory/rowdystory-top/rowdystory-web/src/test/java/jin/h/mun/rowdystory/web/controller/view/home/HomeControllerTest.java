@@ -1,10 +1,8 @@
 package jin.h.mun.rowdystory.web.controller.view.home;
 
-import jin.h.mun.rowdystory.web.controller.attributes.account.LoginAttributes;
-import jin.h.mun.rowdystory.web.controller.attributes.account.RegisterAttributes;
-import jin.h.mun.rowdystory.web.controller.attributes.home.HomeAttributes;
-import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeMapping;
-import jin.h.mun.rowdystory.web.controller.view.home.HomeResolver.HomeView;
+import jin.h.mun.rowdystory.web.controller.view.home.Home.HomeMapping;
+import jin.h.mun.rowdystory.web.controller.view.home.Home.HomeView;
+import jin.h.mun.rowdystory.web.controller.view.attribute.ModelAttribute;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,21 +22,18 @@ class HomeControllerTest {
     @Test
     public void home() throws Exception {
         //given
-        String[] attributes = {
-            HomeAttributes.HOME_URI, LoginAttributes.LOGIN_URI,
-            RegisterAttributes.REGISTER_URI
-        };
+        String[] attributeKeys = ModelAttribute.of( HomeView.HOME ).keySet().toArray( new String[0] );
 
         //when
         mockMvc.perform( get( HomeMapping.ROOT ) )
                 .andExpect( status().isOk() )
                 .andExpect( view().name( HomeView.HOME ) )
-                .andExpect( model().attributeExists( attributes ) );
+                .andExpect( model().attributeExists( attributeKeys ) );
 
         mockMvc.perform( get( HomeMapping.HOME ) )
                 .andExpect( status().isOk() )
                 .andExpect( view().name( HomeView.HOME ) )
-                .andExpect( model().attributeExists( attributes ) );
+                .andExpect( model().attributeExists( attributeKeys ) );
     }
 
 }

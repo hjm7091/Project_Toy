@@ -5,7 +5,7 @@ var index = {
             _this.validateEmail();
             _this.activateButton();
         });
-        $("#inputName").on("change keyup paste", function() {
+        $("#inputUserName").on("change keyup paste", function() {
             _this.validateName();
             _this.activateButton();
         });
@@ -17,9 +17,12 @@ var index = {
             _this.validatePasswordConfirm();
             _this.activateButton();
         });
-        $("#registerBtn").on("click", function(e) {
+        $("#registerBtn").on("click", function() {
 //            _this.loadButton();
-            _this.register(e);
+            _this.register();
+        });
+        $("#registerForm").bind("submit", function(e) {
+            util.preventEvent(e);
         });
     },
     validateEmail : function() {
@@ -38,28 +41,15 @@ var index = {
     },
     validateName : function() {
         var _this = this;
-        var name = $("#inputName").val();
+        var name = $("#inputUserName").val();
         if(name == "") {
-            _this.emptyAction("#inputName", "#alertName");
+            _this.emptyAction("#inputUserName", "#alertName");
             return;
         }
         if(name.length < 3) {
-            _this.invalidAction("#inputName", "#alertName", "닉네임을 3자 이상 입력해주세요.");
+            _this.invalidAction("#inputUserName", "#alertName", "닉네임을 3자 이상 입력해주세요.");
         } else {
-            $.ajax({
-                type: "GET",
-                url: "/api/v1/users/checkName",
-                data: { name: name },
-            }).done(function(duplicate) {
-                if(!duplicate) {
-                    _this.validAction("#inputName", "#alertName");
-                } else {
-                    _this.invalidAction("#inputName", "#alertName", "중복된 닉네임이 존재합니다.");
-                }
-                _this.activateButton();
-            }).fail(function(error) {
-                alert(JSON.stringify(error));
-            });
+            _this.validAction("#inputUserName", "#alertName");
         }
     },
     validatePassword : function() {
@@ -128,12 +118,12 @@ var index = {
         $(divId).html(`<strong>${message}</strong>`);
     },
     activateButton : function() {
-        if($("#inputEmail").hasClass("is-valid") && $("#inputName").hasClass("is-valid")
+        if($("#inputEmail").hasClass("is-valid") && $("#inputUserName").hasClass("is-valid")
             && $("#inputPassword").hasClass("is-valid") && $("#inputPasswordConfirm").hasClass("is-valid")) {
             $("#registerBtn").attr("disabled", false);
             return;
         }
-        if($("#inputEmail").hasClass("is-invalid") || $("#inputName").hasClass("is-invalid")
+        if($("#inputEmail").hasClass("is-invalid") || $("#inputUserName").hasClass("is-invalid")
             || $("#inputPassword").hasClass("is-invalid") || $("#inputPasswordConfirm").hasClass("is-invalid")) {
             $("#registerBtn").attr("disabled", true);
             return;
@@ -141,27 +131,39 @@ var index = {
     },
     checkDuplicate : function(email) {
         var _this = this;
-        $.ajax({
-            type: "GET",
-            contentType: 'application/hal+json',
-            url: "/api/v1/accounts",
-            data: { email: email }
-        }).done(function(duplicate) {
+
+        var data = { email : email };
+
+        var success = function(duplicate) {
             if(!duplicate) {
                 _this.validAction("#inputEmail", "#alertEmail");
             } else {
                 _this.invalidAction("#inputEmail", "#alertEmail", "중복된 이메일이 존재합니다.");
             }
             _this.activateButton();
-        }).fail(function(error) {
-            alert(JSON.stringify(error));
-        });
+        }
+
+        account.getByEmail(data, success, util.error);
     },
     loadButton : function() {
         $("#registerBtn").html("<span class='spinner-border spinner-border-sm' role='status'></span> 인증 이메일을 보내는중...");
     },
-    register : function(e) {
-        console.log(e);
+    register : function() {
+        var data = {
+            "email" : $("#inputEmail").val(),
+            "password" : $("#inputPassword").val(),
+            "userName" : $("#inputUserName").val(),
+        };
+
+        var result = account.register(JSON.stringify(data), function(user) {
+            if(user) {
+                alert("회원 가입 성공");
+                window.location = result.getResponseHeader("Location");
+            } else {
+                alert("회원 가입 실패");
+                location.reload();
+            }
+        }, util.error);
     }
 };
 

@@ -1,6 +1,6 @@
 package jin.h.mun.rowdystory.web.controller.view.account;
 
-public class AccountResolver {
+public class Account {
 
     public static class AccountView {
         public static final String PREFIX = "account";

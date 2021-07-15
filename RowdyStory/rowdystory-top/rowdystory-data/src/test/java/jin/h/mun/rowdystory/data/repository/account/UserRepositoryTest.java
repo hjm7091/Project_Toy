@@ -32,7 +32,6 @@ public class UserRepositoryTest {
                 .email( userEmail )
                 .password( "1234" )
                 .userName( "jin" )
-                .picture( "picture1" )
                 .build() );
         testEntityManager.persist( user );
 

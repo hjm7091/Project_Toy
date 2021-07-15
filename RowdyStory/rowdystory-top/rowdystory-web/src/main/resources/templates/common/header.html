@@ -12,8 +12,8 @@
             <div class="col-12">
                 <div class="text-right">
                     <ul class="list-inline my-2" th:if="${session.user == null}">
-                        <li class="list-inline-item"><a class="text-dark" th:href="@{${login}}">로그인</a></li>
-                        <li class="list-inline-item"><a class="text-dark" th:href="@{${register}}">회원가입</a></li>
+                        <li class="list-inline-item"><a class="text-dark" th:href="@{${login_url}}">로그인</a></li>
+                        <li class="list-inline-item"><a class="text-dark" th:href="@{${register_url}}">회원가입</a></li>
                     </ul>
                     <ul class="list-inline my-2" th:if="${session.user != null}">
                         <li class="list-inline-item">
@@ -46,7 +46,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" th:href="@{${home}}">Rowdy Story</a>
+            <a class="navbar-brand" th:href="@{${home_url}}">Rowdy Story</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars">
                 <span class="navbar-toggler-icon"></span>
             </button>

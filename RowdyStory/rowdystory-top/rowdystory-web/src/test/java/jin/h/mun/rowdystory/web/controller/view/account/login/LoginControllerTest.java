@@ -11,6 +11,7 @@ import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountView;
 import jin.h.mun.rowdystory.web.controller.view.attribute.ModelAttribute;
 import jin.h.mun.rowdystory.web.controller.view.home.Home.HomeMapping;
 import jin.h.mun.rowdystory.web.controller.view.home.Home.HomeView;
+import jin.h.mun.rowdystory.web.resolver.session.SessionDefine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ class LoginControllerTest {
 
     @Test
     @DisplayName( "세션 정보 없는 경우 로그인 페이지 호출시 login.html 리턴" )
-    public void getLoginPageWithNoSession() throws Exception {
+    public void getLoginPageWithoutSession() throws Exception {
         //given
         String[] attributes = ModelAttribute.of( AccountView.LOGIN ).keySet().toArray( new String[0] );
 
@@ -88,8 +89,8 @@ class LoginControllerTest {
         mockMvc.perform( get( AccountMapping.LOGIN ) )
 //                .andDo( print() )
                 .andExpect( status().isOk() )
-                .andExpect( view().name( AccountView.LOGIN ) )
-                .andExpect( model().attributeExists( attributes ) );
+                .andExpect( model().attributeExists( attributes ) )
+                .andExpect( view().name( AccountView.LOGIN ) );
     }
 
     @Test
@@ -97,12 +98,14 @@ class LoginControllerTest {
     public void getLoginPageWithSession() throws Exception {
         //given
         HashMap<String, Object> sessionAttrs = new HashMap<>();
-        sessionAttrs.put( "user", UserDTO.builder().email( "test@test.com" ).build() );
+        sessionAttrs.put( SessionDefine.USER.getName(), UserDTO.builder().email( "test@test.com" ).build() );
+        String[] attributes = ModelAttribute.of( HomeView.HOME ).keySet().toArray( new String[0] );
 
         //when
         mockMvc.perform( get( AccountMapping.LOGIN ).sessionAttrs( sessionAttrs ) )
 //                .andDo( print() )
                 .andExpect( status().isOk() )
+                .andExpect( model().attributeExists( attributes ) )
                 .andExpect( view().name( HomeView.HOME ) );
     }
 

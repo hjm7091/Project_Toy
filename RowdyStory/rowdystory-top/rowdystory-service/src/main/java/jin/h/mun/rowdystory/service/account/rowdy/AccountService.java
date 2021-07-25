@@ -38,6 +38,13 @@ public class AccountService {
     }
 
     @Transactional
+    public UserDTO changeEmail( String from, String to ) {
+        User user = userRepository.findByEmail( from ).orElseThrow( () -> new IllegalStateException( "impossible" ) );
+        user.changeEmail( to );
+        return user.toDTO();
+    }
+
+    @Transactional
     public UserDTO register( UserRegisterRequest userRegisterRequest ) throws Exception {
         userRegisterRequest.setPassword( passwordEncoder.encode( userRegisterRequest.getPassword() ) );
         return userRepository.save( new User( userRegisterRequest ) ).toDTO();
@@ -63,5 +70,4 @@ public class AccountService {
         }
         return false;
     }
-
 }

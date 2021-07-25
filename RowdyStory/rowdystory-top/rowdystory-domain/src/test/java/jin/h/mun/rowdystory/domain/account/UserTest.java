@@ -4,7 +4,6 @@ import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
 import org.junit.jupiter.api.*;
 
@@ -31,11 +30,12 @@ public class UserTest {
 	
 	@BeforeEach
 	public void setUp() {
-		user = new User( UserRegisterRequest.builder()
-				   .email( "hjm7091@naver.com" )
-				   .password( "1234" )
-				   .userName( "jin" )
-				   .build() );
+		user = User.builder()
+				.email( "hjm7091@naver.com" )
+				.password( "1234" )
+				.userName( "hjm7091" )
+				.picture( "picture" )
+				.roleType( RoleType.USER ).build();
 
 		persistHelper.persist( user );
 	}
@@ -87,6 +87,7 @@ public class UserTest {
 	public void fieldUpdateWithValue() {
 		//given
 		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+				.email( "change@test.com" )
 				.password( "5678" )
 				.userName( "hak" )
 				.picture( "picture2" )
@@ -99,6 +100,7 @@ public class UserTest {
 		
 		//then
 		User findUserInDB = persistHelper.find( User.class, user.getId() );
+		assertThat( findUserInDB.getEmail() ).isEqualTo( userUpdateRequest.getEmail() );
 		assertThat( findUserInDB.getPassword() ).isEqualTo( userUpdateRequest.getPassword() );
 		assertThat( findUserInDB.getUserName() ).isEqualTo( userUpdateRequest.getUserName() );
 		assertThat( findUserInDB.getPicture() ).isEqualTo( userUpdateRequest.getPicture() );
@@ -106,12 +108,22 @@ public class UserTest {
 	}
 
 	@Test
-	@DisplayName( "change 메서드 호출시 파라미터가 null 이라면 NullPointerException 예외가 발생해야 한다." )
+	@DisplayName( "업데이트 요청의 값이 null 이라면 user 의 필드는 업데이트 되지 않아야 한다." )
 	public void fieldUpdateWithNull() {
-		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changePassword, null ) );
-		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changeUserName, null ) );
-		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changePicture, null ) );
-		assertThrows( NullPointerException.class, () -> persistHelper.update( user::changeRoleType, null ) );
+		//given
+		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder().build();
+
+		//when
+		persistHelper.update( user::update, userUpdateRequest );
+		persistHelper.clearEntityManager();
+
+		//then
+		User findUserInDB = persistHelper.find( User.class, user.getId() );
+		assertThat( findUserInDB.getEmail() ).isNotNull();
+		assertThat( findUserInDB.getPassword() ).isNotNull();
+		assertThat( findUserInDB.getUserName() ).isNotNull();
+		assertThat( findUserInDB.getPicture() ).isNotNull();
+		assertThat( findUserInDB.getRoleType() ).isNotNull();
 	}
 	
 	@Test

@@ -8,6 +8,7 @@ import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -73,28 +74,34 @@ public class User extends BaseTimeField {
 		this.socialType = socialType;
 		this.roleType = roleType;
 	}
+
+	public User changeEmail( @Nullable final String email ) {
+		this.email = email != null ? email : this.email;
+		return this;
+	}
 		
-	public User changePassword( @NonNull final String password ) {
-		this.password = password;
+	public User changePassword( @Nullable final String password ) {
+		this.password = password != null ? password : this.password;
 		return this;
 	}
 	
-	public User changeUserName( @NonNull final String userName ) {
-		this.userName = userName;
+	public User changeUserName( @Nullable final String userName ) {
+		this.userName = userName != null ? userName : this.userName;
 		return this;
 	}
 	
-	public User changeRoleType( @NonNull final RoleType roleType ) {
-		this.roleType = roleType;
+	public User changeRoleType( @Nullable final RoleType roleType ) {
+		this.roleType = roleType != null ? roleType : this.roleType;
 		return this;
 	}
 	
-	public User changePicture( @NonNull final String picture ) {
-		this.picture = picture;
+	public User changePicture( @Nullable final String picture ) {
+		this.picture = picture != null ? picture : this.picture;
 		return this;
 	}
 	
 	public User update( final UserUpdateRequest request ) {
+		changeEmail( request.getEmail() );
 		changePassword( request.getPassword() );
 		changeUserName( request.getUserName() );
 		changePicture( request.getPicture() );

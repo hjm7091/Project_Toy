@@ -16,10 +16,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-@RequestMapping( AccountAPI.BASE )
 @RequiredArgsConstructor
-@RestController
 @Slf4j
+@RequestMapping( AccountAPI.BASE )
+@RestController
 public class AccountCURDController {
 
     private final AccountService accountService;

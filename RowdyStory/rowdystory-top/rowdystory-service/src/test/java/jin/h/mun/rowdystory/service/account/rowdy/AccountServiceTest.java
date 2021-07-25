@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -150,5 +151,30 @@ class AccountServiceTest {
         //then
         assertThat( accountService.checkDuplicate( email ) ).isTrue();
         assertThat( accountService.checkDuplicate( "jin111@test.com" ) ).isFalse();
+    }
+
+    @Test
+    @DisplayName( "이메일 변경 테스트" )
+    public void changeEmail() {
+        //given
+        User jin = User.builder().email( "jin@test.com" ).build();
+        String hakEmail = "hak@test.com";
+
+        //when
+        when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
+        UserDTO changedDTO = accountService.changeEmail( jin.getEmail(), hakEmail );
+
+        //then
+        assertThat( jin.getEmail() ).isEqualTo( hakEmail );
+    }
+
+    @Test
+    @DisplayName( "이메일 변경 테스트 (이런 경우는 없어야함), 테스트 커버리지를 위해 작성" )
+    public void changeEmailForTestCoverage() {
+        //given
+        String hakEmail = "hak@test.com";
+
+        //when
+        assertThrows( IllegalStateException.class, () -> accountService.changeEmail( "test", hakEmail ) );
     }
 }

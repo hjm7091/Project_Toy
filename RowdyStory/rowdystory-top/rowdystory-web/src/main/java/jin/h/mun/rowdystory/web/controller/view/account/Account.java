@@ -7,6 +7,7 @@ public class Account {
         public static final String LOGIN = PREFIX + "/login";
         public static final String PASSWORD = PREFIX + "/password";
         public static final String REGISTER = PREFIX + "/register";
+        public static final String INFO = PREFIX + "/info";
     }
 
     public static class AccountMapping {
@@ -16,6 +17,7 @@ public class Account {
         public static final String LOGOUT = PREFIX + "/logout";
         public static final String PASSWORD = PREFIX + "/password";
         public static final String REGISTER = PREFIX + "/register";
+        public static final String INFO = PREFIX + "/info";
     }
 
 }

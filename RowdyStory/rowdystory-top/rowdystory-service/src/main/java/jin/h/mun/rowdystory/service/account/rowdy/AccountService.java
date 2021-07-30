@@ -6,7 +6,6 @@ import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +19,6 @@ import java.util.stream.Collectors;
 public class AccountService {
 
     private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     public List<UserDTO> getAll() throws Exception {
         return userRepository.findAll()
@@ -46,15 +43,23 @@ public class AccountService {
 
     @Transactional
     public UserDTO register( UserRegisterRequest userRegisterRequest ) throws Exception {
-        userRegisterRequest.setPassword( passwordEncoder.encode( userRegisterRequest.getPassword() ) );
         return userRepository.save( new User( userRegisterRequest ) ).toDTO();
     }
 
     @Transactional
-    public Optional<UserDTO> update( Long id, UserUpdateRequest userUpdateRequest ) throws Exception {
+    public Optional<UserDTO> updateById( Long id, UserUpdateRequest userUpdateRequest ) throws Exception {
         Optional<User> userOpt = userRepository.findById( id );
         if ( userOpt.isPresent() ) {
-            userUpdateRequest.setPassword( passwordEncoder.encode( userUpdateRequest.getPassword() ) );
+            UserDTO userDTO = userOpt.get().update( userUpdateRequest ).toDTO();
+            return Optional.of( userDTO );
+        }
+        return Optional.empty();
+    }
+
+    @Transactional
+    public Optional<UserDTO> updateByEmail( String email, UserUpdateRequest userUpdateRequest ) {
+        Optional<User> userOpt = userRepository.findByEmail( email );
+        if ( userOpt.isPresent() ) {
             UserDTO userDTO = userOpt.get().update( userUpdateRequest ).toDTO();
             return Optional.of( userDTO );
         }

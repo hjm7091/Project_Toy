@@ -91,7 +91,7 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName( "계정 업데이트 테스트" )
+    @DisplayName( "id 또는 email 에 따라 계정 업데이트 테스트" )
     public void update() throws Exception {
         //given
         User user = User.builder()
@@ -110,13 +110,18 @@ class AccountServiceTest {
 
         //when
         when( userRepository.findById( 1L ) ).thenReturn( Optional.of( user ) );
+        when( userRepository.findByEmail( "user@test.com" ) ).thenReturn( Optional.of( user ) );
         when( passwordEncoder.encode( anyString() ) ).thenReturn( "encrypted" );
-        Optional<UserDTO> userOpt1L = accountService.update( 1L, userUpdateRequest );
-        Optional<UserDTO> userOpt2L = accountService.update( 2L, userUpdateRequest );
+        Optional<UserDTO> userOpt1L = accountService.updateById( 1L, userUpdateRequest );
+        Optional<UserDTO> userOpt2L = accountService.updateById( 2L, userUpdateRequest );
+        Optional<UserDTO> userOptTest = accountService.updateByEmail( "user@test.com", userUpdateRequest );
+        Optional<UserDTO> userOptInvalid = accountService.updateByEmail( "invalid", userUpdateRequest );
 
         //then
         assertThat( userOpt1L.isPresent() ).isTrue();
         assertThat( userOpt2L.isPresent() ).isFalse();
+        assertThat( userOptTest.isPresent() ).isTrue();
+        assertThat( userOptInvalid.isPresent() ).isFalse();
     }
 
     @Test

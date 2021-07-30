@@ -35,7 +35,7 @@ public class DataConfig {
             User jin = User.builder()
                     .email( "hjm7091@naver.com" )
                     .userName( "jin" )
-                    .password( passwordEncoder.encode("123456") )
+                    .password( passwordEncoder.encode( "123456" ) )
                     .roleType( RoleType.USER )
                     .socialType( SocialType.GOOGLE )
                     .build();

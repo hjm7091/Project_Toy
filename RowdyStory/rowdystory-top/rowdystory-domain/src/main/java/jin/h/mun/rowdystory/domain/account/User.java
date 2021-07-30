@@ -8,16 +8,16 @@ import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
-@EqualsAndHashCode( of = { "id", "email" }, callSuper = false )
-@ToString( of = { "id", "email", "userName" } )
 @Entity
 @Table(
 	name = "tbUser",
@@ -36,7 +36,8 @@ public class User extends BaseTimeField {
 	
 	@Column( name = "userEmail", nullable = false )
 	private String email;
-	
+
+	@Type( type = "jin.h.mun.rowdystory.domain.usertype.PasswordCryptoUserType" )
 	@Column( name = "userPassword" )
 	private String password;
 	
@@ -56,7 +57,7 @@ public class User extends BaseTimeField {
 	
 	@OneToMany( mappedBy = "owner", cascade = CascadeType.REMOVE )
 	private final List<Post> posts = new ArrayList<>();
-	
+
 	public User( UserRegisterRequest request ) {
 		this.email = request.getEmail();
 		this.password = request.getPassword();
@@ -120,5 +121,26 @@ public class User extends BaseTimeField {
 				.userName( this.userName )
 				.picture( this.picture )
 				.build();
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "(" +
+				"id = " + id + ", " +
+				"email = " + email + ", " +
+				"userName = " + userName + ")";
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) return true;
+		if ( o == null || getClass() != o.getClass() ) return false;
+		User user = ( User ) o;
+		return id.equals( user.id ) && email.equals( user.email );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( id, email );
 	}
 }

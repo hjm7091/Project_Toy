@@ -168,6 +168,21 @@ public class UserTest {
 	}
 
 	@Test
+	@DisplayName( "password 가 없는 유저 저장" )
+	public void saveUserWithoutPassword() {
+		//given
+		User user1 = User.builder().email( "test@test.com" ).build();
+
+		//when
+		persistHelper.persist( user1 );
+		persistHelper.clearEntityManager();
+
+		//then
+		User findUserInDB = persistHelper.find( User.class, user1.getId() );
+		assertThat( findUserInDB.getPassword() ).isNull();
+	}
+
+	@Test
 	@DisplayName( "user 의 toString() 은 id, email, userName 필드가 있어야함." )
 	public void ToString() {
 		//when

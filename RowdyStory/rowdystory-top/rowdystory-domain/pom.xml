@@ -34,6 +34,11 @@
 			<artifactId>rowdystory-dto</artifactId>
 			<version>${rowdystory.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>jin.h.mun</groupId>
+			<artifactId>rowdystory-crypto</artifactId>
+			<version>${rowdystory.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>

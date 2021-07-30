@@ -5,6 +5,7 @@ import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
 import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
 import jin.h.mun.rowdystory.service.account.rowdy.AccountService;
 import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountMapping;
+import jin.h.mun.rowdystory.web.resolver.session.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.MediaTypes;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @RequestMapping( AccountAPI.BASE )
 @RestController
-public class AccountCURDController {
+public class AccountCRUDController {
 
     private final AccountService accountService;
 
@@ -44,7 +45,14 @@ public class AccountCURDController {
     @PutMapping( value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE, consumes = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<UserDTO> updateById( @PathVariable( "id" ) Long id,
                                               @RequestBody UserUpdateRequest userUpdateRequest ) throws Exception {
-        Optional<UserDTO> userOpt = accountService.update( id, userUpdateRequest );
+        Optional<UserDTO> userOpt = accountService.updateById( id, userUpdateRequest );
+        return userOpt.map( ResponseEntity::ok ).orElseGet( () -> ResponseEntity.notFound().build() );
+    }
+
+    @PutMapping( consumes = MediaTypes.HAL_JSON_VALUE, produces = MediaTypes.HAL_JSON_VALUE )
+    public ResponseEntity<UserDTO> updateByEmail( @SessionUser UserDTO userDTO,
+                                                  @RequestBody UserUpdateRequest userUpdateRequest ) {
+        Optional<UserDTO> userOpt = accountService.updateByEmail( userDTO.getEmail(), userUpdateRequest );
         return userOpt.map( ResponseEntity::ok ).orElseGet( () -> ResponseEntity.notFound().build() );
     }
 

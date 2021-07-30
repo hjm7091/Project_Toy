@@ -29,7 +29,8 @@
 		<module>rowdystory-domain</module>
 		<module>rowdystory-data</module>
 		<module>rowdystory-exception</module>
-	</modules>
+        <module>rowdystory-crypto</module>
+    </modules>
   
 	<!-- spring boot parent -->
 	<parent> 

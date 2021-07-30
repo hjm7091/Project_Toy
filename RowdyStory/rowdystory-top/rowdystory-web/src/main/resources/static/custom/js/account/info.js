@@ -6,6 +6,10 @@ var index = {
             _this.validateEmail();
             _this.activateButton("#inputEmail", "#modifyEmailCompleteBtn");
         });
+        $("#inputPassword").on("change keyup paste", function() {
+            _this.validatePassword();
+            _this.activateButton("#inputPassword", "#modifyPasswordBtn");
+        });
         $("#modifyEmailBtn").on("click", function() {
             _this.toggleButton("#modifyEmailBtn");
             _this.toggleButton("#modifyEmailCancelBtn");
@@ -21,7 +25,13 @@ var index = {
         $("#modifyEmailCompleteBtn").on("click", function() {
             _this.modifyEmail($("#inputEmail").val());
         });
+        $("#modifyPasswordBtn").on("click", function() {
+            _this.modifyPassword($("#inputPassword").val());
+        });
         $("#modifyEmailForm").bind("submit", function(e) {
+            util.preventEvent(e);
+        });
+        $("#modifyPasswordForm").bind("submit", function(e) {
             util.preventEvent(e);
         });
     },
@@ -55,6 +65,19 @@ var index = {
             _this.checkDuplicate(email);
         } else {
             _this.invalidAction("#inputEmail", "#alertEmail", "유효한 이메일 주소를 입력해주세요.");
+        }
+    },
+    validatePassword : function() {
+        var _this = this;
+        var password = $("#inputPassword").val();
+        if(password == "") {
+            _this.emptyAction("#inputPassword", "#alertPassword");
+            return;
+        }
+        if(password.length >= 6) {
+            _this.validAction("#inputPassword", "#alertPassword");
+        } else {
+            _this.invalidAction("#inputPassword", "#alertPassword", "비밀번호를 6자 이상 입력해주세요.");
         }
     },
     emptyAction : function(inputId, divId) {
@@ -106,13 +129,31 @@ var index = {
             var success = function(userDTO) {
                 if (userDTO.email != _this.originEmail) {
                     alert("이메일 변경 성공");
-                    location.reload();
                 } else {
                     alert("이메일 변경 실패");
                 }
+                location.reload();
             }
 
             account.modifyEmail(JSON.stringify(data), success, util.error);
+        }
+    },
+    modifyPassword : function(password) {
+        var _this = this;
+
+        if (confirm("정말로 변경하시겠습니까?")) {
+            var data = { "password" : password };
+
+            var success = function(userDTO) {
+                if (userDTO != null) {
+                    alert("비밀번호 변경 성공");
+                } else {
+                    alert("비밀번호 변경 실패");
+                }
+                location.reload();
+            }
+
+            account.modify(JSON.stringify(data), success, util.error);
         }
     }
 };

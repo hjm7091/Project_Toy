@@ -2,7 +2,10 @@ package jin.h.mun.rowdystory.web.controller.view.account;
 
 public class Account {
 
+    private Account() {}
+
     public static class AccountView {
+        private AccountView() {}
         public static final String PREFIX = "account";
         public static final String LOGIN = PREFIX + "/login";
         public static final String PASSWORD = PREFIX + "/password";
@@ -11,6 +14,7 @@ public class Account {
     }
 
     public static class AccountMapping {
+        private AccountMapping() {}
         public static final String PREFIX = "/account";
         public static final String LOGIN = PREFIX + "/login";
         public static final String LOGIN_FAIL = PREFIX + "/loginFail";

@@ -49,7 +49,7 @@ public class PostRepositoryTest {
 
         testEntityManager.persist( ownerOfPost );
 
-        int postCount = 30;
+        int postCount = 3;
 
         for ( int i = 1; i <= postCount; i++ ) {
             PostRegisterRequest postRegisterRequest = PostRegisterRequest.builder()
@@ -59,7 +59,7 @@ public class PostRepositoryTest {
             posts.add( new Post( postRegisterRequest, ownerOfPost ) );
         }
 
-        postCount = 40;
+        postCount = 4;
 
         for ( int i = 1; i <= postCount; i++) {
             SecretPostRegisterRequest secretPostRegisterRequest = SecretPostRegisterRequest.builder()
@@ -150,7 +150,7 @@ public class PostRepositoryTest {
     @DisplayName( "게시물 타입에 따라 페이징된 게시물 찾기" )
     public void findPostByPostTypeAndPaging() {
         //given
-        int pageNum = 0, pageSize = 10;
+        int pageNum = 0, pageSize = 5;
         PageRequest pageRequest = PageRequest.of( pageNum, pageSize );
 
         //when
@@ -162,18 +162,18 @@ public class PostRepositoryTest {
         assertThat( findPosts.getContent().size() ).isEqualTo( pageSize ); //조회된 데이터 수
         assertThat( findPosts.getTotalElements() ).isEqualTo( posts.size() + secretPosts.size() ); //전체 데이터 수
         assertThat( findPosts.getNumber() ).isEqualTo( pageNum ); //페이지 번호
-        assertThat( findPosts.getTotalPages() ).isEqualTo( ( posts.size() + secretPosts.size() ) / pageSize ); //전체 페이지 번호
+        assertThat( findPosts.getTotalPages() - 1 ).isEqualTo( ( posts.size() + secretPosts.size() ) / pageSize ); //전체 페이지 번호
         assertThat( findPosts.isFirst() ).isTrue();
         assertThat( findPosts.hasNext() ).isTrue();
         assertThat( findPosts.hasPrevious() ).isFalse();
 
         assertThat( findNormalPosts.getContent() ).allMatch( post -> post.getPostType() == PostType.NORMAL );
-        assertThat( findNormalPosts.getContent().size() ).isEqualTo( pageSize );
-        assertThat( findNormalPosts.getTotalPages() ).isEqualTo( posts.size() / pageSize );
+        assertThat( findNormalPosts.getContent().size() ).isLessThan( pageSize );
+        assertThat( findNormalPosts.getTotalPages() - 1 ).isEqualTo( posts.size() / pageSize );
 
         assertThat( findSecretPosts.getContent() ).allMatch( post -> post.getPostType() == PostType.SECRET );
-        assertThat( findSecretPosts.getContent().size() ).isEqualTo( pageSize );
-        assertThat( findSecretPosts.getTotalPages() ).isEqualTo( secretPosts.size() / pageSize );
+        assertThat( findSecretPosts.getContent().size() ).isLessThan( pageSize );
+        assertThat( findSecretPosts.getTotalPages() - 1 ).isEqualTo( secretPosts.size() / pageSize );
     }
 
 }

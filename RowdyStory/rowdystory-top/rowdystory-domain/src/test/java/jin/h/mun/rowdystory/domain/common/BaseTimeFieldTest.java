@@ -2,7 +2,7 @@ package jin.h.mun.rowdystory.domain.common;
 
 import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.User;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
+import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -29,7 +29,7 @@ class BaseTimeFieldTest {
 
     @BeforeEach
     public void setUp() {
-        user = new User( UserRegisterRequest.builder()
+        user = new User( RegisterRequest.builder()
                 .email( "hjm7091@naver.com" )
                 .password( "1234" )
                 .userName( "jin" )

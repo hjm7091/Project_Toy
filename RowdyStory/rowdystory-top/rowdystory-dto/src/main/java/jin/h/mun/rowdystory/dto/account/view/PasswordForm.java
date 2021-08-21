@@ -1,4 +1,4 @@
-package jin.h.mun.rowdystory.dto.account;
+package jin.h.mun.rowdystory.dto.account.view;
 
 import lombok.*;
 
@@ -7,9 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserLoginRequest {
+public class PasswordForm {
 
     private String email;
-    private String password;
 
 }

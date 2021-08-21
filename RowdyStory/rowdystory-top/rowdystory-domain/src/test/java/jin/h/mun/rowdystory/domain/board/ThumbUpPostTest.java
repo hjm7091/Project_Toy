@@ -2,7 +2,7 @@ package jin.h.mun.rowdystory.domain.board;
 
 import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.User;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
+import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
 import org.junit.jupiter.api.*;
 
@@ -37,7 +37,7 @@ public class ThumbUpPostTest {
 	@BeforeEach
 	public void setUp() {
 		//게시물 주인
-		jin = new User( UserRegisterRequest.builder()
+		jin = new User( RegisterRequest.builder()
 							.email( "jin@naver.com" )
 							.password( "1234" )
 							.userName( "jin" )

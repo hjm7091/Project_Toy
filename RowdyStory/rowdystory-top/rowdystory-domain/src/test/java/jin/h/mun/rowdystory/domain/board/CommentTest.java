@@ -2,7 +2,7 @@ package jin.h.mun.rowdystory.domain.board;
 
 import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.User;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
+import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -32,13 +32,13 @@ public class CommentTest {
 	@BeforeEach
 	public void setUp() {
 		//게시물 주인
-		jin = new User( UserRegisterRequest.builder()
+		jin = new User( RegisterRequest.builder()
 				.email( "jin@gmail.com" )
 				.password( "1234" )
 				.userName( "jin" ).build() );
 		
 		//게시물에 글을 쓸 유저
-		hak = new User( UserRegisterRequest.builder()
+		hak = new User( RegisterRequest.builder()
 				.email( "hak@gmail.com" )
 				.password( "1234" )
 				.userName( "hak" ).build() );

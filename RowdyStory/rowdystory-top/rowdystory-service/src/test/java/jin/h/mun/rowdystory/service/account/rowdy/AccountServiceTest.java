@@ -3,9 +3,12 @@ package jin.h.mun.rowdystory.service.account.rowdy;
 import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
+import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
-import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
+import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
+import jin.h.mun.rowdystory.dto.account.api.UpdateRequest;
+import jin.h.mun.rowdystory.exception.account.AccountPreviousPasswordUnmatchedException;
+import jin.h.mun.rowdystory.exception.account.SocialAccountUnmodifiableException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,7 +78,7 @@ class AccountServiceTest {
     @DisplayName( "계정 등록 테스트" )
     public void register() throws Exception {
         //given
-        UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
+        RegisterRequest registerRequest = RegisterRequest.builder()
                 .email( "user@test.com" )
                 .password( "1234" )
                 .userName( "user" ).build();
@@ -83,11 +86,11 @@ class AccountServiceTest {
         //when
         when( userRepository.save( any( User.class ) ) ).then( returnsFirstArg() );
         when( passwordEncoder.encode( anyString() ) ).thenReturn( "encrypted" );
-        UserDTO userDTO = accountService.register( userRegisterRequest );
+        UserDTO userDTO = accountService.register( registerRequest );
 
         //then
-        assertThat( userDTO.getEmail() ).isEqualTo( userRegisterRequest.getEmail() );
-        assertThat( userDTO.getUserName() ).isEqualTo( userRegisterRequest.getUserName() );
+        assertThat( userDTO.getEmail() ).isEqualTo( registerRequest.getEmail() );
+        assertThat( userDTO.getUserName() ).isEqualTo( registerRequest.getUserName() );
     }
 
     @Test
@@ -101,7 +104,7 @@ class AccountServiceTest {
                 .picture( "picture" )
                 .roleType( RoleType.GUEST ).build();
 
-        UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+        UpdateRequest updateRequest = UpdateRequest.builder()
                 .password( "updatePassword" )
                 .userName( "updateUserName" )
                 .picture( "updatePicture" )
@@ -112,10 +115,10 @@ class AccountServiceTest {
         when( userRepository.findById( 1L ) ).thenReturn( Optional.of( user ) );
         when( userRepository.findByEmail( "user@test.com" ) ).thenReturn( Optional.of( user ) );
         when( passwordEncoder.encode( anyString() ) ).thenReturn( "encrypted" );
-        Optional<UserDTO> userOpt1L = accountService.updateById( 1L, userUpdateRequest );
-        Optional<UserDTO> userOpt2L = accountService.updateById( 2L, userUpdateRequest );
-        Optional<UserDTO> userOptTest = accountService.updateByEmail( "user@test.com", userUpdateRequest );
-        Optional<UserDTO> userOptInvalid = accountService.updateByEmail( "invalid", userUpdateRequest );
+        Optional<UserDTO> userOpt1L = accountService.updateById( 1L, updateRequest );
+        Optional<UserDTO> userOpt2L = accountService.updateById( 2L, updateRequest );
+        Optional<UserDTO> userOptTest = accountService.updateByEmail( "user@test.com", updateRequest );
+        Optional<UserDTO> userOptInvalid = accountService.updateByEmail( "invalid", updateRequest );
 
         //then
         assertThat( userOpt1L.isPresent() ).isTrue();
@@ -159,8 +162,8 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName( "이메일 변경 테스트" )
-    public void changeEmail() {
+    @DisplayName( "이메일 변경 테스트 (소셜 유저가 아닌 경우 이메일 변경됨)" )
+    public void changeNonSocialUser() {
         //given
         User jin = User.builder().email( "jin@test.com" ).build();
         String hakEmail = "hak@test.com";
@@ -174,12 +177,55 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName( "이메일 변경 테스트 (이런 경우는 없어야함), 테스트 커버리지를 위해 작성" )
-    public void changeEmailForTestCoverage() {
+    @DisplayName( "이메일 변경 테스트 (소셜 유저인 경우 예외 발생)" )
+    public void changeSocialUser() {
+        //given
+        User jin = User.builder().email( "jin@test.com" ).socialType( SocialType.GOOGLE ).build();
+        String hakEmail = "hak@test.com";
+
+        //when
+        when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
+        assertThrows( SocialAccountUnmodifiableException.class, () -> accountService.changeEmail( jin.getEmail(), hakEmail ) );
+        assertThrows( SocialAccountUnmodifiableException.class, () -> accountService.changePassword( jin.getEmail(), "1111", "2222" ) );
+    }
+
+    @Test
+    @DisplayName( "비밀번호 변경 테스트 (이전 비밀번호가 일치하지 않는 경우 예외 발생)" )
+    public void changeWithInvalidPreviousPassword() {
+        //given
+        User jin = User.builder().email( "jin@test.com" ).password( "1234" ).build();
+        String from = "1111", to = "2222";
+
+        //when
+        when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
+        when( passwordEncoder.matches( from, jin.getPassword() ) ).thenReturn( false );
+        assertThrows( AccountPreviousPasswordUnmatchedException.class, () -> accountService.changePassword( jin.getEmail(), from, to ) );
+    }
+
+    @Test
+    @DisplayName( "비밀번호 변경 테스트 (이전 비밀번호가 일치하는 경우 비밀번호 변경됨)" )
+    public void changeWithValidPreviousPassword() {
+        //given
+        User jin = User.builder().email( "jin@test.com" ).password( "1234" ).build();
+        String from = "1234", to = "2222";
+
+        //when
+        when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
+        when( passwordEncoder.matches( from, jin.getPassword() ) ).thenReturn( true );
+        accountService.changePassword( jin.getEmail(), from, to );
+
+        //then
+        assertThat( jin.getPassword() ).isEqualTo( to );
+    }
+
+    @Test
+    @DisplayName( "테스트 커버리지를 위해 작성" )
+    public void forCoverage() {
         //given
         String hakEmail = "hak@test.com";
 
         //when
         assertThrows( IllegalStateException.class, () -> accountService.changeEmail( "test", hakEmail ) );
+        assertThrows( IllegalStateException.class, () -> accountService.changePassword( "test", "before", "after" ) );
     }
 }

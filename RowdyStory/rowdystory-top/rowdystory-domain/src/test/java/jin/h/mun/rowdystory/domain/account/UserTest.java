@@ -4,7 +4,7 @@ import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
+import jin.h.mun.rowdystory.dto.account.api.UpdateRequest;
 import org.junit.jupiter.api.*;
 
 import javax.persistence.PersistenceException;
@@ -86,7 +86,7 @@ public class UserTest {
 	@DisplayName( "업데이트 요청의 값이 null 이 아니라면 user 의 필드는 업데이트 되어야 한다." )
 	public void fieldUpdateWithValue() {
 		//given
-		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+		UpdateRequest updateRequest = UpdateRequest.builder()
 				.email( "change@test.com" )
 				.password( "5678" )
 				.userName( "hak" )
@@ -95,26 +95,26 @@ public class UserTest {
 				.build();
 
 		//when
-		persistHelper.update( user::update, userUpdateRequest );
+		persistHelper.update( user::update, updateRequest);
 		persistHelper.clearEntityManager();
 		
 		//then
 		User findUserInDB = persistHelper.find( User.class, user.getId() );
-		assertThat( findUserInDB.getEmail() ).isEqualTo( userUpdateRequest.getEmail() );
-		assertThat( findUserInDB.getPassword() ).isEqualTo( userUpdateRequest.getPassword() );
-		assertThat( findUserInDB.getUserName() ).isEqualTo( userUpdateRequest.getUserName() );
-		assertThat( findUserInDB.getPicture() ).isEqualTo( userUpdateRequest.getPicture() );
-		assertThat( findUserInDB.getRoleType() ).isEqualTo( RoleType.getRoleTypeFrom( userUpdateRequest.getRoleType() ) );
+		assertThat( findUserInDB.getEmail() ).isEqualTo( updateRequest.getEmail() );
+		assertThat( findUserInDB.getPassword() ).isEqualTo( updateRequest.getPassword() );
+		assertThat( findUserInDB.getUserName() ).isEqualTo( updateRequest.getUserName() );
+		assertThat( findUserInDB.getPicture() ).isEqualTo( updateRequest.getPicture() );
+		assertThat( findUserInDB.getRoleType() ).isEqualTo( RoleType.getRoleTypeFrom( updateRequest.getRoleType() ) );
 	}
 
 	@Test
 	@DisplayName( "업데이트 요청의 값이 null 이라면 user 의 필드는 업데이트 되지 않아야 한다." )
 	public void fieldUpdateWithNull() {
 		//given
-		UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder().build();
+		UpdateRequest updateRequest = UpdateRequest.builder().build();
 
 		//when
-		persistHelper.update( user::update, userUpdateRequest );
+		persistHelper.update( user::update, updateRequest);
 		persistHelper.clearEntityManager();
 
 		//then

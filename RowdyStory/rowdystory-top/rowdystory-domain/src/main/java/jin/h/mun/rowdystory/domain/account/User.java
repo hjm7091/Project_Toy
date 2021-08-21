@@ -5,10 +5,9 @@ import jin.h.mun.rowdystory.domain.account.enums.SocialType;
 import jin.h.mun.rowdystory.domain.board.Post;
 import jin.h.mun.rowdystory.domain.common.BaseTimeField;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
-import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
+import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
+import jin.h.mun.rowdystory.dto.account.api.UpdateRequest;
 import lombok.*;
-import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -37,7 +36,6 @@ public class User extends BaseTimeField {
 	@Column( name = "userEmail", nullable = false )
 	private String email;
 
-	@Type( type = "jin.h.mun.rowdystory.domain.usertype.PasswordCryptoUserType" )
 	@Column( name = "userPassword" )
 	private String password;
 	
@@ -58,7 +56,7 @@ public class User extends BaseTimeField {
 	@OneToMany( mappedBy = "owner", cascade = CascadeType.REMOVE )
 	private final List<Post> posts = new ArrayList<>();
 
-	public User( UserRegisterRequest request ) {
+	public User( RegisterRequest request ) {
 		this.email = request.getEmail();
 		this.password = request.getPassword();
 		this.userName = request.getUserName();
@@ -101,7 +99,7 @@ public class User extends BaseTimeField {
 		return this;
 	}
 	
-	public User update( final UserUpdateRequest request ) {
+	public User update( final UpdateRequest request ) {
 		changeEmail( request.getEmail() );
 		changePassword( request.getPassword() );
 		changeUserName( request.getUserName() );

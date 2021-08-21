@@ -1,5 +1,6 @@
-package jin.h.mun.rowdystory.dto.account;
+package jin.h.mun.rowdystory.dto.account.api;
 
+import jin.h.mun.rowdystory.dto.annotation.Encoding;
 import lombok.*;
 
 @Getter @Setter
@@ -7,10 +8,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserUpdateRequest {
+public class UpdateRequest {
 
 	private String email;
 
+	@Encoding
 	private String password;
 	
 	private String userName;

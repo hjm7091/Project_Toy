@@ -1,8 +1,9 @@
 package jin.h.mun.rowdystory.web.controller.api.account;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
+import jin.h.mun.rowdystory.dto.account.api.UpdateRequest;
 import jin.h.mun.rowdystory.service.account.rowdy.AccountService;
+import jin.h.mun.rowdystory.web.controller.api.common.ExceptionHandler;
 import jin.h.mun.rowdystory.web.resolver.session.SessionDefine;
 import jin.h.mun.rowdystory.web.resolver.session.SessionUser;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 @RequestMapping( AccountAPI.EMAIL )
 @RestController
-public class EmailController {
+public class EmailRestController extends ExceptionHandler {
 
     private final AccountService accountService;
 
@@ -30,10 +31,9 @@ public class EmailController {
     }
 
     @PutMapping( consumes = MediaTypes.HAL_JSON_VALUE, produces = MediaTypes.HAL_JSON_VALUE )
-    public ResponseEntity<UserDTO> changeEmail( @SessionUser UserDTO userDTO, @RequestBody UserUpdateRequest userUpdateRequest ) {
-        UserDTO changedUserDTO = accountService.changeEmail( userDTO.getEmail(), userUpdateRequest.getEmail() );
+    public ResponseEntity<UserDTO> changeEmail( @SessionUser UserDTO userDTO, @RequestBody UpdateRequest updateRequest ) {
+        UserDTO changedUserDTO = accountService.changeEmail( userDTO.getEmail(), updateRequest.getEmail() );
         httpSession.setAttribute( SessionDefine.USER.getName(), changedUserDTO );
         return new ResponseEntity<>( changedUserDTO, HttpStatus.OK );
     }
-
 }

@@ -12,8 +12,6 @@ import jin.h.mun.rowdystory.dto.post.SecretPostUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 @Getter
 @NoArgsConstructor( access = AccessLevel.PROTECTED )
@@ -22,7 +20,6 @@ import org.hibernate.annotations.Type;
 @DiscriminatorValue( PostType.Values.SECRET )
 public class SecretPost extends Post {
 
-	@Type( type = "jin.h.mun.rowdystory.domain.usertype.PasswordCryptoUserType" )
 	@Column( name = "postPassword", nullable = false )
 	String password;
 	

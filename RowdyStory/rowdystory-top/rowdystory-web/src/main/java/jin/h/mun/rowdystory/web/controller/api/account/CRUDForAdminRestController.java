@@ -1,19 +1,16 @@
 package jin.h.mun.rowdystory.web.controller.api.account;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
-import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
+import jin.h.mun.rowdystory.dto.account.api.UpdateRequest;
 import jin.h.mun.rowdystory.service.account.rowdy.AccountService;
-import jin.h.mun.rowdystory.web.controller.view.account.Account.AccountMapping;
+import jin.h.mun.rowdystory.web.controller.api.common.ExceptionHandler;
 import jin.h.mun.rowdystory.web.resolver.session.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,15 +18,9 @@ import java.util.Optional;
 @Slf4j
 @RequestMapping( AccountAPI.BASE )
 @RestController
-public class AccountCRUDController {
+public class CRUDForAdminRestController extends ExceptionHandler {
 
     private final AccountService accountService;
-
-    @PostMapping( produces = MediaTypes.HAL_JSON_VALUE, consumes = MediaTypes.HAL_JSON_VALUE )
-    public ResponseEntity<UserDTO> register( @RequestBody UserRegisterRequest userRegisterRequest ) throws Exception {
-        UserDTO userDTO = accountService.register( userRegisterRequest );
-        return ResponseEntity.created( URI.create( AccountMapping.LOGIN ) ).body( userDTO );
-    }
 
     @GetMapping( produces = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<List<UserDTO>> getAll() throws Exception {
@@ -44,15 +35,15 @@ public class AccountCRUDController {
 
     @PutMapping( value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE, consumes = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<UserDTO> updateById( @PathVariable( "id" ) Long id,
-                                              @RequestBody UserUpdateRequest userUpdateRequest ) throws Exception {
-        Optional<UserDTO> userOpt = accountService.updateById( id, userUpdateRequest );
+                                              @RequestBody UpdateRequest updateRequest ) throws Exception {
+        Optional<UserDTO> userOpt = accountService.updateById( id, updateRequest );
         return userOpt.map( ResponseEntity::ok ).orElseGet( () -> ResponseEntity.notFound().build() );
     }
 
     @PutMapping( consumes = MediaTypes.HAL_JSON_VALUE, produces = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<UserDTO> updateByEmail( @SessionUser UserDTO userDTO,
-                                                  @RequestBody UserUpdateRequest userUpdateRequest ) {
-        Optional<UserDTO> userOpt = accountService.updateByEmail( userDTO.getEmail(), userUpdateRequest );
+                                                  @RequestBody UpdateRequest updateRequest ) {
+        Optional<UserDTO> userOpt = accountService.updateByEmail( userDTO.getEmail(), updateRequest );
         return userOpt.map( ResponseEntity::ok ).orElseGet( () -> ResponseEntity.notFound().build() );
     }
 
@@ -60,11 +51,5 @@ public class AccountCRUDController {
     public ResponseEntity<Boolean> deleteById( @PathVariable( "id" ) Long id ) throws Exception {
         boolean result = accountService.delete( id );
         return ResponseEntity.ok( result );
-    }
-
-    @ExceptionHandler( Exception.class )
-    public ResponseEntity<String> handle( Exception e ) {
-        String error = String.format( "class : %s, message : %s", e.getClass().getSimpleName(), e.getMessage() );
-        return new ResponseEntity<>( error, HttpStatus.INTERNAL_SERVER_ERROR );
     }
 }

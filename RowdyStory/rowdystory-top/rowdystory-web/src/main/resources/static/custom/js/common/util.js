@@ -13,6 +13,15 @@ var util = {
             e.cancelBubble = true;
         }
     },
+    stringToObject : function(str) {
+        var properties = str.split(',');
+        var obj = {};
+        properties.forEach(function(property) {
+            var tup = property.trim().split(':');
+            obj[tup[0].trim()] = tup[1].trim();
+        });
+        return obj;
+    },
     error : function(error) {
         alert(JSON.stringify(error));
     }

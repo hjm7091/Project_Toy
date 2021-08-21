@@ -3,7 +3,7 @@ package jin.h.mun.rowdystory.domain.board;
 import jin.h.mun.rowdystory.domain.PersistHelper;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.board.enums.PostType;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
+import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
 import jin.h.mun.rowdystory.dto.post.PostRegisterRequest;
 import jin.h.mun.rowdystory.dto.post.PostUpdateRequest;
 import jin.h.mun.rowdystory.dto.post.SecretPostRegisterRequest;
@@ -34,7 +34,7 @@ public class PostTest {
 
 	@BeforeEach
 	public void setUp() {
-		owner = new User( UserRegisterRequest.builder()
+		owner = new User( RegisterRequest.builder()
 						   .email( "hjm7091@naver.com" )
 						   .password( "1234" )
 						   .userName( "jin" )

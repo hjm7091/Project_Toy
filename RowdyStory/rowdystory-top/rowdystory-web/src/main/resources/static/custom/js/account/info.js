@@ -2,14 +2,27 @@ var index = {
     originEmail : $("#inputEmail").val(),
     init : function() {
         var _this = this;
+
         $("#inputEmail").on("change keyup paste", function() {
-            _this.validateEmail();
+            _this.validateEmail("#inputEmail", "#alertEmail");
             _this.activateButton("#inputEmail", "#modifyEmailCompleteBtn");
         });
-        $("#inputPassword").on("change keyup paste", function() {
-            _this.validatePassword();
-            _this.activateButton("#inputPassword", "#modifyPasswordBtn");
+
+        let inputIds = ["#prevPassword", "#newPassword", "#newPasswordCheck"];
+        let divIds = ["#alertPrevPassword", "#alertNewPassword", "#alertNewPasswordCheck"];
+        $("#prevPassword").on("change keyup paste", function() {
+            _this.validatePassword("#prevPassword", "#alertPrevPassword", "#modifyPasswordBtn");
+            _this.activatePasswordButton(inputIds, divIds, "#modifyPasswordBtn");
         });
+        $("#newPassword").on("change keyup paste", function() {
+            _this.validatePassword("#newPassword", "#alertNewPassword", "#modifyPasswordBtn");
+            _this.activatePasswordButton(inputIds, divIds, "#modifyPasswordBtn");
+        });
+        $("#newPasswordCheck").on("change keyup paste", function() {
+            _this.validatePassword("#newPasswordCheck", "#alertNewPasswordCheck", "#modifyPasswordBtn");
+            _this.activatePasswordButton(inputIds, divIds, "#modifyPasswordBtn");
+        });
+
         $("#modifyEmailBtn").on("click", function() {
             _this.toggleButton("#modifyEmailBtn");
             _this.toggleButton("#modifyEmailCancelBtn");
@@ -26,8 +39,9 @@ var index = {
             _this.modifyEmail($("#inputEmail").val());
         });
         $("#modifyPasswordBtn").on("click", function() {
-            _this.modifyPassword($("#inputPassword").val());
+            _this.modifyPassword($("#prevPassword").val(), $("#newPassword").val());
         });
+
         $("#modifyEmailForm").bind("submit", function(e) {
             util.preventEvent(e);
         });
@@ -53,31 +67,32 @@ var index = {
             _this.emptyAction("#inputEmail", "#alertEmail");
         }
     },
-    validateEmail : function() {
+    validateEmail : function(inputId, divId) {
         var _this = this;
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var email = $("#inputEmail").val();
+        var email = $(inputId).val();
         if(email == _this.originEmail) {
-            _this.emptyAction("#inputEmail", "#alertEmail");
+            _this.emptyAction(inputId, divId);
             return;
         }
         if(re.test(email)) {
             _this.checkDuplicate(email);
         } else {
-            _this.invalidAction("#inputEmail", "#alertEmail", "유효한 이메일 주소를 입력해주세요.");
+            _this.invalidAction(inputId, divId, "유효한 이메일 주소를 입력해주세요.");
         }
     },
-    validatePassword : function() {
+    validatePassword : function(inputId, divId, buttonId) {
         var _this = this;
-        var password = $("#inputPassword").val();
+        var password = $(inputId).val();
         if(password == "") {
-            _this.emptyAction("#inputPassword", "#alertPassword");
+            _this.emptyAction(inputId, divId);
             return;
         }
         if(password.length >= 6) {
-            _this.validAction("#inputPassword", "#alertPassword");
+            _this.validAction(inputId, divId);
         } else {
-            _this.invalidAction("#inputPassword", "#alertPassword", "비밀번호를 6자 이상 입력해주세요.");
+            _this.invalidAction(inputId, divId, "비밀번호를 6자 이상 입력해주세요.");
+            $(buttonId).attr("disabled", true);
         }
     },
     emptyAction : function(inputId, divId) {
@@ -104,6 +119,35 @@ var index = {
             return;
         }
     },
+    activatePasswordButton : function(inputIds, divIds, buttonId) {
+        let _this = this;
+
+        let newPassword = $(inputIds[1]).val();
+        let newPasswordCheck = $(inputIds[2]).val();
+
+        if (newPassword.length >= 6 && newPasswordCheck.length >= 6) {
+            if ( newPassword !== newPasswordCheck ) {
+                _this.invalidAction(inputIds[1], divIds[1], "비밀번호가 일치하지 않습니다.");
+                _this.invalidAction(inputIds[2], divIds[2], "비밀번호가 일치하지 않습니다.");
+            } else {
+                _this.validAction(inputIds[1], divIds[1]);
+                _this.validAction(inputIds[2], divIds[2]);
+            }
+        }
+
+        let flag = true;
+        inputIds.forEach(inputId => {
+            if(!$(inputId).hasClass("is-valid")) {
+                flag = false;
+            }
+        });
+
+        if (flag) {
+            $(buttonId).attr("disabled", false);
+        } else {
+            $(buttonId).attr("disabled", true);
+        }
+    },
     checkDuplicate : function(email) {
         var _this = this;
 
@@ -121,7 +165,7 @@ var index = {
         account.getByEmail(data, success, util.error);
     },
     modifyEmail : function(email) {
-        var _this = this;
+        let _this = this;
 
         if (confirm("정말로 변경하시겠습니까?")) {
             var data = { "email" : email };
@@ -135,17 +179,27 @@ var index = {
                 location.reload();
             }
 
-            account.modifyEmail(JSON.stringify(data), success, util.error);
+            var error = function(result) {
+                var responseText = util.stringToObject(result.responseText);
+                alert(responseText.message);
+                location.reload();
+            }
+
+            account.modifyEmail(JSON.stringify(data), success, error);
         }
     },
-    modifyPassword : function(password) {
-        var _this = this;
+    modifyPassword : function(before, after) {
+        let _this = this;
 
         if (confirm("정말로 변경하시겠습니까?")) {
-            var data = { "password" : password };
+            let data = { "before" : before, "after" : after };
 
-            var success = function(userDTO) {
-                if (userDTO != null) {
+            /*
+            * response 로 string 이 반환되면 성공임에도 불구하고 error 콜백이 호출됨. 이유를 모르겠음.
+            * response 로 객체가 반환되면 정상적으로 동작함.
+            */
+            let success = function(result) {
+                if (result.responseText !== null) {
                     alert("비밀번호 변경 성공");
                 } else {
                     alert("비밀번호 변경 실패");
@@ -153,7 +207,13 @@ var index = {
                 location.reload();
             }
 
-            account.modify(JSON.stringify(data), success, util.error);
+            let error = function(result) {
+                let responseText = util.stringToObject(result.responseText);
+                alert(responseText.message);
+                location.reload();
+            }
+
+            account.modifyPassword(JSON.stringify(data), success, error);
         }
     }
 };

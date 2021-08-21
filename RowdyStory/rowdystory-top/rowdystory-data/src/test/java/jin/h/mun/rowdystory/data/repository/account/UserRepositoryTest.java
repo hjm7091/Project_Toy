@@ -2,7 +2,7 @@ package jin.h.mun.rowdystory.data.repository.account;
 
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.SocialType;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
+import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class UserRepositoryTest {
     public void findByEmail() {
         //given
         String userEmail = "hjm7091@naver.com";
-        User user = new User( UserRegisterRequest.builder()
+        User user = new User( RegisterRequest.builder()
                 .email( userEmail )
                 .password( "1234" )
                 .userName( "jin" )

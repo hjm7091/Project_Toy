@@ -5,8 +5,7 @@ import jin.h.mun.rowdystory.data.repository.account.UserRepository;
 import jin.h.mun.rowdystory.domain.account.User;
 import jin.h.mun.rowdystory.domain.account.enums.RoleType;
 import jin.h.mun.rowdystory.dto.account.UserDTO;
-import jin.h.mun.rowdystory.dto.account.UserRegisterRequest;
-import jin.h.mun.rowdystory.dto.account.UserUpdateRequest;
+import jin.h.mun.rowdystory.dto.account.api.UpdateRequest;
 import jin.h.mun.rowdystory.web.resolver.session.SessionDefine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +23,12 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class AccountCRUDControllerTest {
+class CRUDForAdminRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,50 +41,6 @@ class AccountCRUDControllerTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Test
-    @DisplayName( "회원 가입 (중복되지 않는 이메일)" )
-    public void registerWithUniqueEmail() throws Exception {
-        //given
-        UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
-                .email( "test@naver.com" )
-                .password( "1234" )
-                .userName( "test" )
-                .build();
-
-        //when
-        MvcResult mvcResult = mockMvc.perform( post( AccountAPI.BASE )
-                .accept( MediaTypes.HAL_JSON_VALUE )
-                .contentType( MediaTypes.HAL_JSON_VALUE )
-                .content( objectMapper.writeValueAsString( userRegisterRequest ) ) )
-                .andDo( print() )
-                .andExpect( status().isCreated() )
-                .andReturn();
-
-        //then
-        UserDTO user = objectMapper.readValue( mvcResult.getResponse().getContentAsString(), User.class ).toDTO();
-        assertThat( user.getEmail() ).isEqualTo( userRegisterRequest.getEmail() );
-        assertThat( user.getUserName() ).isEqualTo( userRegisterRequest.getUserName() );
-    }
-
-    @Test
-    @DisplayName( "회원 가입 (중복된 이메일)" )
-    public void registerWithNonUniqueEmail() throws Exception {
-        //given
-        userRepository.save( User.builder().email( "jin@test.com" ).build() );
-        UserRegisterRequest jin = UserRegisterRequest.builder()
-                .email( "jin@test.com" )
-                .password( "1234" )
-                .userName( "admin" ).build();
-
-        //when
-        mockMvc.perform( post( AccountAPI.BASE )
-                .accept( MediaTypes.HAL_JSON_VALUE )
-                .contentType( MediaTypes.HAL_JSON_VALUE )
-                .content( objectMapper.writeValueAsString( jin ) ) )
-//                .andDo( print() )
-                .andExpect( status().is5xxServerError() );
-    }
 
     @Test
     @DisplayName( "회원 조회 (전체)" )
@@ -119,7 +73,7 @@ class AccountCRUDControllerTest {
     @DisplayName( "회원 수정 (유효한 id)" )
     public void updateByValidId() throws Exception {
         //given
-        UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+        UpdateRequest updateRequest = UpdateRequest.builder()
                 .password( "updatePassword" )
                 .userName( "updateUserName" )
                 .picture( "updatePicture" )
@@ -130,7 +84,7 @@ class AccountCRUDControllerTest {
         mockMvc.perform( put( AccountAPI.BASE + "/{id}", 1L )
                 .accept( MediaTypes.HAL_JSON_VALUE )
                 .contentType( MediaTypes.HAL_JSON_VALUE )
-                .content( objectMapper.writeValueAsString( userUpdateRequest ) ) )
+                .content( objectMapper.writeValueAsString( updateRequest ) ) )
 //                .andDo( print() )
                 .andExpect( status().isOk() );
     }
@@ -138,7 +92,7 @@ class AccountCRUDControllerTest {
     @Test
     @DisplayName( "회원 수정 (유효하지 않은 id)" )
     public void updateByInValidId() throws Exception {
-        UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+        UpdateRequest updateRequest = UpdateRequest.builder()
                 .password( "updatePassword" )
                 .userName( "updateUserName" )
                 .picture( "updatePicture" )
@@ -148,7 +102,7 @@ class AccountCRUDControllerTest {
         mockMvc.perform( put( AccountAPI.BASE + "/{id}", -1L )
                 .accept( MediaTypes.HAL_JSON_VALUE )
                 .contentType( MediaTypes.HAL_JSON_VALUE )
-                .content( objectMapper.writeValueAsString( userUpdateRequest ) ) )
+                .content( objectMapper.writeValueAsString( updateRequest ) ) )
 //                .andDo( print() )
                 .andExpect( status().isNotFound() );
     }
@@ -166,7 +120,7 @@ class AccountCRUDControllerTest {
 
         HashMap<String, Object> sessionAttrs = new HashMap<>();
         sessionAttrs.put( SessionDefine.USER.getName(), jin.toDTO() );
-        UserUpdateRequest hak = UserUpdateRequest.builder()
+        UpdateRequest hak = UpdateRequest.builder()
                 .userName( "hak" ).build();
 
         //when
@@ -196,7 +150,7 @@ class AccountCRUDControllerTest {
 
         HashMap<String, Object> sessionAttrs = new HashMap<>();
         sessionAttrs.put( SessionDefine.USER.getName(), UserDTO.builder().email( "hak@naver.com" ).build() );
-        UserUpdateRequest hak = UserUpdateRequest.builder()
+        UpdateRequest hak = UpdateRequest.builder()
                 .userName( "hak" ).build();
 
         //when

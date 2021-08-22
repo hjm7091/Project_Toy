@@ -1,4 +1,4 @@
-var network = {
+const network = {
     ajax : function(method, url, data, success, error) {
         return $.ajax({
             type : method,

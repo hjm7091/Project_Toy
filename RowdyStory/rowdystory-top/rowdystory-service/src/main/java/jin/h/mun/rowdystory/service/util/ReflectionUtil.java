@@ -1,8 +1,6 @@
 package jin.h.mun.rowdystory.service.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class ReflectionUtil {
 
@@ -25,31 +23,37 @@ public class ReflectionUtil {
         }
     }
 
-    public static void changeField( String fieldName, Object target, Object value ) {
+    public static void setValueOfField( Field field, Object target, Object value ) {
         try {
-            Field field = target.getClass().getDeclaredField( fieldName );
-            field.setAccessible( true );
             field.set( target, value );
-        } catch ( NoSuchFieldException | IllegalAccessException e ) {
+        } catch ( IllegalAccessException e ) {
             throw new RuntimeException( e.getMessage(), e );
         }
     }
 
-    public static Object invokeGetterMethod( String fieldName, Object target ) {
+    public static Object getValueOfField( Field field, Object target ) {
         try {
-            Method[] methods = target.getClass().getDeclaredMethods();
-            for ( Method method : methods ) {
-                String methodName = method.getName().toLowerCase();
-                int parameterCount = method.getParameterCount();
-                if ( methodName.startsWith( "get" ) && methodName.endsWith( fieldName ) && parameterCount == 0 ) {
-                    return method.invoke( target );
-                }
-            }
-        } catch ( InvocationTargetException | IllegalAccessException e ) {
+            return field.get( target );
+        } catch ( IllegalAccessException e ) {
             throw new RuntimeException( e.getMessage(), e );
         }
-
-        throw new IllegalStateException( fieldName + "'s getter method doesn't exist." );
     }
+
+//    public static Object invokeGetterMethod( String fieldName, Object target ) {
+//        try {
+//            Method[] methods = target.getClass().getDeclaredMethods();
+//            for ( Method method : methods ) {
+//                String methodName = method.getName().toLowerCase();
+//                int parameterCount = method.getParameterCount();
+//                if ( methodName.startsWith( "get" ) && methodName.endsWith( fieldName ) && parameterCount == 0 ) {
+//                    return method.invoke( target );
+//                }
+//            }
+//        } catch ( InvocationTargetException | IllegalAccessException e ) {
+//            throw new RuntimeException( e.getMessage(), e );
+//        }
+//
+//        throw new IllegalStateException( fieldName + "'s getter method doesn't exist." );
+//    }
 
 }

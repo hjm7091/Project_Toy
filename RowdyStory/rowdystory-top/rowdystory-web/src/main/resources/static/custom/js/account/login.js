@@ -1,6 +1,6 @@
-var index = {
+const index = {
     init : function() {
-        var _this = this;
+        const _this = this;
         $("#inputEmail").on("change keyup paste", function() {
             _this.validateEmail();
             _this.activateButton();
@@ -10,7 +10,7 @@ var index = {
             _this.activateButton();
         });
         $('.btn_social').on("click", function() {
-            var socialType = $(this).data('social');
+            let socialType = $(this).data('social');
             console.log(socialType);
             location.href = "/login/oauth2/authorization/" + socialType;
         });
@@ -20,23 +20,23 @@ var index = {
         $("#inputPassword").val('');
     },
     validateEmail : function() {
-        var _this = this;
+        const _this = this;
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var email = $("#inputEmail").val();
-        if(email == "") {
+        let email = $("#inputEmail").val();
+        if(email === "") {
             _this.emptyAction("#inputEmail", "#alertEmail");
             return;
         }
-        if(re.test(email) || email == "admin") {
+        if(re.test(email) || email === "admin") {
             _this.validAction("#inputEmail", "#alertEmail");
         } else {
             _this.invalidAction("#inputEmail", "#alertEmail", "유효한 이메일 주소를 입력해주세요.");
         }
     },
     validatePassword : function() {
-        var _this = this;
-        var password = $("#inputPassword").val();
-        if(password == "") {
+        const _this = this;
+        let password = $("#inputPassword").val();
+        if(password === "") {
             _this.emptyAction("#inputPassword", "#alertPassword");
             return;
         }

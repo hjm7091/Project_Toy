@@ -1,4 +1,4 @@
-var util = {
+const util = {
     preventEvent : function(e) {
         if (e.preventDefault) {
             e.preventDefault();
@@ -14,10 +14,10 @@ var util = {
         }
     },
     stringToObject : function(str) {
-        var properties = str.split(',');
-        var obj = {};
+        let properties = str.split(',');
+        let obj = {};
         properties.forEach(function(property) {
-            var tup = property.trim().split(':');
+            let tup = property.trim().split(':');
             obj[tup[0].trim()] = tup[1].trim();
         });
         return obj;

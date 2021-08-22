@@ -36,9 +36,10 @@ public class RequestBodyEncodeAdvice extends org.springframework.web.servlet.mvc
         Field[] fields = target.getClass().getDeclaredFields();
         for ( Field field : fields ) {
             if ( shouldBeEncrypted( field ) && field.getType() == String.class ) {
-                String value = ( String ) ReflectionUtil.invokeGetterMethod( field.getName(), target );
+                field.setAccessible( true );
+                String value = ( String ) ReflectionUtil.getValueOfField( field, target );
                 if ( value != null ) {
-                    ReflectionUtil.changeField( field.getName(), target, passwordEncoder.encode( value ) );
+                    ReflectionUtil.setValueOfField( field, target, passwordEncoder.encode( value ) );
                 }
             }
         }

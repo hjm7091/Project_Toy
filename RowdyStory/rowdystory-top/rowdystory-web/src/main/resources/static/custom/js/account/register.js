@@ -1,22 +1,29 @@
-var index = {
+const index = {
     init : function() {
-        var _this = this;
+        const _this = this;
         $("#inputEmail").on("change keyup paste", function() {
             _this.validateEmail();
             _this.activateButton();
         });
+
         $("#inputUserName").on("change keyup paste", function() {
             _this.validateName();
             _this.activateButton();
         });
+
+        let inputIds = ["#inputPassword", "#inputPasswordConfirm"];
+        let divIds = ["#alertPassword", "#alertPasswordConfirm"];
         $("#inputPassword").on("change keyup paste", function() {
-            _this.validatePassword();
+            _this.validatePassword(inputIds[0], divIds[0]);
+            _this.comparePassword(inputIds, divIds);
             _this.activateButton();
         });
         $("#inputPasswordConfirm").on("change keyup paste", function() {
-            _this.validatePasswordConfirm();
+            _this.validatePassword(inputIds[1], divIds[1]);
+            _this.comparePassword(inputIds, divIds);
             _this.activateButton();
         });
+
         $("#registerBtn").on("click", function() {
 //            _this.loadButton();
             _this.register();
@@ -26,10 +33,10 @@ var index = {
         });
     },
     validateEmail : function() {
-        var _this = this;
+        const _this = this;
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var email = $("#inputEmail").val();
-        if(email == "") {
+        let email = $("#inputEmail").val();
+        if(email === "") {
             _this.emptyAction("#inputEmail", "#alertEmail");
             return;
         }
@@ -40,9 +47,9 @@ var index = {
         }
     },
     validateName : function() {
-        var _this = this;
-        var name = $("#inputUserName").val();
-        if(name == "") {
+        const _this = this;
+        let name = $("#inputUserName").val();
+        if(name === "") {
             _this.emptyAction("#inputUserName", "#alertName");
             return;
         }
@@ -52,56 +59,42 @@ var index = {
             _this.validAction("#inputUserName", "#alertName");
         }
     },
-    validatePassword : function() {
-        var _this = this;
-        var password = $("#inputPassword").val();
-        if(password == "") {
-            _this.emptyAction("#inputPassword", "#alertPassword");
+    validatePassword : function(inputId, divId) {
+        const _this = this;
+        let password = $(inputId).val();
+
+        if(password === "") {
+            _this.emptyAction(inputId, divId);
             return;
         }
+
         if(password.length >= 6) {
-            var passwordConfirm = $("#inputPasswordConfirm").val();
-            if(passwordConfirm.length > 0) {
-                if(_this.compare("#inputPassword", "#inputPasswordConfirm")) {
-                    _this.validAction("#inputPassword", "#alertPassword");
-                    _this.validAction("#inputPasswordConfirm", "#alertPasswordConfirm");
-                } else {
-                    _this.invalidAction("#inputPassword", "#alertPassword", "비밀번호가 일치하지 않습니다.");
-                }
-            } else {
-                _this.validAction("#inputPassword", "#alertPassword");
-            }
+             _this.validAction(inputId, divId);
         } else {
-            _this.invalidAction("#inputPassword", "#alertPassword", "비밀번호를 6자 이상 입력해주세요.");
+            _this.invalidAction(inputId, divId, "비밀번호를 6자 이상 입력해주세요.");
         }
     },
-    validatePasswordConfirm : function() {
-        var _this = this;
-        var passwordConfirm = $("#inputPasswordConfirm").val();
-        if(passwordConfirm == "") {
-            _this.emptyAction("#inputPasswordConfirm", "#alertPasswordConfirm");
+    comparePassword : function(inputIds, divIds) {
+        const _this = this;
+        let password = $(inputIds[0]).val();
+        let passwordConfirm = $(inputIds[1]).val();
+
+        if (password.length < 6 || passwordConfirm.length < 6) {
             return;
         }
-        if(passwordConfirm.length >= 6) {
-            var password = $("#inputPassword").val();
-            if(password.length > 0) {
-                if(_this.compare("#inputPassword", "#inputPasswordConfirm")) {
-                    _this.validAction("#inputPasswordConfirm", "#alertPasswordConfirm");
-                    _this.validAction("#inputPassword", "#alertPassword");
-                } else {
-                    _this.invalidAction("#inputPasswordConfirm", "#alertPasswordConfirm" , "비밀번호가 일치하지 않습니다.");
-                }
-            } else {
-                _this.validAction("#inputPasswordConfirm", "#alertPasswordConfirm");
-            }
+
+        if(_this.isSame(inputIds[0], inputIds[1])) {
+            _this.validAction(inputIds[0], divIds[0]);
+            _this.validAction(inputIds[1], divIds[1]);
         } else {
-            _this.invalidAction("#inputPasswordConfirm", "#alertPasswordConfirm" , "비밀번호를 6자 이상 입력해주세요.");
+            _this.invalidAction(inputIds[0], divIds[0], "비밀번호가 일치하지 않습니다.");
+            _this.invalidAction(inputIds[1], divIds[1], "비밀번호가 일치하지 않습니다.");
         }
     },
-    compare : function(passwordId, passwordConfirmId) {
-        var pw = $(passwordId).val();
-        var pwc = $(passwordConfirmId).val();
-        return (pw == pwc);
+    isSame : function(passwordId, passwordConfirmId) {
+        let pw = $(passwordId).val();
+        let pwc = $(passwordConfirmId).val();
+        return pw === pwc;
     },
     emptyAction : function(inputId, divId) {
         $(inputId).removeClass("is-valid").removeClass("is-invalid");
@@ -130,11 +123,11 @@ var index = {
         }
     },
     checkDuplicate : function(email) {
-        var _this = this;
+        const _this = this;
 
-        var data = { email : email };
+        const data = { "email" : email };
 
-        var success = function(duplicate) {
+        const success = function(duplicate) {
             if(!duplicate) {
                 _this.validAction("#inputEmail", "#alertEmail");
             } else {
@@ -149,13 +142,13 @@ var index = {
         $("#registerBtn").html("<span class='spinner-border spinner-border-sm' role='status'></span> 인증 이메일을 보내는중...");
     },
     register : function() {
-        var data = {
+        const data = {
             "email" : $("#inputEmail").val(),
             "password" : $("#inputPassword").val(),
             "userName" : $("#inputUserName").val(),
         };
 
-        var result = account.register(JSON.stringify(data), function(user) {
+        const result = account.register(JSON.stringify(data), function(user) {
             if(user) {
                 alert("회원 가입 성공");
                 window.location = result.getResponseHeader("Location");

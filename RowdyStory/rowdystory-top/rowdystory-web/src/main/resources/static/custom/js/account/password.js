@@ -1,6 +1,6 @@
-var index = {
+const index = {
     init : function() {
-        var _this = this;
+        const _this = this;
         $("#inputEmail").on("change keyup paste", function() {
             _this.validateEmail();
             _this.activateButton();
@@ -10,10 +10,10 @@ var index = {
         });
     },
     validateEmail : function() {
-        var _this = this;
+        const _this = this;
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var email = $("#inputEmail").val();
-        if(email == "") {
+        let email = $("#inputEmail").val();
+        if(email === "") {
             _this.emptyAction("#inputEmail", "#alertEmail");
             return;
         }

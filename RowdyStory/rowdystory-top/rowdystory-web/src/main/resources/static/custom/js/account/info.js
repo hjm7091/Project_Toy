@@ -1,7 +1,7 @@
-var index = {
+const index = {
     originEmail : $("#inputEmail").val(),
     init : function() {
-        var _this = this;
+        const _this = this;
 
         $("#inputEmail").on("change keyup paste", function() {
             _this.validateEmail("#inputEmail", "#alertEmail");
@@ -57,7 +57,7 @@ var index = {
         }
     },
     toggleInput : function(inputId) {
-        var _this = this;
+        const _this = this;
         if( $(inputId).attr("readonly") ) {
             $(inputId).removeAttr("readonly");
         } else {
@@ -68,10 +68,10 @@ var index = {
         }
     },
     validateEmail : function(inputId, divId) {
-        var _this = this;
+        const _this = this;
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var email = $(inputId).val();
-        if(email == _this.originEmail) {
+        let email = $(inputId).val();
+        if(email === _this.originEmail) {
             _this.emptyAction(inputId, divId);
             return;
         }
@@ -82,9 +82,9 @@ var index = {
         }
     },
     validatePassword : function(inputId, divId, buttonId) {
-        var _this = this;
-        var password = $(inputId).val();
-        if(password == "") {
+        const _this = this;
+        let password = $(inputId).val();
+        if(password === "") {
             _this.emptyAction(inputId, divId);
             return;
         }
@@ -149,11 +149,11 @@ var index = {
         }
     },
     checkDuplicate : function(email) {
-        var _this = this;
+        const _this = this;
 
-        var data = { email : email };
+        const data = { "email" : email };
 
-        var success = function(duplicate) {
+        const success = function(duplicate) {
             if(!duplicate) {
                 _this.validAction("#inputEmail", "#alertEmail");
             } else {
@@ -165,13 +165,13 @@ var index = {
         account.getByEmail(data, success, util.error);
     },
     modifyEmail : function(email) {
-        let _this = this;
+        const _this = this;
 
         if (confirm("정말로 변경하시겠습니까?")) {
-            var data = { "email" : email };
+            const data = { "email" : email };
 
-            var success = function(userDTO) {
-                if (userDTO.email != _this.originEmail) {
+            const success = function(userDTO) {
+                if (userDTO.email !== _this.originEmail) {
                     alert("이메일 변경 성공");
                 } else {
                     alert("이메일 변경 실패");
@@ -179,8 +179,8 @@ var index = {
                 location.reload();
             }
 
-            var error = function(result) {
-                var responseText = util.stringToObject(result.responseText);
+            const error = function(result) {
+                let responseText = util.stringToObject(result.responseText);
                 alert(responseText.message);
                 location.reload();
             }
@@ -189,16 +189,16 @@ var index = {
         }
     },
     modifyPassword : function(before, after) {
-        let _this = this;
+        const _this = this;
 
         if (confirm("정말로 변경하시겠습니까?")) {
-            let data = { "before" : before, "after" : after };
+            const data = { "before" : before, "after" : after };
 
             /*
             * response 로 string 이 반환되면 성공임에도 불구하고 error 콜백이 호출됨. 이유를 모르겠음.
             * response 로 객체가 반환되면 정상적으로 동작함.
             */
-            let success = function(result) {
+            const success = function(result) {
                 if (result.responseText !== null) {
                     alert("비밀번호 변경 성공");
                 } else {
@@ -207,7 +207,7 @@ var index = {
                 location.reload();
             }
 
-            let error = function(result) {
+            const error = function(result) {
                 let responseText = util.stringToObject(result.responseText);
                 alert(responseText.message);
                 location.reload();

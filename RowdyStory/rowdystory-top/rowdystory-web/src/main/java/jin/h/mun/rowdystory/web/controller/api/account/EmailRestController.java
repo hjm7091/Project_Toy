@@ -2,7 +2,7 @@ package jin.h.mun.rowdystory.web.controller.api.account;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.api.UpdateRequest;
-import jin.h.mun.rowdystory.service.account.rowdy.AccountService;
+import jin.h.mun.rowdystory.service.account.rowdy.CommonCRUDService;
 import jin.h.mun.rowdystory.web.controller.api.common.ExceptionHandler;
 import jin.h.mun.rowdystory.web.resolver.session.SessionDefine;
 import jin.h.mun.rowdystory.web.resolver.session.SessionUser;
@@ -21,18 +21,18 @@ import javax.servlet.http.HttpSession;
 @RestController
 public class EmailRestController extends ExceptionHandler {
 
-    private final AccountService accountService;
+    private final CommonCRUDService commonCRUDService;
 
     private final HttpSession httpSession;
 
     @GetMapping( consumes = MediaTypes.HAL_JSON_VALUE, produces = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<Boolean> checkDuplicate( String email ) {
-        return new ResponseEntity<>( accountService.checkDuplicate( email ), HttpStatus.OK );
+        return new ResponseEntity<>( commonCRUDService.checkDuplicate( email ), HttpStatus.OK );
     }
 
     @PutMapping( consumes = MediaTypes.HAL_JSON_VALUE, produces = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<UserDTO> changeEmail( @SessionUser UserDTO userDTO, @RequestBody UpdateRequest updateRequest ) {
-        UserDTO changedUserDTO = accountService.changeEmail( userDTO.getEmail(), updateRequest.getEmail() );
+        UserDTO changedUserDTO = commonCRUDService.updateEmail( userDTO.getEmail(), updateRequest.getEmail() );
         httpSession.setAttribute( SessionDefine.USER.getName(), changedUserDTO );
         return new ResponseEntity<>( changedUserDTO, HttpStatus.OK );
     }

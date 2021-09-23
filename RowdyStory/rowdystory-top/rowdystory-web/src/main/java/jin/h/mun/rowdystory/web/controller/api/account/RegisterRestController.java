@@ -2,7 +2,7 @@ package jin.h.mun.rowdystory.web.controller.api.account;
 
 import jin.h.mun.rowdystory.dto.account.UserDTO;
 import jin.h.mun.rowdystory.dto.account.api.RegisterRequest;
-import jin.h.mun.rowdystory.service.account.rowdy.AccountService;
+import jin.h.mun.rowdystory.service.account.rowdy.CommonCRUDService;
 import jin.h.mun.rowdystory.web.controller.api.common.ExceptionHandler;
 import jin.h.mun.rowdystory.web.controller.view.account.Account;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +22,11 @@ import java.net.URI;
 @RequestMapping( AccountAPI.REGISTER )
 public class RegisterRestController extends ExceptionHandler {
 
-    private final AccountService accountService;
+    private final CommonCRUDService commonCRUDService;
 
     @PostMapping( produces = MediaTypes.HAL_JSON_VALUE, consumes = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<UserDTO> register( @RequestBody RegisterRequest registerRequest ) throws Exception {
-        UserDTO userDTO = accountService.register( registerRequest );
+        UserDTO userDTO = commonCRUDService.register( registerRequest );
         return ResponseEntity.created( URI.create( Account.AccountMapping.LOGIN ) ).body( userDTO );
     }
 

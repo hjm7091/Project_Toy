@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith( SpringExtension.class )
-class AccountServiceTest {
+class CommonCRUDServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -38,7 +38,7 @@ class AccountServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private AccountService accountService;
+    private CommonCRUDService commonCRUDService;
 
     @Test
     @DisplayName( "모든 계정 조회 테스트" )
@@ -49,7 +49,7 @@ class AccountServiceTest {
 
         //when
         when( userRepository.findAll() ).thenReturn( Arrays.asList( user1, user2 ) );
-        List<UserDTO> userDTOs = accountService.getAll();
+        List<UserDTO> userDTOs = commonCRUDService.getAll();
 
         //then
         assertThat( userDTOs )
@@ -66,8 +66,8 @@ class AccountServiceTest {
 
         //when
         when( userRepository.findById( 1L ) ).thenReturn( Optional.of( user ) );
-        Optional<UserDTO> userOpt1L = accountService.get( 1L );
-        Optional<UserDTO> userOpt2L = accountService.get( 2L );
+        Optional<UserDTO> userOpt1L = commonCRUDService.getById( 1L );
+        Optional<UserDTO> userOpt2L = commonCRUDService.getById( 2L );
 
         //then
         assertThat( userOpt1L.isPresent() ).isTrue();
@@ -86,7 +86,7 @@ class AccountServiceTest {
         //when
         when( userRepository.save( any( User.class ) ) ).then( returnsFirstArg() );
         when( passwordEncoder.encode( anyString() ) ).thenReturn( "encrypted" );
-        UserDTO userDTO = accountService.register( registerRequest );
+        UserDTO userDTO = commonCRUDService.register( registerRequest );
 
         //then
         assertThat( userDTO.getEmail() ).isEqualTo( registerRequest.getEmail() );
@@ -115,10 +115,10 @@ class AccountServiceTest {
         when( userRepository.findById( 1L ) ).thenReturn( Optional.of( user ) );
         when( userRepository.findByEmail( "user@test.com" ) ).thenReturn( Optional.of( user ) );
         when( passwordEncoder.encode( anyString() ) ).thenReturn( "encrypted" );
-        Optional<UserDTO> userOpt1L = accountService.updateById( 1L, updateRequest );
-        Optional<UserDTO> userOpt2L = accountService.updateById( 2L, updateRequest );
-        Optional<UserDTO> userOptTest = accountService.updateByEmail( "user@test.com", updateRequest );
-        Optional<UserDTO> userOptInvalid = accountService.updateByEmail( "invalid", updateRequest );
+        Optional<UserDTO> userOpt1L = commonCRUDService.updateById( 1L, updateRequest );
+        Optional<UserDTO> userOpt2L = commonCRUDService.updateById( 2L, updateRequest );
+        Optional<UserDTO> userOptTest = commonCRUDService.updateByEmail( "user@test.com", updateRequest );
+        Optional<UserDTO> userOptInvalid = commonCRUDService.updateByEmail( "invalid", updateRequest );
 
         //then
         assertThat( userOpt1L.isPresent() ).isTrue();
@@ -142,8 +142,8 @@ class AccountServiceTest {
         when( userRepository.findById( 1L ) ).thenReturn( Optional.of( user ) );
 
         //then
-        assertThat( accountService.delete( 1L ) ).isTrue();
-        assertThat( accountService.delete( 2L ) ).isFalse();
+        assertThat( commonCRUDService.deleteById( 1L ) ).isTrue();
+        assertThat( commonCRUDService.deleteById( 2L ) ).isFalse();
     }
 
     @Test
@@ -157,8 +157,8 @@ class AccountServiceTest {
         when( userRepository.findByEmail( email ) ).thenReturn( Optional.of( user ) );
 
         //then
-        assertThat( accountService.checkDuplicate( email ) ).isTrue();
-        assertThat( accountService.checkDuplicate( "jin111@test.com" ) ).isFalse();
+        assertThat( commonCRUDService.checkDuplicate( email ) ).isTrue();
+        assertThat( commonCRUDService.checkDuplicate( "jin111@test.com" ) ).isFalse();
     }
 
     @Test
@@ -170,7 +170,7 @@ class AccountServiceTest {
 
         //when
         when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
-        UserDTO changedDTO = accountService.changeEmail( jin.getEmail(), hakEmail );
+        UserDTO changedDTO = commonCRUDService.updateEmail( jin.getEmail(), hakEmail );
 
         //then
         assertThat( jin.getEmail() ).isEqualTo( hakEmail );
@@ -185,8 +185,8 @@ class AccountServiceTest {
 
         //when
         when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
-        assertThrows( SocialAccountUnmodifiableException.class, () -> accountService.changeEmail( jin.getEmail(), hakEmail ) );
-        assertThrows( SocialAccountUnmodifiableException.class, () -> accountService.changePassword( jin.getEmail(), "1111", "2222" ) );
+        assertThrows( SocialAccountUnmodifiableException.class, () -> commonCRUDService.updateEmail( jin.getEmail(), hakEmail ) );
+        assertThrows( SocialAccountUnmodifiableException.class, () -> commonCRUDService.updatePassword( jin.getEmail(), "1111", "2222" ) );
     }
 
     @Test
@@ -199,7 +199,7 @@ class AccountServiceTest {
         //when
         when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
         when( passwordEncoder.matches( from, jin.getPassword() ) ).thenReturn( false );
-        assertThrows( AccountPreviousPasswordUnmatchedException.class, () -> accountService.changePassword( jin.getEmail(), from, to ) );
+        assertThrows( AccountPreviousPasswordUnmatchedException.class, () -> commonCRUDService.updatePassword( jin.getEmail(), from, to ) );
     }
 
     @Test
@@ -212,7 +212,7 @@ class AccountServiceTest {
         //when
         when( userRepository.findByEmail( jin.getEmail() ) ).thenReturn( Optional.of( jin ) );
         when( passwordEncoder.matches( from, jin.getPassword() ) ).thenReturn( true );
-        accountService.changePassword( jin.getEmail(), from, to );
+        commonCRUDService.updatePassword( jin.getEmail(), from, to );
 
         //then
         assertThat( jin.getPassword() ).isEqualTo( to );
@@ -225,7 +225,7 @@ class AccountServiceTest {
         String hakEmail = "hak@test.com";
 
         //when
-        assertThrows( IllegalStateException.class, () -> accountService.changeEmail( "test", hakEmail ) );
-        assertThrows( IllegalStateException.class, () -> accountService.changePassword( "test", "before", "after" ) );
+        assertThrows( IllegalStateException.class, () -> commonCRUDService.updateEmail( "test", hakEmail ) );
+        assertThrows( IllegalStateException.class, () -> commonCRUDService.updatePassword( "test", "before", "after" ) );
     }
 }

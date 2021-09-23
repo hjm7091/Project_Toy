@@ -17,32 +17,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Transactional( readOnly = true )
 @RequiredArgsConstructor
 @Service
-public class AccountService {
+@Transactional
+public class CommonCRUDService {
 
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
+    public UserDTO register( RegisterRequest registerRequest ) throws Exception {
+        return userRepository.save( new User( registerRequest ) ).toDTO();
+    }
+
+    @Transactional( readOnly = true )
     public List<UserDTO> getAll() throws Exception {
         return userRepository.findAll()
                 .stream().map( User::toDTO )
                 .collect( Collectors.toList() );
     }
 
-    public Optional<UserDTO> get( Long id ) throws Exception {
-        return userRepository.findById( id ).map( User::toDTO );
-    }
-
+    @Transactional( readOnly = true )
     public boolean checkDuplicate( String email ) {
         return userRepository.findByEmail( email ).isPresent();
     }
 
-    @Transactional
-    public UserDTO changeEmail( String from, String to ) {
-        User user = userRepository.findByEmail( from ).orElseThrow( () -> new IllegalStateException( "impossible case..." ) );
+    public UserDTO updateEmail( String from, String to ) {
+        User user = userRepository.findByEmail( from ).orElseThrow( () -> new IllegalStateException( from + " is a non-existent email." ) );
         if ( user.isSocialUser() ) {
             throw new SocialAccountUnmodifiableException( ErrorMessage.SOCIAL_ACCOUNT_UNMODIFIABLE.getMessage() );
         }
@@ -50,8 +51,7 @@ public class AccountService {
         return user.toDTO();
     }
 
-    @Transactional
-    public void changePassword( String email, String from, String to ) {
+    public void updatePassword( String email, String from, String to ) {
         User user = userRepository.findByEmail( email ).orElseThrow( () -> new IllegalStateException( "impossible case..." ) );
         if ( user.isSocialUser() ) {
             throw new SocialAccountUnmodifiableException( ErrorMessage.SOCIAL_ACCOUNT_UNMODIFIABLE.getMessage() );
@@ -62,12 +62,11 @@ public class AccountService {
         user.changePassword( to );
     }
 
-    @Transactional
-    public UserDTO register( RegisterRequest registerRequest ) throws Exception {
-        return userRepository.save( new User( registerRequest ) ).toDTO();
+    @Transactional( readOnly = true )
+    public Optional<UserDTO> getById( Long id ) throws Exception {
+        return userRepository.findById( id ).map( User::toDTO );
     }
 
-    @Transactional
     public Optional<UserDTO> updateById( Long id, UpdateRequest updateRequest ) throws Exception {
         Optional<User> userOpt = userRepository.findById( id );
         if ( userOpt.isPresent() ) {
@@ -77,7 +76,6 @@ public class AccountService {
         return Optional.empty();
     }
 
-    @Transactional
     public Optional<UserDTO> updateByEmail( String email, UpdateRequest updateRequest ) {
         Optional<User> userOpt = userRepository.findByEmail( email );
         if ( userOpt.isPresent() ) {
@@ -87,8 +85,7 @@ public class AccountService {
         return Optional.empty();
     }
 
-    @Transactional
-    public boolean delete( Long id ) throws Exception {
+    public boolean deleteById( Long id ) throws Exception {
         Optional<User> userOpt = userRepository.findById( id );
         if ( userOpt.isPresent() ) {
             userRepository.delete( userOpt.get() );

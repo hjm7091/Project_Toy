@@ -15,7 +15,7 @@ public class AES256Util {
 
     private AES256Util() {}
 
-    private static final String SECRET_KEY_CONFIG = "PBKDF2WithHmacSHA1";
+    private static final String SECRET_KEY_CONFIG = "PBKDF2WithHmacSHA256";
 
     private static final String CIPHER_CONFIG = "AES/CBC/PKCS5Padding";
 

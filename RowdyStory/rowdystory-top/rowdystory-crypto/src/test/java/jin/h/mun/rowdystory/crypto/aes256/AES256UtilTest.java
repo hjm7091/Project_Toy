@@ -51,4 +51,21 @@ class AES256UtilTest {
         //then
         assertThat( message ).contains( "Given final block not properly padded" );
     }
+
+    @Test
+    @DisplayName( "미리 암호화된 값 복호화 테스트" )
+    public void decryptPreEncryptedStr() {
+        //given
+        String encryptedStr1 = "qNgbzb3vMh0WlkjNIlxLjudADMV6O5yo7SJAtSvzSS1yjA3Rh9f5Uhw1GBuAa26Vena31Q==";
+        String encryptedStr2 = "tfEn9b9J8xYeRcG4MjSUjfVHuPvi0T26L3ssxTK1LjqSHWYkPj5exZf38hOwna1TEwGgvQ==";
+        String key = "key";
+
+        //when
+        String decryptedStr1 = AES256Util.decrypt( encryptedStr1, key );
+        String decryptedStr2 = AES256Util.decrypt( encryptedStr2, key );
+
+        //then
+        assertThat( decryptedStr1 ).isEqualTo( "msg" );
+        assertThat( decryptedStr2 ).isEqualTo( "msg" );
+    }
 }
